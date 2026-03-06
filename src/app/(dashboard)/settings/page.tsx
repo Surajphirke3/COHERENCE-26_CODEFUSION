@@ -126,7 +126,10 @@ export default function SettingsPage() {
                     {member.user?._id ? (
                       <select
                         value={member.role}
-                        onChange={(e) => handleRoleUpdate(member.user!._id, e.target.value)}
+                        onChange={(e) =>
+                          TEAM_ROLES.includes(e.target.value as (typeof TEAM_ROLES)[number]) &&
+                          handleRoleUpdate(member.user!._id, e.target.value)
+                        }
                         disabled={updatingRoleId === member.user._id || member.role === 'owner'}
                         className="h-8 rounded-md border border-border bg-card px-2 text-xs text-foreground outline-none transition-colors hover:border-border-hover focus:border-accent disabled:opacity-60"
                       >
