@@ -20,12 +20,8 @@ export interface Toast {
 
 interface ToastContextValue {
   toasts: Toast[];
-  addToast: (toast: Omit<Toast, "id">) => void;
+  addToast: (message: string, type?: ToastType) => void;
   removeToast: (id: string) => void;
-  success: (message: string) => void;
-  error: (message: string) => void;
-  warning: (message: string) => void;
-  info: (message: string) => void;
 }
 
 const ToastContext = createContext<ToastContextValue | undefined>(undefined);
@@ -45,28 +41,20 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     setToasts((prev) => prev.filter((toast) => toast.id !== id));
   }, []);
 
-  const addToast = useCallback(
-    (toast: Omit<Toast, "id">) => {
-      const id = Math.random().toString(36).substring(2, 9);
-      setToasts((prev) => [...prev, { ...toast, id }]);
+  const addToast = useCallback((message: string, type: ToastType = "info") => {
+    const id = Math.random().toString(36).substring(2, 9);
+    setToasts((prev) => [...prev, { id, message, type }]);
 
-      // Auto-dismiss after 4s (except errors which stay longer)
-      const duration = toast.type === "error" ? 8000 : 4000;
-      setTimeout(() => {
-        removeToast(id);
-      }, duration);
-    },
-    [removeToast]
-  );
-
-  const success = useCallback((message: string) => addToast({ message, type: "success" }), [addToast]);
-  const error = useCallback((message: string) => addToast({ message, type: "error" }), [addToast]);
-  const warning = useCallback((message: string) => addToast({ message, type: "warning" }), [addToast]);
-  const info = useCallback((message: string) => addToast({ message, type: "info" }), [addToast]);
+    // Auto-dismiss after 4s (except errors which stay longer)
+    const duration = type === "error" ? 8000 : 4000;
+    setTimeout(() => {
+      removeToast(id);
+    }, duration);
+  }, [removeToast]);
 
   return (
     <ToastContext.Provider
-      value={{ toasts, addToast, removeToast, success, error, warning, info }}
+      value={{ toasts, addToast, removeToast }}
     >
       {children}
       <ToastContainer />

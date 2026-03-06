@@ -15,8 +15,8 @@ export default function NotFound() {
         Sorry, we couldn&apos;t find the page you&apos;re looking for. It might have been moved or removed.
       </p>
       <div className="flex gap-4">
-        <Button asChild variant="secondary" size="lg">
-          <button onClick={() => window.history.back()}>Go Back</button>
+        <Button variant="secondary" size="lg" onClick={() => window.history.back()}>
+          Go Back
         </Button>
         <Link href="/">
           <Button variant="primary" size="lg">Return to Dashboard</Button>

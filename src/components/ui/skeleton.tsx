@@ -10,7 +10,7 @@ export interface SkeletonProps {
   count?: number;
 }
 
-const base = 'bg-gradient-to-r from-white/[0.04] via-white/[0.08] to-white/[0.04] bg-[length:200%_100%] animate-shimmer rounded';
+const base = 'bg-linear-to-r from-white/[0.04] via-white/[0.08] to-white/[0.04] bg-[length:200%_100%] animate-shimmer rounded';
 
 export function Skeleton({ variant = 'text', className, count = 1 }: SkeletonProps) {
   const items = Array.from({ length: count });

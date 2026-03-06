@@ -24,7 +24,7 @@ export function Progress({ value, variant = 'accent', className, showLabel }: Pr
 
   return (
     <div className={cn('flex items-center gap-2', className)}>
-      <div className="relative h-1 w-full overflow-hidden rounded-full bg-white/[0.06]">
+      <div className="relative h-1 w-full overflow-hidden rounded-full bg-white/6">
         <div
           className={cn('h-full rounded-full transition-all duration-500 ease-out', barColors[variant])}
           style={{ width: `${clamped}%` }}

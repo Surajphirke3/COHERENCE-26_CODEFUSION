@@ -83,7 +83,7 @@ export function SubjectLineGenerator({ onSelect, leadId, nodePrompt }: SubjectLi
                 'group relative rounded-lg border p-3 text-left transition-all cursor-pointer',
                 selected === i
                   ? 'border-accent bg-accent-muted/30'
-                  : 'border-border bg-white/[0.02] hover:border-border-hover'
+                  : 'border-border bg-white/2 hover:border-border-hover'
               )}
             >
               <p className="text-sm text-foreground pr-6">{v}</p>

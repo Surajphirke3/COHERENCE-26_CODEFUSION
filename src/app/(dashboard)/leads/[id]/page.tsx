@@ -125,7 +125,7 @@ export default function LeadDetailPage() {
 function InfoRow({ icon: Icon, label, value }: { icon: React.ElementType; label: string; value: string }) {
   return (
     <div className="flex items-center gap-3">
-      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/[0.04] text-muted-foreground">
+      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/4 text-muted-foreground">
         <Icon size={14} />
       </div>
       <div>

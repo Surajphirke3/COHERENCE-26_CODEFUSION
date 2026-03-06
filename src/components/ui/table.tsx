@@ -61,7 +61,7 @@ export function Table<T extends Record<string, unknown>>({
     <div className={cn('overflow-x-auto rounded-xl border border-border', className)}>
       <table className="w-full text-sm">
         <thead>
-          <tr className="border-b border-border bg-white/[0.02]">
+          <tr className="border-b border-border bg-white/2">
             {columns.map((col) => (
               <th
                 key={col.key}
@@ -89,8 +89,8 @@ export function Table<T extends Record<string, unknown>>({
               onClick={onRowClick ? () => onRowClick(item) : undefined}
               className={cn(
                 'border-b border-border last:border-0 transition-colors',
-                idx % 2 === 1 && 'bg-white/[0.01]',
-                onRowClick && 'cursor-pointer hover:bg-white/[0.04]'
+                idx % 2 === 1 && 'bg-white/1',
+                onRowClick && 'cursor-pointer hover:bg-white/4'
               )}
             >
               {columns.map((col) => (

@@ -108,7 +108,7 @@ export default function SafetyPage() {
               <p className="py-6 text-center text-sm text-muted-foreground">No active alerts — all clear!</p>
             ) : (
               alerts.map((alert: { _id: string; type: string; message: string; severity: string; createdAt: string }) => (
-                <div key={alert._id} className="flex items-start gap-3 rounded-lg border border-border bg-white/[0.02] p-3">
+                <div key={alert._id} className="flex items-start gap-3 rounded-lg border border-border bg-white/2 p-3">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
                       <Badge status={alert.severity === 'high' ? 'failed' : 'paused'} size="sm">{alert.severity}</Badge>

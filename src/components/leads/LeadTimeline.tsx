@@ -16,7 +16,7 @@ const iconMap: Record<string, { icon: React.ElementType; color: string; bg: stri
   email_opened: { icon: Eye, color: 'text-success', bg: 'bg-success-muted' },
   link_clicked: { icon: Link2, color: 'text-cyan-400', bg: 'bg-cyan-400/15' },
   email_replied: { icon: MessageSquare, color: 'text-ai', bg: 'bg-ai-muted' },
-  stage_changed: { icon: Tag, color: 'text-muted-foreground', bg: 'bg-white/[0.06]' },
+  stage_changed: { icon: Tag, color: 'text-muted-foreground', bg: 'bg-white/6' },
 };
 
 export function LeadTimeline({ leadId }: LeadTimelineProps) {

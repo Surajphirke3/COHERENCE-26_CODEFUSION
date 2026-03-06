@@ -97,7 +97,7 @@ export function ObjectionHandlerPanel({ replyText, leadId }: ObjectionHandlerPan
       ) : (
         <div className="grid grid-cols-1 gap-2">
           {options.map((opt, i) => (
-            <div key={i} className="rounded-lg border border-border bg-white/[0.02] p-4 hover:border-border-hover transition-colors">
+            <div key={i} className="rounded-lg border border-border bg-white/2 p-4 hover:border-border-hover transition-colors">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xs font-medium text-ai">{opt.label}</span>
                 <button

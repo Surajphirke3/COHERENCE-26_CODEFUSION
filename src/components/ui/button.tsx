@@ -15,13 +15,13 @@ const variantStyles: Record<string, string> = {
   primary:
     'bg-accent text-white hover:bg-accent-hover shadow-[0_0_20px_rgba(59,130,246,0.15)] hover:shadow-[0_0_30px_rgba(59,130,246,0.25)]',
   secondary:
-    'bg-transparent text-foreground border border-border hover:border-border-hover hover:bg-white/[0.03]',
+    'bg-transparent text-foreground border border-border hover:border-border-hover hover:bg-white/3',
   danger:
     'bg-danger text-white hover:bg-red-600 shadow-[0_0_20px_rgba(239,68,68,0.15)]',
   ai:
-    'bg-gradient-to-r from-violet-600 to-purple-500 text-white hover:from-violet-500 hover:to-purple-400 shadow-[0_0_20px_rgba(139,92,246,0.2)]',
+    'bg-linear-to-r from-violet-600 to-purple-500 text-white hover:from-violet-500 hover:to-purple-400 shadow-[0_0_20px_rgba(139,92,246,0.2)]',
   ghost:
-    'bg-transparent text-muted hover:text-foreground hover:bg-white/[0.05]',
+    'bg-transparent text-muted hover:text-foreground hover:bg-white/5',
 };
 
 const sizeStyles: Record<string, string> = {

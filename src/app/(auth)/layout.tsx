@@ -7,7 +7,7 @@ import type { ReactNode } from "react";
  */
 export default function AuthLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-brand-950 via-brand-900 to-accent-900 px-4 py-12">
+    <div className="flex min-h-screen items-center justify-center bg-linear-to-br from-brand-950 via-brand-900 to-accent-900 px-4 py-12">
       <div className="w-full max-w-[440px]">
         {/* Brand mark */}
         <div className="mb-8 text-center">

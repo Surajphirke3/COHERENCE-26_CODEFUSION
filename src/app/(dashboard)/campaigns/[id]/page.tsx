@@ -108,7 +108,7 @@ export default function CampaignDetailPage() {
                 { label: 'Replied', value: campaign.stats?.replied || 0 },
                 { label: 'Bounced', value: campaign.stats?.bounced || 0 },
               ].map((s) => (
-                <div key={s.label} className="rounded-lg border border-border bg-white/[0.02] p-3 text-center">
+                <div key={s.label} className="rounded-lg border border-border bg-white/2 p-3 text-center">
                   <p className="text-lg font-bold font-mono text-foreground">{s.value}</p>
                   <p className="text-[11px] text-muted-foreground">{s.label}</p>
                 </div>

@@ -54,7 +54,7 @@ export default function MonitorPage() {
               <p className="text-xs text-muted-foreground py-4 text-center">No active alerts</p>
             ) : (
               alerts.map((alert: { _id: string; type: string; message: string; severity: string; createdAt: string }) => (
-                <div key={alert._id} className="rounded-lg border border-border bg-white/[0.02] p-3">
+                <div key={alert._id} className="rounded-lg border border-border bg-white/2 p-3">
                   <div className="flex items-center gap-2 mb-1">
                     <Badge status={alert.severity === 'high' ? 'failed' : 'paused'} size="sm">{alert.severity}</Badge>
                     <span className="text-xs font-medium text-foreground">{alert.type}</span>

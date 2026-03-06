@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Search, Bell, LogOut, Settings, User, X } from 'lucide-react';
+import { Search, Bell, LogOut, Settings, X } from 'lucide-react';
 import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { cn, getInitials } from '@/lib/utils';
@@ -50,11 +50,11 @@ export function Topnav() {
         {/* Left: Search trigger */}
         <button
           onClick={() => setSearchOpen(true)}
-          className="flex items-center gap-2 rounded-lg border border-border bg-white/[0.03] px-3 py-1.5 text-sm text-muted-foreground hover:border-border-hover transition-colors cursor-pointer"
+          className="flex items-center gap-2 rounded-lg border border-border bg-white/3 px-3 py-1.5 text-sm text-muted-foreground hover:border-border-hover transition-colors cursor-pointer"
         >
           <Search size={14} />
           <span>Search…</span>
-          <kbd className="ml-4 rounded border border-border bg-white/[0.04] px-1.5 py-0.5 text-[10px] font-mono text-muted-foreground">
+          <kbd className="ml-4 rounded border border-border bg-white/4 px-1.5 py-0.5 text-[10px] font-mono text-muted-foreground">
             ⌘K
           </kbd>
         </button>
@@ -65,7 +65,7 @@ export function Topnav() {
           <div ref={notifRef} className="relative">
             <button
               onClick={() => setNotifOpen(!notifOpen)}
-              className="relative rounded-lg p-2 text-muted-foreground hover:text-foreground hover:bg-white/[0.05] transition-colors cursor-pointer"
+              className="relative rounded-lg p-2 text-muted-foreground hover:text-foreground hover:bg-white/5 transition-colors cursor-pointer"
               aria-label="Notifications"
             >
               <Bell size={18} />
@@ -115,10 +115,10 @@ export function Topnav() {
           <div ref={userMenuRef} className="relative">
             <button
               onClick={() => setUserMenuOpen(!userMenuOpen)}
-              className="flex items-center gap-2 rounded-lg p-1.5 hover:bg-white/[0.05] transition-colors cursor-pointer"
+              className="flex items-center gap-2 rounded-lg p-1.5 hover:bg-white/5 transition-colors cursor-pointer"
               aria-label="User menu"
             >
-              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-accent to-ai text-[11px] font-bold text-white">
+              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-linear-to-br from-accent to-ai text-[11px] font-bold text-white">
                 {getInitials(userName)}
               </div>
             </button>
@@ -132,7 +132,7 @@ export function Topnav() {
                 <div className="py-1">
                   <button
                     onClick={() => { setUserMenuOpen(false); router.push('/settings'); }}
-                    className="flex w-full items-center gap-2 px-4 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-white/[0.04] transition-colors cursor-pointer"
+                    className="flex w-full items-center gap-2 px-4 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-white/4 transition-colors cursor-pointer"
                   >
                     <Settings size={14} /> Settings
                   </button>

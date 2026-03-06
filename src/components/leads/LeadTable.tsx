@@ -129,7 +129,7 @@ export function LeadTable({ campaignId }: LeadTableProps) {
       <div className="overflow-x-auto rounded-xl border border-border">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-border bg-white/[0.02]">
+            <tr className="border-b border-border bg-white/2">
               <th className="w-10 px-3 py-3">
                 <input
                   type="checkbox"
@@ -177,8 +177,8 @@ export function LeadTable({ campaignId }: LeadTableProps) {
                   onClick={() => router.push(`/leads/${lead._id}`)}
                   className={cn(
                     'border-b border-border last:border-0 cursor-pointer transition-colors',
-                    idx % 2 === 1 && 'bg-white/[0.01]',
-                    'hover:bg-white/[0.04]',
+                    idx % 2 === 1 && 'bg-white/2',
+                    'hover:bg-white/4',
                     selectedLeadIds.has(lead._id) && 'bg-accent-muted/20'
                   )}
                 >

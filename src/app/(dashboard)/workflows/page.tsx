@@ -55,7 +55,7 @@ export default function WorkflowsPage() {
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
             {workflows.map((w: { _id: string; name: string; description?: string; graph?: { nodes?: unknown[] }; version: number; isTemplate: boolean; createdAt: string }) => (
               <Link key={w._id} href={`/workflows/${w._id}`}>
-                <div className="group rounded-xl border border-border bg-card p-5 transition-all duration-150 hover:border-border-hover hover:translate-y-[-1px] hover:shadow-lg hover:shadow-accent/5">
+                <div className="group rounded-xl border border-border bg-card p-5 transition-all duration-150 hover:border-border-hover hover:-translate-y-px hover:shadow-lg hover:shadow-accent/5">
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent-muted text-accent">
                       <GitBranch size={18} />

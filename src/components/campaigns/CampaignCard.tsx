@@ -57,7 +57,7 @@ export function CampaignCard({ campaign, onMutate }: CampaignCardProps) {
   };
 
   return (
-    <div className="group relative rounded-xl border border-border bg-card p-5 transition-all duration-150 hover:border-border-hover hover:translate-y-[-1px] hover:shadow-lg hover:shadow-accent/5">
+    <div className="group relative rounded-xl border border-border bg-card p-5 transition-all duration-150 hover:border-border-hover hover:-translate-y-px hover:shadow-lg hover:shadow-accent/5">
       {/* Status badge */}
       <div className="absolute right-4 top-4">
         <Badge status={campaign.status} size="sm" dot>{campaign.status}</Badge>
@@ -97,14 +97,14 @@ export function CampaignCard({ campaign, onMutate }: CampaignCardProps) {
         <div className="relative ml-auto">
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className="rounded-lg p-1.5 text-muted-foreground hover:text-foreground hover:bg-white/[0.05] transition-colors cursor-pointer"
+            className="rounded-lg p-1.5 text-muted-foreground hover:text-foreground hover:bg-white/5 transition-colors cursor-pointer"
             aria-label="More actions"
           >
             <MoreHorizontal size={16} />
           </button>
           {menuOpen && (
             <div className="absolute right-0 top-full mt-1 w-36 rounded-lg border border-border bg-card shadow-xl z-10 animate-scale-in">
-              <button onClick={() => handleAction('clone')} className="flex w-full items-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-white/[0.04] cursor-pointer">
+              <button onClick={() => handleAction('clone')} className="flex w-full items-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-white/4 cursor-pointer">
                 <Copy size={14} /> Clone
               </button>
               <button onClick={() => handleAction('delete')} className="flex w-full items-center gap-2 px-3 py-2 text-sm text-danger hover:bg-danger-muted/50 cursor-pointer">

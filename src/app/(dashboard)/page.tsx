@@ -23,7 +23,7 @@ function KPICard({ icon: Icon, label, value, subtitle, color }: {
   color: string;
 }) {
   return (
-    <div className="rounded-xl border border-border bg-card p-5 transition-all duration-150 hover:border-border-hover hover:translate-y-[-1px]">
+    <div className="rounded-xl border border-border bg-card p-5 transition-all duration-150 hover:border-border-hover hover:-translate-y-px">
       <div className="flex items-center gap-3">
         <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${color}`}>
           <Icon size={20} />
@@ -43,7 +43,7 @@ export default function DashboardPage() {
   const userName = session?.user?.name?.split(' ')[0] || 'there';
 
   const { campaigns, isLoading: campLoading } = useCampaigns({ limit: 5 });
-  const { total: totalLeads, isLoading: leadsLoading } = useLeads({ limit: 1 });
+  const { isLoading: leadsLoading } = useLeads({ limit: 1 });
   const { activities, isLoading: actLoading } = useActivity({ limit: 10 });
 
   const activeCampaigns = campaigns.filter((c: { status: string }) => c.status === 'active');
@@ -99,7 +99,7 @@ export default function DashboardPage() {
                 <p className="py-8 text-center text-sm text-muted-foreground">No campaigns yet</p>
               ) : (
                 campaigns.slice(0, 5).map((c: { _id: string; name: string; status: string; stats?: { totalLeads?: number; contacted?: number } }) => (
-                  <Link key={c._id} href={`/campaigns/${c._id}`} className="flex items-center justify-between px-5 py-3 hover:bg-white/[0.02] transition-colors">
+                  <Link key={c._id} href={`/campaigns/${c._id}`} className="flex items-center justify-between px-5 py-3 hover:bg-white/2 transition-colors">
                     <div>
                       <p className="text-sm font-medium text-foreground">{c.name}</p>
                       <div className="mt-1 w-32">

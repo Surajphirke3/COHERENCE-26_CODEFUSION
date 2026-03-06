@@ -52,7 +52,7 @@ export function ExecutionFeed({ campaignId }: { campaignId: string }) {
           <p className="py-10 text-center text-xs text-muted-foreground">Waiting for events…</p>
         ) : (
           events.map((e) => (
-            <div key={e.id} className="flex items-start gap-2 rounded-lg bg-white/[0.02] px-3 py-2 text-xs animate-slide-up">
+            <div key={e.id} className="flex items-start gap-2 rounded-lg bg-white/2 px-3 py-2 text-xs animate-slide-up">
               <StatusIcon status={e.status} />
               <div className="flex-1 min-w-0">
                 <span className="font-medium text-foreground">{e.leadName}</span>

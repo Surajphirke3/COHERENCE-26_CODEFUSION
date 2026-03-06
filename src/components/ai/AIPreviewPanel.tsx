@@ -96,7 +96,7 @@ export function AIPreviewPanel({ leadId, leadName }: AIPreviewPanelProps) {
               <input
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
-                className="w-full rounded-lg border border-border bg-white/[0.02] px-3 py-1.5 text-sm text-foreground outline-none focus:border-accent"
+                className="w-full rounded-lg border border-border bg-white/2 px-3 py-1.5 text-sm text-foreground outline-none focus:border-accent"
               />
             )}
           </div>
@@ -120,7 +120,7 @@ export function AIPreviewPanel({ leadId, leadName }: AIPreviewPanelProps) {
                 value={body}
                 onChange={(e) => setBody(e.target.value)}
                 rows={6}
-                className="w-full rounded-lg border border-border bg-white/[0.02] px-3 py-2 text-sm text-foreground outline-none focus:border-accent resize-y"
+                className="w-full rounded-lg border border-border bg-white/2 px-3 py-2 text-sm text-foreground outline-none focus:border-accent resize-y"
               />
             )}
           </div>

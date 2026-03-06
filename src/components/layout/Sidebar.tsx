@@ -55,7 +55,7 @@ export function Sidebar() {
     >
       {/* Logo */}
       <div className="flex h-14 items-center gap-2.5 border-b border-border px-4">
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-accent to-ai text-white">
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-linear-to-br from-accent to-ai text-white">
           <Zap size={18} />
         </div>
         {!sidebarCollapsed && (
@@ -78,7 +78,7 @@ export function Sidebar() {
                 'group relative flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-150',
                 active
                   ? 'bg-accent-muted text-accent'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-white/[0.04]'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-white/4'
               )}
             >
               {active && (
@@ -89,7 +89,7 @@ export function Sidebar() {
                 <>
                   <span className="flex-1">{item.label}</span>
                   {item.badge && (
-                    <span className="rounded-full bg-white/[0.08] px-1.5 py-0.5 text-[10px] font-mono">
+                    <span className="rounded-full bg-white/8 px-1.5 py-0.5 text-[10px] font-mono">
                       {item.badge}
                     </span>
                   )}
@@ -107,7 +107,7 @@ export function Sidebar() {
       <div className="border-t border-border p-2">
         <button
           onClick={toggleSidebar}
-          className="flex w-full items-center justify-center rounded-lg p-2 text-muted-foreground hover:text-foreground hover:bg-white/[0.04] transition-colors cursor-pointer"
+          className="flex w-full items-center justify-center rounded-lg p-2 text-muted-foreground hover:text-foreground hover:bg-white/4 transition-colors cursor-pointer"
           aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
           {sidebarCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}

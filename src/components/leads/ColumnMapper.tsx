@@ -30,7 +30,7 @@ export function ColumnMapper({ mapping, onUpdate }: ColumnMapperProps) {
       </div>
       <table className="w-full text-sm">
         <thead>
-          <tr className="border-b border-border bg-white/[0.02]">
+          <tr className="border-b border-border bg-white/2">
             <th className="px-4 py-2 text-left font-medium text-muted-foreground">Source Column</th>
             <th className="px-4 py-2 text-left font-medium text-muted-foreground">Sample Data</th>
             <th className="px-4 py-2 text-left font-medium text-muted-foreground">Maps To</th>

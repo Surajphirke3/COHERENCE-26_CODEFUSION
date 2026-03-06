@@ -11,6 +11,17 @@ import { Table } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { useAnalytics } from '@/lib/hooks/useAnalytics';
 
+interface CampaignRow {
+  name: string;
+  status: React.ComponentProps<typeof Badge>['status'];
+  stats?: {
+    contacted?: number;
+    opened?: number;
+    replied?: number;
+  };
+  [key: string]: unknown;
+}
+
 export default function AnalyticsPage() {
   const [campaignFilter, setCampaignFilter] = useState<string>('');
   const { totalSent, totalOpened, totalClicked, totalReplied, totalBounced, campaigns, isLoading } = useAnalytics({
@@ -62,23 +73,23 @@ export default function AnalyticsPage() {
         <div className="rounded-xl border border-border bg-card p-6 mt-6">
           <h2 className="mb-4 text-sm font-semibold text-foreground">Campaign Comparison</h2>
           <Table
-            data={campaigns}
+            data={campaigns as CampaignRow[]}
             columns={[
               { key: 'name', header: 'Campaign Name', sortable: true },
               {
                 key: 'status',
                 header: 'Status',
-                render: (row: any) => <Badge status={row.status} size="sm">{row.status}</Badge>,
+                render: (row: CampaignRow) => <Badge status={row.status} size="sm">{row.status as string}</Badge>,
               },
               {
                 key: 'stats.contacted',
                 header: 'Sent',
-                render: (row: any) => row.stats?.contacted?.toLocaleString() || '0',
+                render: (row: CampaignRow) => row.stats?.contacted?.toLocaleString() || '0',
               },
               {
                 key: 'openRate',
                 header: 'Open Rate',
-                render: (row: any) => {
+                render: (row: CampaignRow) => {
                   const s = row.stats?.contacted || 0;
                   const o = row.stats?.opened || 0;
                   return s > 0 ? `${((o / s) * 100).toFixed(1)}%` : '0%';
@@ -87,7 +98,7 @@ export default function AnalyticsPage() {
               {
                 key: 'replyRate',
                 header: 'Reply Rate',
-                render: (row: any) => {
+                render: (row: CampaignRow) => {
                   const s = row.stats?.contacted || 0;
                   const r = row.stats?.replied || 0;
                   return s > 0 ? `${((r / s) * 100).toFixed(1)}%` : '0%';

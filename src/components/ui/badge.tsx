@@ -17,11 +17,11 @@ export interface BadgeProps {
 const statusStyles: Record<BadgeStatus, string> = {
   active: 'bg-success-muted text-success border-success/20',
   paused: 'bg-warning-muted text-warning border-warning/20',
-  draft: 'bg-white/[0.06] text-muted border-border',
+  draft: 'bg-white/6 text-muted border-border',
   completed: 'bg-accent-muted text-accent border-accent/20',
   failed: 'bg-danger-muted text-danger border-danger/20',
   replied: 'bg-ai-muted text-ai border-ai/20',
-  default: 'bg-white/[0.06] text-muted border-border',
+  default: 'bg-white/6 text-muted border-border',
 };
 
 const sizeStyles: Record<string, string> = {

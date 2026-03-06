@@ -51,7 +51,7 @@ Provide 5-7 specific, actionable optimization suggestions to improve reply rates
       </div>
 
       {content ? (
-        <div className="max-h-80 overflow-y-auto rounded-lg border border-border bg-white/[0.02] p-4">
+        <div className="max-h-80 overflow-y-auto rounded-lg border border-border bg-white/2 p-4">
           <StreamingMessage content={content} isStreaming={isStreaming} />
           {!isStreaming && content && (
             <div className="mt-4 border-t border-border pt-3">
@@ -62,9 +62,9 @@ Provide 5-7 specific, actionable optimization suggestions to improve reply rates
           )}
         </div>
       ) : (
-        <div className="rounded-lg border border-border bg-white/[0.02] p-8 text-center">
+        <div className="rounded-lg border border-border bg-white/2 p-8 text-center">
           <p className="text-xs text-muted-foreground">
-            Click "Analyze Workflow" to get AI-powered optimization suggestions
+            Click &quot;Analyze Workflow&quot; to get AI-powered optimization suggestions
           </p>
         </div>
       )}

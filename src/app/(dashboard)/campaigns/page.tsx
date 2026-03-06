@@ -28,7 +28,7 @@ export default function CampaignsPage() {
 
       <div className="p-6 space-y-5">
         {/* Tab filters */}
-        <div className="flex items-center gap-1 rounded-lg border border-border bg-white/[0.02] p-1 w-fit">
+        <div className="flex items-center gap-1 rounded-lg border border-border bg-white/2 p-1 w-fit">
           {TABS.map((tab) => (
             <button
               key={tab}
@@ -66,7 +66,7 @@ export default function CampaignsPage() {
         ) : (
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
             {campaigns.map((c: { _id: string; name: string; status: string; stats?: Record<string, number> }) => (
-              <CampaignCard key={c._id} campaign={c as any} onMutate={mutate} />
+              <CampaignCard key={c._id} campaign={c as React.ComponentProps<typeof CampaignCard>['campaign']} onMutate={mutate} />
             ))}
           </div>
         )}
