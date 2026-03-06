@@ -9,7 +9,7 @@ import OutreachMessageModel from "@/lib/models/OutreachMessage";
 import CampaignModel from "@/lib/models/Campaign";
 import { SafetyConfigUpdateSchema } from "@/lib/validators/safety.schema";
 
-export async function GET(_req: NextRequest) {
+export async function GET() {
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
@@ -38,14 +38,28 @@ export async function GET(_req: NextRequest) {
     .sort({ triggeredAt: -1 })
     .lean();
 
-  return NextResponse.json({
-    domainScore: 85,
+  const health = {
+    score: 85,
     spf: true,
     dkim: true,
     dmarc: false,
+  };
+
+  const config = {
+    ...org.safetyConfig,
+    todaySends,
+  };
+
+  return NextResponse.json({
+    health,
+    config,
     activeAlerts,
     todaySends,
     dailyLimit: org.safetyConfig.dailyLimit,
+    domainScore: health.score,
+    spf: health.spf,
+    dkim: health.dkim,
+    dmarc: health.dmarc,
   });
 }
 

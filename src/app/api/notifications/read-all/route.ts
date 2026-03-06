@@ -1,11 +1,11 @@
 // src/app/api/notifications/read-all/route.ts
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import connectDB from "@/lib/db";
 import NotificationModel from "@/lib/models/Notification";
 
-export async function PATCH(_req: NextRequest) {
+export async function PATCH() {
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 

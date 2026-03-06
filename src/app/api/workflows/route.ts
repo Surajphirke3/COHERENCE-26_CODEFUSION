@@ -15,13 +15,15 @@ export async function GET(req: NextRequest) {
 
   const { searchParams } = new URL(req.url);
   const isTemplate = searchParams.get("isTemplate");
+  const search = searchParams.get("search");
 
   const filter: Record<string, unknown> = { orgId };
   if (isTemplate === "true") filter.isTemplate = true;
   if (isTemplate === "false") filter.isTemplate = false;
+  if (search) filter.name = { $regex: search, $options: "i" };
 
   const workflows = await WorkflowModel.find(filter).sort({ updatedAt: -1 }).lean();
-  return NextResponse.json({ workflows });
+  return NextResponse.json({ workflows, total: workflows.length });
 }
 
 export async function POST(req: NextRequest) {

@@ -1,11 +1,10 @@
 // src/components/ai/WorkflowOptimizerPanel.tsx
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Zap, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { StreamingMessage } from './StreamingMessage';
-import { Skeleton } from '@/components/ui/skeleton';
 import { useAI } from '@/lib/hooks/useAI';
 import { useToast } from '@/contexts/toast-context';
 

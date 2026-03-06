@@ -4,7 +4,6 @@
 import React, { useState } from 'react';
 import { Sparkles, Copy, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { StreamingMessage } from './StreamingMessage';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/contexts/toast-context';
 

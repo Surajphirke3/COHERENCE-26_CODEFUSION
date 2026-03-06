@@ -105,7 +105,7 @@ export class DelayCalculator {
    * @param timeWindowEnd   - End hour (0-23)
    * @returns A `Date` representing the next valid send moment
    */
-  nextSendTime(timeWindowStart: number, _timeWindowEnd: number): Date {
+  nextSendTime(timeWindowStart: number): Date {
     const now = new Date();
     const next = new Date(now);
     next.setHours(timeWindowStart, 0, 0, 0);

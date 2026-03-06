@@ -60,7 +60,7 @@ export class DomainHealthService {
 
     const [dnsResult, blacklisted, bounceRate] = await Promise.all([
       this.checkDNS(domain),
-      this.checkBlacklist(domain),
+      this.checkBlacklist(),
       this.getRecentBounceRate(orgId),
     ]);
 
@@ -138,7 +138,7 @@ export class DomainHealthService {
    * @param _domain - Domain to check
    * @returns `true` if blacklisted
    */
-  async checkBlacklist(_domain: string): Promise<boolean> {
+  async checkBlacklist(): Promise<boolean> {
     // Stub: in production, check against services like Spamhaus, Barracuda, etc.
     return false;
   }
