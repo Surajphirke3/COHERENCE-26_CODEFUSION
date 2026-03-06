@@ -61,7 +61,6 @@ const OutreachMessageSchema = new Schema<IOutreachMessage>(
 
 OutreachMessageSchema.index({ leadId: 1 });
 OutreachMessageSchema.index({ campaignId: 1, status: 1 });
-OutreachMessageSchema.index({ trackingPixelId: 1 }, { unique: true });
 
 const OutreachMessageModel: Model<IOutreachMessage> =
   mongoose.models.OutreachMessage ||

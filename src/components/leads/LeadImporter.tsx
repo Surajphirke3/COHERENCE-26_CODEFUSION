@@ -8,7 +8,6 @@ import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ColumnMapper } from './ColumnMapper';
 import { useImport } from '@/lib/hooks/useImport';
-import { cn } from '@/lib/utils';
 
 export function LeadImporter() {
   const {

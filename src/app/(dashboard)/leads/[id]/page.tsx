@@ -12,7 +12,6 @@ import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
 import { LeadTimeline } from '@/components/leads/LeadTimeline';
 import { AIPreviewPanel } from '@/components/ai/AIPreviewPanel';
-import { cn } from '@/lib/utils';
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 

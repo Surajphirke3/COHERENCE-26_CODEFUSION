@@ -4,7 +4,6 @@
 import React from 'react';
 import { useAnalytics } from '@/lib/hooks/useAnalytics';
 import { Skeleton } from '@/components/ui/skeleton';
-import { cn } from '@/lib/utils';
 
 interface LeadFunnelProps {
   campaignId?: string;

@@ -28,9 +28,10 @@ export class ThrottleService {
    */
   async checkAndIncrement(
     orgId: string,
-    _campaignId: string,
+    campaignId: string,
   ): Promise<ThrottleResult> {
     await connectDB();
+    void campaignId;
 
     const org = await OrganizationModel.findById(
       new mongoose.Types.ObjectId(orgId),

@@ -18,7 +18,9 @@ export default function WorkflowsPage() {
   return (
     <div>
       <PageHeader title="Workflows" subtitle={`${total} workflows`}>
-        <Button icon={<Plus size={16} />}>New Workflow</Button>
+        <Link href="/workflows/templates">
+          <Button icon={<Plus size={16} />}>New Workflow</Button>
+        </Link>
       </PageHeader>
 
       <div className="p-6 space-y-5">
@@ -50,6 +52,11 @@ export default function WorkflowsPage() {
             </div>
             <h3 className="text-lg font-semibold text-foreground">No workflows yet</h3>
             <p className="mt-1 text-sm text-muted-foreground">Create your first workflow to automate outreach</p>
+            <div className="mt-5">
+              <Link href="/workflows/templates">
+                <Button icon={<Plus size={16} />}>Browse Templates</Button>
+              </Link>
+            </div>
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">

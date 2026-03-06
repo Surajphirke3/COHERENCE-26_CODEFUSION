@@ -3,7 +3,7 @@
 
 import React, { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { Play, Pause, ArrowLeft } from 'lucide-react';
+import { Play, Pause } from 'lucide-react';
 import useSWR from 'swr';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { Button } from '@/components/ui/button';

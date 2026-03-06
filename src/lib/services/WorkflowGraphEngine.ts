@@ -1,7 +1,7 @@
 // src/lib/services/WorkflowGraphEngine.ts
 import mongoose from 'mongoose';
 import connectDB from '@/lib/db';
-import { WorkflowModel, type IWorkflow, type IWorkflowNode, type IWorkflowEdge } from '@/lib/models';
+import { WorkflowModel, type IWorkflow, type IWorkflowNode } from '@/lib/models';
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */

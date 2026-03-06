@@ -4,7 +4,6 @@
 import React from 'react';
 import { useToast } from '@/contexts/toast-context';
 import { CheckCircle2, AlertCircle, Info, AlertTriangle, X } from 'lucide-react';
-import { cn } from '@/lib/utils';
 
 export function ToastContainer() {
   const { toasts, removeToast } = useToast();

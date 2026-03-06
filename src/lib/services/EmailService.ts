@@ -91,12 +91,13 @@ export class EmailService {
     htmlBody: string,
     campaignId: string,
     leadId: string,
+    trackingPixelId: string,
   ): string {
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
     return htmlBody.replace(
       /href="(https?:\/\/[^"]+)"/g,
       (_match, url: string) => {
-        const tracked = `${baseUrl}/api/webhooks/click?cid=${campaignId}&lid=${leadId}&url=${encodeURIComponent(url)}`;
+        const tracked = `${baseUrl}/api/webhooks/click?pid=${trackingPixelId}&cid=${campaignId}&lid=${leadId}&url=${encodeURIComponent(url)}`;
         return `href="${tracked}"`;
       },
     );
@@ -167,7 +168,7 @@ export class EmailService {
 
     // Inject tracking
     htmlBody = this.injectTrackingPixel(htmlBody, trackingPixelId);
-    htmlBody = this.injectClickTracking(htmlBody, campaignId, lead._id.toString());
+    htmlBody = this.injectClickTracking(htmlBody, campaignId, lead._id.toString(), trackingPixelId);
 
     // Send
     const sendResult = await this.send(lead.email, personalizedMessage.subject, htmlBody, {

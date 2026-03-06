@@ -2,8 +2,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { CheckCircle, XCircle, Clock, Mail, Loader2 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { CheckCircle, XCircle, Mail, Loader2 } from 'lucide-react';
 
 interface ExecutionEvent {
   id: string;

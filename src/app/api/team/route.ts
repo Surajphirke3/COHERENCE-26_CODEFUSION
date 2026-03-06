@@ -8,7 +8,7 @@ import UserModel from "@/lib/models/User";
 import { InviteSchema } from "@/lib/validators/auth.schema";
 import bcrypt from "bcryptjs";
 
-export async function GET(_req: NextRequest) {
+export async function GET() {
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 

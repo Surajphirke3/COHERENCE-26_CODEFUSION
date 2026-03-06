@@ -8,21 +8,12 @@ import ActivityModel from "@/lib/models/Activity";
 import AnalyticsSnapshotModel from "@/lib/models/AnalyticsSnapshot";
 import { WebhookClickSchema } from "@/lib/validators/execution.schema";
 
-export async function POST(req: NextRequest) {
+async function recordClick(trackingPixelId: string, url: string, clickedAt?: string) {
   await connectDB();
 
-  const body = await req.json();
-  const parsed = WebhookClickSchema.safeParse(body);
-  if (!parsed.success) {
-    return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
-  }
-
-  const { trackingPixelId, url, clickedAt } = parsed.data;
-
   const message = await OutreachMessageModel.findOne({ trackingPixelId });
-  if (!message) return NextResponse.json({ error: "Message not found" }, { status: 404 });
+  if (!message) return false;
 
-  // Set clickedAt if not already set
   if (!message.clickedAt) {
     message.clickedAt = clickedAt ? new Date(clickedAt) : new Date();
     message.status = "clicked";
@@ -31,23 +22,19 @@ export async function POST(req: NextRequest) {
   message.clickCount += 1;
   await message.save();
 
-  // Update lead stage to 'clicked' if currently 'contacted'
   await LeadModel.findOneAndUpdate(
     { _id: message.leadId, stage: "contacted" },
     { $set: { stage: "clicked", lastTouchedAt: new Date() } }
   );
 
-  // Update campaign stats
   await CampaignModel.updateOne(
     { _id: message.campaignId },
     { $inc: { "stats.clicked": 1 } }
   );
 
-  // Get campaign for orgId
   const campaign = await CampaignModel.findById(message.campaignId).lean();
 
   if (campaign) {
-    // Log activity
     await ActivityModel.create({
       orgId: campaign.orgId,
       userId: campaign.createdBy || campaign.orgId,
@@ -57,7 +44,6 @@ export async function POST(req: NextRequest) {
       metadata: { url, trackingPixelId, messageId: message._id },
     });
 
-    // Update AnalyticsSnapshot clicks for this campaign+date
     const today = new Date();
     today.setUTCHours(0, 0, 0, 0);
 
@@ -77,6 +63,38 @@ export async function POST(req: NextRequest) {
       { upsert: true }
     );
   }
+
+  return true;
+}
+
+export async function GET(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const parsed = WebhookClickSchema.safeParse({
+    trackingPixelId: searchParams.get("pid"),
+    campaignId: searchParams.get("cid") || undefined,
+    leadId: searchParams.get("lid") || undefined,
+    url: searchParams.get("url"),
+    ipAddress: req.headers.get("x-forwarded-for") || undefined,
+    userAgent: req.headers.get("user-agent") || undefined,
+  });
+
+  if (!parsed.success) {
+    return NextResponse.redirect(new URL("/campaigns", req.url));
+  }
+
+  await recordClick(parsed.data.trackingPixelId, parsed.data.url);
+  return NextResponse.redirect(parsed.data.url);
+}
+
+export async function POST(req: NextRequest) {
+  const body = await req.json();
+  const parsed = WebhookClickSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
+  }
+
+  const ok = await recordClick(parsed.data.trackingPixelId, parsed.data.url, parsed.data.clickedAt);
+  if (!ok) return NextResponse.json({ error: "Message not found" }, { status: 404 });
 
   return NextResponse.json({ success: true });
 }

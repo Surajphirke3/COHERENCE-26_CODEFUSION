@@ -50,7 +50,7 @@ export default function OnboardingPage() {
       {/* Skip link */}
       <div className="mb-4 flex justify-end">
         <Link
-          href="/"
+          href="/campaigns"
           className="text-xs text-brand-500 hover:text-brand-300 transition"
         >
           Skip setup →
@@ -109,7 +109,7 @@ export default function OnboardingPage() {
         <Step3Done
           smtpData={smtpData}
           safetyData={safetyData}
-          onGoToDashboard={() => router.push("/")}
+          onGoToDashboard={() => router.push("/campaigns")}
         />
       )}
     </div>

@@ -12,7 +12,7 @@ import { Shield, AlertTriangle } from 'lucide-react';
 
 export default function MonitorPage() {
   const { id } = useParams<{ id: string }>();
-  const { health, alerts } = useSafety();
+  const { alerts } = useSafety();
 
   return (
     <div>

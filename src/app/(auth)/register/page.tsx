@@ -4,6 +4,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { signIn } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -58,6 +59,18 @@ export default function RegisterPage() {
 
       if (!res.ok) {
         addToast(result.error || "Registration failed", "error");
+        return;
+      }
+
+      const loginResult = await signIn("credentials", {
+        email: data.email,
+        password: data.password,
+        redirect: false,
+      });
+
+      if (loginResult?.error) {
+        addToast("Account created. Please sign in to continue.", "warning");
+        router.push("/login");
         return;
       }
 

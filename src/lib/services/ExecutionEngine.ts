@@ -13,7 +13,7 @@ import {
   type IWorkflowNode,
 } from '@/lib/models';
 import { sleep } from '@/lib/utils';
-import { workflowGraphEngine, type EmailNodeConfig, type ConditionNodeConfig } from './WorkflowGraphEngine';
+import { workflowGraphEngine, type ConditionNodeConfig } from './WorkflowGraphEngine';
 import { messagePersonalizer, type EmailNodeConfig as MsgEmailNodeConfig } from './MessagePersonalizer';
 import { emailService } from './EmailService';
 import { safetyPolicyEnforcer } from './SafetyPolicyEnforcer';

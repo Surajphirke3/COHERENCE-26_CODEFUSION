@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useForm } from "react-hook-form";
@@ -19,6 +19,7 @@ type LoginFormData = z.infer<typeof LoginSchema>;
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { addToast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -46,7 +47,8 @@ export default function LoginPage() {
       }
 
       addToast("Welcome back!", "success");
-      router.push("/");
+      const callbackUrl = searchParams.get("callbackUrl");
+      router.push(callbackUrl || "/campaigns");
     } catch {
       addToast("Something went wrong. Please try again.", "error");
     } finally {
