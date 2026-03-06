@@ -1,118 +1,216 @@
-// src/components/layout/Sidebar.tsx
-'use client';
+'use client'
 
-import React from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { useSession, signOut } from 'next-auth/react'
 import {
-  LayoutDashboard,
-  Megaphone,
-  GitBranch,
-  Users,
-  BarChart2,
-  Shield,
-  Settings,
-  ChevronLeft,
-  ChevronRight,
-  Zap,
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { useUIStore } from '@/lib/store/uiStore';
+  LayoutDashboard, FolderKanban, Users, FileText, Bot, Settings, LogOut, ChevronLeft, Rocket, MessageSquare
+} from 'lucide-react'
+import { useState } from 'react'
+import { getInitials } from '@/lib/utils/format'
 
-interface NavItem {
-  href: string;
-  label: string;
-  icon: React.ElementType;
-  badge?: number | string;
-  alertDot?: boolean;
-}
+const navGroups = [
+  {
+    label: 'Workspace',
+    items: [
+      { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+      { href: '/projects', label: 'Projects', icon: FolderKanban },
+      { href: '/docs', label: 'Docs', icon: FileText },
+    ],
+  },
+  {
+    label: 'Team',
+    items: [
+      { href: '/team', label: 'Members', icon: Users },
+      { href: '/messages', label: 'Messages', icon: MessageSquare },
+      { href: '/ai', label: 'AI Assistant', icon: Bot },
+    ],
+  },
+  {
+    label: 'Account',
+    items: [
+      { href: '/settings', label: 'Settings', icon: Settings },
+    ],
+  },
+]
 
-const navItems: NavItem[] = [
-  { href: '/', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/campaigns', label: 'Campaigns', icon: Megaphone },
-  { href: '/workflows', label: 'Workflows', icon: GitBranch },
-  { href: '/leads', label: 'Leads', icon: Users },
-  { href: '/analytics', label: 'Analytics', icon: BarChart2 },
-  { href: '/safety', label: 'Safety', icon: Shield },
-  { href: '/settings', label: 'Settings', icon: Settings },
-];
-
-export function Sidebar() {
-  const pathname = usePathname();
-  const { sidebarCollapsed, toggleSidebar } = useUIStore();
-
-  const isActive = (href: string) => {
-    if (href === '/') return pathname === '/';
-    return pathname.startsWith(href);
-  };
+export default function Sidebar() {
+  const pathname = usePathname()
+  const { data: session } = useSession()
+  const [collapsed, setCollapsed] = useState(false)
 
   return (
     <aside
-      className={cn(
-        'fixed left-0 top-0 z-40 flex h-screen flex-col border-r border-border bg-card transition-all duration-200',
-        sidebarCollapsed ? 'w-16' : 'w-60'
-      )}
+      style={{
+        width: collapsed ? '64px' : 'var(--sidebar-width)',
+        height: '100vh',
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        background: 'var(--bg-elevated)',
+        borderRight: '1px solid var(--border-subtle)',
+        display: 'flex',
+        flexDirection: 'column',
+        transition: 'width 200ms ease',
+        zIndex: 40,
+        overflow: 'hidden',
+      }}
     >
       {/* Logo */}
-      <div className="flex h-14 items-center gap-2.5 border-b border-border px-4">
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-linear-to-br from-accent to-ai text-white">
-          <Zap size={18} />
+      <div
+        style={{
+          padding: collapsed ? '16px 12px' : '16px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '10px',
+          borderBottom: '1px solid var(--border-subtle)',
+          minHeight: 'var(--topbar-height)',
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '32px',
+            height: '32px',
+            background: 'var(--brand-50)',
+            borderRadius: 'var(--radius-md)',
+            flexShrink: 0,
+          }}
+        >
+          <Rocket size={18} color="var(--brand-600)" />
         </div>
-        {!sidebarCollapsed && (
-          <span className="text-base font-bold tracking-tight text-foreground">
-            Chronos
+        {!collapsed && (
+          <span style={{ fontWeight: 700, fontSize: '15px', color: 'var(--text-primary)', letterSpacing: '-0.01em' }}>
+            Workspace
           </span>
         )}
       </div>
 
-      {/* Nav */}
-      <nav className="flex-1 space-y-0.5 overflow-y-auto px-2 py-3">
-        {navItems.map((item) => {
-          const active = isActive(item.href);
-          const Icon = item.icon;
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                'group relative flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-150',
-                active
-                  ? 'bg-accent-muted text-accent'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-white/4'
-              )}
-            >
-              {active && (
-                <span className="absolute left-0 top-1/2 h-5 w-0.5 -translate-y-1/2 rounded-r-full bg-accent" />
-              )}
-              <Icon size={18} className="shrink-0" />
-              {!sidebarCollapsed && (
-                <>
-                  <span className="flex-1">{item.label}</span>
-                  {item.badge && (
-                    <span className="rounded-full bg-white/8 px-1.5 py-0.5 text-[10px] font-mono">
-                      {item.badge}
-                    </span>
-                  )}
-                  {item.alertDot && (
-                    <span className="h-2 w-2 rounded-full bg-danger animate-pulse" />
-                  )}
-                </>
-              )}
-            </Link>
-          );
-        })}
+      {/* Navigation groups */}
+      <nav style={{ flex: 1, padding: '4px 8px', overflowY: 'auto' }}>
+        {navGroups.map((group, gi) => (
+          <div key={group.label} style={{ marginTop: gi === 0 ? '4px' : '20px' }}>
+            {/* Group label */}
+            {!collapsed && (
+              <div
+                style={{
+                  fontSize: '11px',
+                  fontWeight: 500,
+                  letterSpacing: '0.06em',
+                  textTransform: 'uppercase' as const,
+                  color: 'var(--text-tertiary)',
+                  padding: '0 10px 4px',
+                }}
+              >
+                {group.label}
+              </div>
+            )}
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+              {group.items.map((item) => {
+                const isActive = pathname === item.href || pathname?.startsWith(item.href + '/')
+                const Icon = item.icon
+
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '10px',
+                      padding: collapsed ? '8px 14px' : '6px 10px',
+                      borderRadius: 'var(--radius)',
+                      fontSize: '13.5px',
+                      fontWeight: isActive ? 500 : 400,
+                      color: isActive ? 'var(--brand-700)' : 'var(--text-secondary)',
+                      background: isActive ? 'var(--brand-50)' : 'transparent',
+                      transition: 'background 120ms ease, color 120ms ease',
+                      textDecoration: 'none',
+                      whiteSpace: 'nowrap',
+                      justifyContent: collapsed ? 'center' : 'flex-start',
+                      position: 'relative',
+                    }}
+                    title={collapsed ? item.label : undefined}
+                  >
+                    {/* Active indicator — 3px left border line */}
+                    {isActive && (
+                      <span
+                        style={{
+                          position: 'absolute',
+                          left: 0,
+                          top: '4px',
+                          bottom: '4px',
+                          width: '3px',
+                          background: 'var(--brand-600)',
+                          borderRadius: '0 2px 2px 0',
+                        }}
+                      />
+                    )}
+                    <Icon
+                      size={18}
+                      color={isActive ? 'var(--brand-600)' : 'var(--text-tertiary)'}
+                      style={{ flexShrink: 0 }}
+                    />
+                    {!collapsed && item.label}
+                  </Link>
+                )
+              })}
+            </div>
+          </div>
+        ))}
       </nav>
 
-      {/* Collapse toggle */}
-      <div className="border-t border-border p-2">
+      {/* Bottom: user + actions */}
+      <div style={{ padding: '8px', borderTop: '1px solid var(--border-subtle)' }}>
+        {session?.user && (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '6px 10px',
+              marginBottom: '4px',
+              borderRadius: 'var(--radius)',
+              justifyContent: collapsed ? 'center' : 'flex-start',
+            }}
+          >
+            <div className="avatar avatar-sm">{getInitials(session.user.name || 'U')}</div>
+            {!collapsed && (
+              <div style={{ overflow: 'hidden' }}>
+                <div style={{ fontSize: '13px', fontWeight: 500, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {session.user.name}
+                </div>
+                <div style={{ fontSize: '11px', color: 'var(--text-tertiary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {session.user.email}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         <button
-          onClick={toggleSidebar}
-          className="flex w-full items-center justify-center rounded-lg p-2 text-muted-foreground hover:text-foreground hover:bg-white/4 transition-colors cursor-pointer"
-          aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          onClick={() => signOut({ callbackUrl: '/login' })}
+          className="btn-ghost"
+          style={{ width: '100%', justifyContent: collapsed ? 'center' : 'flex-start', color: 'var(--text-tertiary)', fontSize: '13px' }}
+          title="Sign out"
         >
-          {sidebarCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+          <LogOut size={16} />
+          {!collapsed && 'Sign out'}
+        </button>
+
+        <button
+          onClick={() => setCollapsed(!collapsed)}
+          className="btn-ghost"
+          style={{ width: '100%', justifyContent: collapsed ? 'center' : 'flex-start', marginTop: '2px', fontSize: '13px' }}
+          title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+        >
+          <ChevronLeft size={16} style={{ transition: 'transform 200ms ease', transform: collapsed ? 'rotate(180deg)' : 'none' }} />
+          {!collapsed && 'Collapse'}
         </button>
       </div>
     </aside>
-  );
+  )
 }

@@ -1,44 +1,26 @@
-// src/app/api/activity/route.ts
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
-import { NextRequest, NextResponse } from "next/server";
-import connectDB from "@/lib/db";
-import ActivityModel from "@/lib/models/Activity";
+import { connectDB } from '@/lib/mongodb/client'
+import { ActivityLog } from '@/lib/mongodb/models/ActivityLog'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth/options'
+import { NextResponse } from 'next/server'
 
-export async function GET(req: NextRequest) {
-  const session = await getServerSession(authOptions);
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+export async function GET(req: Request) {
+  try {
+    const session = await getServerSession(authOptions)
+    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  await connectDB();
-  const orgId = (session.user as { orgId: string }).orgId;
+    await connectDB()
+    const { searchParams } = new URL(req.url)
+    const limit = parseInt(searchParams.get('limit') || '20')
 
-  const { searchParams } = new URL(req.url);
-  const resourceType = searchParams.get("resourceType");
-  const resourceId = searchParams.get("resourceId");
-  const userId = searchParams.get("userId");
-  const page = parseInt(searchParams.get("page") || "1", 10);
-  const limit = parseInt(searchParams.get("limit") || "20", 10);
-
-  const filter: Record<string, unknown> = { orgId };
-  if (resourceType) filter.resourceType = resourceType;
-  if (resourceId) filter.resourceId = resourceId;
-  if (userId) filter.userId = userId;
-
-  const skip = (page - 1) * limit;
-  const [activities, total] = await Promise.all([
-    ActivityModel.find(filter)
-      .populate("userId", "name avatar")
+    const logs = await ActivityLog.find()
+      .populate('actorId', 'name avatarUrl')
       .sort({ createdAt: -1 })
-      .skip(skip)
       .limit(limit)
-      .lean(),
-    ActivityModel.countDocuments(filter),
-  ]);
 
-  return NextResponse.json({
-    activities,
-    total,
-    page,
-    totalPages: Math.ceil(total / limit),
-  });
+    return NextResponse.json(logs)
+  } catch (error) {
+    console.error('GET /api/activity error:', error)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  }
 }
