@@ -17,7 +17,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "OutreachAI",
+  title: "Chronos",
   description: "AI-powered outreach automation",
 };
 

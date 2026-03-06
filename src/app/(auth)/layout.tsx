@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 
 /**
  * Auth layout — centered card on a gradient background with
- * the OutreachAI brand mark at the top.
+ * the Chronos brand mark at the top.
  */
 export default function AuthLayout({ children }: { children: ReactNode }) {
   return (
@@ -26,7 +26,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
               <path d="m13 13 6 6" />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-white">OutreachAI</h1>
+          <h1 className="text-2xl font-bold text-white">Chronos</h1>
           <p className="mt-1 text-sm text-brand-400">
             AI-powered outreach automation
           </p>

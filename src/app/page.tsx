@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
@@ -8,8 +9,12 @@ export default async function Home() {
   if (session) {
     redirect("/campaigns");
   }
+=======
+import { Navbar, Hero, Features, Testimonials, CTA, Footer } from "@/components/landing";
+>>>>>>> 4d3e013db0d49b8fdf448fb84055536d98b63a47
 
   return (
+<<<<<<< HEAD
     <div className="flex min-h-screen items-center justify-center bg-background px-6">
       <main className="w-full max-w-4xl rounded-2xl border border-border bg-card p-10 md:p-14">
         <div className="mx-auto max-w-2xl text-center">
@@ -37,7 +42,17 @@ export default async function Home() {
             Sign In
           </Link>
         </div>
+=======
+    <div className="min-h-screen bg-[#020817] text-white selection:bg-blue-500/30 font-sans">
+      <Navbar />
+      <main>
+        <Hero />
+        <Features />
+        <Testimonials />
+        <CTA />
+>>>>>>> 4d3e013db0d49b8fdf448fb84055536d98b63a47
       </main>
+      <Footer />
     </div>
   );
 }

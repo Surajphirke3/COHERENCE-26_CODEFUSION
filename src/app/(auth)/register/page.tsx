@@ -92,7 +92,7 @@ export default function RegisterPage() {
         Create your account
       </h2>
       <p className="mb-6 text-sm text-brand-400">
-        Get started with OutreachAI in seconds
+        Get started with Chronos in seconds
       </p>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">

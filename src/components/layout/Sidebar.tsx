@@ -60,7 +60,7 @@ export function Sidebar() {
         </div>
         {!sidebarCollapsed && (
           <span className="text-base font-bold tracking-tight text-foreground">
-            OutreachAI
+            Chronos
           </span>
         )}
       </div>

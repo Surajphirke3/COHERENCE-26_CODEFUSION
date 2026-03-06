@@ -60,7 +60,7 @@ export default function LoginPage() {
     <div>
       <h2 className="mb-1 text-xl font-semibold text-white">Welcome back</h2>
       <p className="mb-6 text-sm text-brand-400">
-        Sign in to your OutreachAI account
+        Sign in to your Chronos account
       </p>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
