@@ -3,7 +3,7 @@ import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import connectDB from "@/lib/db";
-import User from "@/models/User";
+import UserModel from "@/lib/models/User";
 
 /**
  * NextAuth configuration for OutreachAI.
@@ -27,9 +27,9 @@ export const authOptions: NextAuthOptions = {
 
         await connectDB();
 
-        const user = await User.findOne({
+        const user = await UserModel.findOne({
           email: credentials.email.toLowerCase(),
-        }).select("+password");
+        }).select("+passwordHash");
 
         if (!user) {
           throw new Error("Invalid credentials");
@@ -37,18 +37,24 @@ export const authOptions: NextAuthOptions = {
 
         const isPasswordValid = await bcrypt.compare(
           credentials.password,
-          user.password
+          user.passwordHash
         );
 
         if (!isPasswordValid) {
           throw new Error("Invalid credentials");
         }
 
+        await UserModel.updateOne(
+          { _id: user._id },
+          { lastLoginAt: new Date() }
+        );
+
         return {
           id: user._id.toString(),
           name: user.name,
           email: user.email,
           role: user.role,
+          orgId: user.orgId.toString(),
         };
       },
     }),
@@ -68,15 +74,19 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id;
         token.role = (user as unknown as { role: string }).role;
+        token.orgId = (user as unknown as { orgId: string }).orgId;
       }
       return token;
     },
 
     async session({ session, token }) {
       if (session.user) {
-        (session.user as { id: string; role: string }).id = token.id as string;
-        (session.user as { id: string; role: string }).role =
+        (session.user as { id: string; role: string; orgId: string }).id =
+          token.id as string;
+        (session.user as { id: string; role: string; orgId: string }).role =
           token.role as string;
+        (session.user as { id: string; role: string; orgId: string }).orgId =
+          token.orgId as string;
       }
       return session;
     },

@@ -1,20 +1,12 @@
 // src/app/api/auth/register/route.ts
 import { NextResponse } from "next/server";
-import { z } from "zod";
 import bcrypt from "bcryptjs";
 import connectDB from "@/lib/db";
-import User from "@/models/User";
-import Organization from "@/models/Organization";
+import UserModel from "@/lib/models/User";
+import OrganizationModel from "@/lib/models/Organization";
+import { RegisterSchema } from "@/lib/validators/auth.schema";
+import { slugify } from "@/lib/utils";
 import mongoose from "mongoose";
-
-const RegisterSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Please enter a valid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-  workspaceName: z
-    .string()
-    .min(2, "Workspace name must be at least 2 characters"),
-});
 
 /**
  * POST /api/auth/register
@@ -41,7 +33,7 @@ export async function POST(request: Request) {
     await connectDB();
 
     // Check for existing user
-    const existingUser = await User.findOne({ email: email.toLowerCase() });
+    const existingUser = await UserModel.findOne({ email: email.toLowerCase() });
     if (existingUser) {
       return NextResponse.json(
         { error: "An account with this email already exists" },
@@ -50,39 +42,46 @@ export async function POST(request: Request) {
     }
 
     // Hash password
-    const hashedPassword = await bcrypt.hash(password, 12);
+    const passwordHash = await bcrypt.hash(password, 12);
 
     // Create User + Organization in a transaction
     const session = await mongoose.startSession();
     session.startTransaction();
 
     try {
-      const [user] = await User.create(
+      // Create org first so we can assign orgId to user
+      const [organization] = await OrganizationModel.create(
+        [
+          {
+            name: workspaceName,
+            slug: slugify(workspaceName),
+            plan: "free",
+            members: [],
+          },
+        ],
+        { session }
+      );
+
+      const [user] = await UserModel.create(
         [
           {
             name,
             email: email.toLowerCase(),
-            password: hashedPassword,
-            role: "admin",
+            passwordHash,
+            role: "owner",
+            orgId: organization._id,
           },
         ],
         { session }
       );
 
-      const [organization] = await Organization.create(
-        [
-          {
-            name: workspaceName,
-            ownerId: user._id,
-            plan: "free",
-          },
-        ],
-        { session }
-      );
-
-      // Link user to organization
-      user.organizationId = organization._id;
-      await user.save({ session });
+      // Add user as owner member
+      organization.members.push({
+        userId: user._id,
+        role: "owner",
+        joinedAt: new Date(),
+      });
+      await organization.save({ session });
 
       await session.commitTransaction();
 
@@ -93,7 +92,7 @@ export async function POST(request: Request) {
             name: user.name,
             email: user.email,
             role: user.role,
-            organizationId: organization._id.toString(),
+            orgId: organization._id.toString(),
           },
         },
         { status: 201 }
