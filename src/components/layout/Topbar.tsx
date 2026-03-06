@@ -5,11 +5,14 @@ import { Search, Bell, Menu } from 'lucide-react'
 import { useState } from 'react'
 import { getInitials } from '@/lib/utils/format'
 import MobileNav from './MobileNav'
+import NotificationPopup from './NotificationPopup'
+import { useNotifications } from '@/lib/hooks/useNotifications'
 
 export default function Topbar() {
   const { data: session } = useSession()
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
+  const { toggle, unreadCount } = useNotifications()
 
   return (
     <>
@@ -92,21 +95,39 @@ export default function Topbar() {
 
         {/* Right: Notifications + User */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-          <button className="btn-ghost" style={{ padding: '6px', position: 'relative' }} title="Notifications">
+          <button
+            id="notification-bell"
+            className="btn-ghost"
+            style={{ padding: '6px', position: 'relative' }}
+            title="Notifications"
+            onClick={toggle}
+          >
             <Bell size={18} color="var(--text-tertiary)" />
-            <span
-              style={{
-                position: 'absolute',
-                top: '5px',
-                right: '5px',
-                width: '7px',
-                height: '7px',
-                background: 'var(--danger)',
-                borderRadius: '50%',
-                border: '2px solid var(--bg-base)',
-              }}
-            />
+            {unreadCount() > 0 && (
+              <span
+                style={{
+                  position: 'absolute',
+                  top: '3px',
+                  right: '3px',
+                  minWidth: '16px',
+                  height: '16px',
+                  background: 'var(--danger)',
+                  borderRadius: '9999px',
+                  border: '2px solid var(--bg-base)',
+                  fontSize: '9px',
+                  fontWeight: 700,
+                  color: '#fff',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  lineHeight: 1,
+                }}
+              >
+                {unreadCount()}
+              </span>
+            )}
           </button>
+          <NotificationPopup />
 
           {session?.user && (
             <div
