@@ -1,4 +1,4 @@
-import { Schema, model, models } from 'mongoose'
+import mongoose, { Schema, model, models } from 'mongoose'
 
 const ActivityLogSchema = new Schema(
   {
@@ -14,4 +14,4 @@ const ActivityLogSchema = new Schema(
 
 ActivityLogSchema.index({ createdAt: -1 })
 
-export const ActivityLog = models.ActivityLog || model('ActivityLog', ActivityLogSchema)
+export const ActivityLog: mongoose.Model<any> = models.ActivityLog || model('ActivityLog', ActivityLogSchema)

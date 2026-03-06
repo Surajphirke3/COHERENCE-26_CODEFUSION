@@ -18,7 +18,7 @@ export default async function LandingPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col font-sans selection:bg-indigo-100 selection:text-indigo-900 bg-white">
+    <div className="min-h-screen flex flex-col font-sans selection:bg-indigo-500/30 selection:text-indigo-200 bg-[#0A0A0A]">
       <Navbar />
       
       <main className="flex-grow">
