@@ -239,7 +239,7 @@ function Step1EmailProvider({
             </label>
             <input
               className={inputClasses}
-              placeholder="OutreachAI <you@company.com>"
+              placeholder="Chronos <you@company.com>"
               {...register("from")}
             />
           </div>

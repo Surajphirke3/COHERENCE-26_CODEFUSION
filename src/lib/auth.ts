@@ -6,7 +6,7 @@ import connectDB from "@/lib/db";
 import UserModel from "@/lib/models/User";
 
 /**
- * NextAuth configuration for OutreachAI.
+ * NextAuth configuration for Chronos.
  *
  * - CredentialsProvider validates email + password against the User model.
  * - JWT strategy with a 24-hour session lifetime.
