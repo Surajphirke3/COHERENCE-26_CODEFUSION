@@ -1,113 +1,54 @@
-// src/app/api/auth/register/route.ts
-import { NextResponse } from "next/server";
-import bcrypt from "bcryptjs";
-import connectDB from "@/lib/db";
-import UserModel from "@/lib/models/User";
-import OrganizationModel from "@/lib/models/Organization";
-import { RegisterSchema } from "@/lib/validators/auth.schema";
-import { slugify } from "@/lib/utils";
-import mongoose from "mongoose";
+import { connectDB } from '@/lib/mongodb/client'
+import { User } from '@/lib/mongodb/models/User'
+import bcrypt from 'bcryptjs'
+import { NextResponse } from 'next/server'
 
-/**
- * POST /api/auth/register
- *
- * Creates a new user account and organization.
- * Validates input, checks for duplicate emails, hashes the password,
- * and creates both records in a MongoDB transaction.
- */
-export async function POST(request: Request) {
+export async function POST(req: Request) {
   try {
-    const body = await request.json();
+    const { name, email, password } = await req.json()
 
-    // Validate input
-    const parsed = RegisterSchema.safeParse(body);
-    if (!parsed.success) {
+    if (!name || !email || !password) {
       return NextResponse.json(
-        { error: parsed.error.errors[0].message },
+        { error: 'Name, email, and password are required' },
         { status: 400 }
-      );
+      )
     }
 
-    const { name, email, password, workspaceName } = parsed.data;
+    if (password.length < 6) {
+      return NextResponse.json(
+        { error: 'Password must be at least 6 characters' },
+        { status: 400 }
+      )
+    }
 
-    await connectDB();
+    await connectDB()
 
-    // Check for existing user
-    const existingUser = await UserModel.findOne({ email: email.toLowerCase() });
+    const existingUser = await User.findOne({ email })
     if (existingUser) {
       return NextResponse.json(
-        { error: "An account with this email already exists" },
+        { error: 'An account with this email already exists' },
         { status: 409 }
-      );
+      )
     }
 
-    // Hash password
-    const passwordHash = await bcrypt.hash(password, 12);
+    const hashedPassword = await bcrypt.hash(password, 12)
 
-    // Create User + Organization in a transaction
-    const session = await mongoose.startSession();
-    session.startTransaction();
+    const user = await User.create({
+      name,
+      email,
+      password: hashedPassword,
+      role: 'member',
+    })
 
-    try {
-      // Create org first so we can assign orgId to user
-      const [organization] = await OrganizationModel.create(
-        [
-          {
-            name: workspaceName,
-            slug: slugify(workspaceName),
-            plan: "free",
-            members: [],
-          },
-        ],
-        { session }
-      );
-
-      const [user] = await UserModel.create(
-        [
-          {
-            name,
-            email: email.toLowerCase(),
-            passwordHash,
-            role: "owner",
-            orgId: organization._id,
-          },
-        ],
-        { session }
-      );
-
-      // Add user as owner member
-      organization.members.push({
-        userId: user._id,
-        role: "owner",
-        joinedAt: new Date(),
-      });
-      await organization.save({ session });
-
-      await session.commitTransaction();
-
-      return NextResponse.json(
-        {
-          user: {
-            id: user._id.toString(),
-            name: user.name,
-            email: user.email,
-            role: user.role,
-            orgId: organization._id.toString(),
-          },
-        },
-        { status: 201 }
-      );
-    } catch (txError) {
-      await session.abortTransaction();
-      throw txError;
-    } finally {
-      session.endSession();
-    }
-  } catch (error) {
-    console.error("Registration error:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { message: 'Account created successfully', userId: user._id },
+      { status: 201 }
+    )
+  } catch (error) {
+    console.error('Registration error:', error)
+    return NextResponse.json(
+      { error: 'Something went wrong. Please try again.' },
       { status: 500 }
-    );
+    )
   }
 }

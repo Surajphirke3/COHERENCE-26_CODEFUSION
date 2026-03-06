@@ -1,39 +1,26 @@
-// src/app/layout.tsx
-import type { Metadata } from "next";
-import { DM_Sans, JetBrains_Mono } from "next/font/google";
-import { Providers } from "./providers";
-import "./globals.css";
-
-const dmSans = DM_Sans({
-  subsets: ["latin"],
-  variable: "--font-dm-sans",
-  display: "swap",
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
-  variable: "--font-jetbrains-mono",
-  display: "swap",
-});
+import type { Metadata } from 'next'
+import { Providers } from '@/components/providers'
+import './globals.css'
 
 export const metadata: Metadata = {
-  title: "Chronos",
-  description: "AI-powered outreach automation",
-};
+  title: 'Workspace — Startup Team OS',
+  description: 'Your startup team operating system. Tasks, docs, comms, and AI in one place.',
+}
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="dark">
-      <body
-        className={`${dmSans.variable} ${jetbrainsMono.variable} font-sans antialiased`}
-        style={{ backgroundColor: "#020817" }}
-      >
+    <html lang="en">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700;9..144,800;9..144,900&family=Instrument+Sans:wght@400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body>
         <Providers>{children}</Providers>
       </body>
     </html>
-  );
+  )
 }

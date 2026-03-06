@@ -1,106 +1,50 @@
-// src/app/api/team/route.ts
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
-import { NextRequest, NextResponse } from "next/server";
-import connectDB from "@/lib/db";
-import OrganizationModel from "@/lib/models/Organization";
-import UserModel from "@/lib/models/User";
-import { InviteSchema } from "@/lib/validators/auth.schema";
-import bcrypt from "bcryptjs";
+import { connectDB } from '@/lib/mongodb/client'
+import { User } from '@/lib/mongodb/models/User'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth/options'
+import { NextResponse } from 'next/server'
 
 export async function GET() {
-  const session = await getServerSession(authOptions);
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  try {
+    const session = await getServerSession(authOptions)
+    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  await connectDB();
-  const orgId = (session.user as { orgId: string }).orgId;
+    await connectDB()
+    const members = await User.find({ isActive: true })
+      .select('-password')
+      .sort({ role: 1, name: 1 })
 
-  const org = await OrganizationModel.findById(orgId).lean();
-  if (!org) return NextResponse.json({ error: "Organization not found" }, { status: 404 });
-
-  const memberUserIds = org.members.map((m) => m.userId);
-  const users = await UserModel.find(
-    { _id: { $in: memberUserIds } },
-    { name: 1, email: 1, role: 1, avatar: 1, isActive: 1, lastLoginAt: 1 }
-  ).lean();
-
-  const members = org.members.map((m) => {
-    const user = users.find((u) => u._id.toString() === m.userId.toString());
-    return {
-      ...m,
-      user: user || null,
-    };
-  });
-
-  return NextResponse.json({ members });
+    return NextResponse.json(members)
+  } catch (error) {
+    console.error('GET /api/team error:', error)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  }
 }
 
-export async function POST(req: NextRequest) {
-  const session = await getServerSession(authOptions);
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+export async function PATCH(req: Request) {
+  try {
+    const session = await getServerSession(authOptions)
+    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  await connectDB();
-
-  const body = await req.json();
-  const parsed = InviteSchema.safeParse(body);
-  if (!parsed.success) {
-    return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
-  }
-
-  const { email, role } = parsed.data;
-  const orgId = (session.user as { orgId: string }).orgId;
-
-  // Check if user already exists
-  let user = await UserModel.findOne({ email: email.toLowerCase() });
-
-  if (user) {
-    // Check if already a member
-    const org = await OrganizationModel.findById(orgId);
-    if (!org) return NextResponse.json({ error: "Organization not found" }, { status: 404 });
-
-    const alreadyMember = org.members.some(
-      (m) => m.userId.toString() === user!._id.toString()
-    );
-
-    if (alreadyMember) {
-      return NextResponse.json({ error: "User is already a member" }, { status: 409 });
+    // Only admins can update roles
+    if (session.user.role !== 'admin') {
+      return NextResponse.json({ error: 'Admin access required' }, { status: 403 })
     }
 
-    // Add to org
-    org.members.push({
-      userId: user._id,
-      role,
-      joinedAt: new Date(),
-    });
-    await org.save();
+    await connectDB()
+    const { userId, role, title } = await req.json()
 
-    // Update user's orgId
-    user.orgId = org._id;
-    user.role = role as "owner" | "admin" | "manager" | "sdr" | "viewer";
-    await user.save();
-  } else {
-    // Create a pending user with a temporary password
-    const tempPassword = Math.random().toString(36).slice(-10);
-    const passwordHash = await bcrypt.hash(tempPassword, 12);
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { ...(role && { role }), ...(title && { title }) },
+      { new: true }
+    ).select('-password')
 
-    user = await UserModel.create({
-      name: email.split("@")[0],
-      email: email.toLowerCase(),
-      passwordHash,
-      role,
-      orgId,
-    });
+    if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 })
 
-    const org = await OrganizationModel.findById(orgId);
-    if (!org) return NextResponse.json({ error: "Organization not found" }, { status: 404 });
-
-    org.members.push({
-      userId: user._id,
-      role,
-      joinedAt: new Date(),
-    });
-    await org.save();
+    return NextResponse.json(user)
+  } catch (error) {
+    console.error('PATCH /api/team error:', error)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
-
-  return NextResponse.json({ success: true, userId: user._id }, { status: 201 });
 }
