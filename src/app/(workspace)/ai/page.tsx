@@ -1,16 +1,24 @@
 'use client'
 
-import { useState } from 'react'
-import { Sparkles, ListTodo, FileSignature, MessageSquare, Loader2, Plus, ArrowRight } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Sparkles, ListTodo, FileSignature, MessageSquare, Loader2, Plus, ArrowRight, Bot, ChevronDown } from 'lucide-react'
 import { useProjects } from '@/lib/hooks/useProjects'
 import { toast } from 'sonner'
 import StatusBadge from '@/components/shared/StatusBadge'
+import { useAIProviderStore } from '@/lib/store/aiProviderStore'
+import { ALL_PROVIDERS } from '@/lib/ai/providers'
 
 type Tool = 'task-generator' | 'summarizer' | 'prd-writer'
 
 export default function AIPage() {
   const [activeTool, setActiveTool] = useState<Tool>('task-generator')
   const { projects } = useProjects()
+  const { activeProviderId, configs, setActiveProvider, updateConfig, hydrate, hydrated } = useAIProviderStore()
+
+  useEffect(() => { hydrate() }, [hydrate])
+
+  const activeProvider = ALL_PROVIDERS.find(p => p.id === activeProviderId)
+  const activeConfig = configs[activeProviderId]
 
   const tools = [
     { id: 'task-generator' as Tool, label: 'Task Generator', icon: ListTodo, desc: 'Break down features into actionable tasks' },
@@ -27,8 +35,66 @@ export default function AIPage() {
           </div>
           <h1>AI Assistant</h1>
         </div>
-        <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>Three focused tools that actually do work. Powered by Groq.</p>
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>Three focused tools that actually do work.</p>
       </div>
+
+      {/* Provider / Model Selector */}
+      {hydrated && activeProvider && activeConfig && (
+        <div
+          className="card"
+          style={{
+            padding: '12px 16px',
+            marginBottom: '24px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '16px',
+            flexWrap: 'wrap',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Bot size={16} color="var(--brand-600)" />
+            <span style={{ fontSize: '12px', color: 'var(--text-tertiary)', fontWeight: 500 }}>Provider</span>
+          </div>
+          <select
+            className="select"
+            value={activeProviderId}
+            onChange={(e) => { setActiveProvider(e.target.value); toast.success(`Switched to ${ALL_PROVIDERS.find(p => p.id === e.target.value)?.name}`) }}
+            style={{ fontSize: '13px', padding: '4px 8px', minWidth: '140px' }}
+          >
+            {ALL_PROVIDERS.map((p) => (
+              <option key={p.id} value={p.id}>{p.name}</option>
+            ))}
+          </select>
+
+          <span style={{ fontSize: '12px', color: 'var(--text-tertiary)', fontWeight: 500 }}>Model</span>
+          {activeProvider.id === 'byok' || activeProvider.models.length === 0 ? (
+            <input
+              className="input"
+              value={activeConfig.model}
+              onChange={(e) => updateConfig(activeProviderId, { model: e.target.value })}
+              placeholder="Model name..."
+              style={{ fontSize: '13px', padding: '4px 8px', width: '200px' }}
+            />
+          ) : (
+            <select
+              className="select"
+              value={activeConfig.model}
+              onChange={(e) => updateConfig(activeProviderId, { model: e.target.value })}
+              style={{ fontSize: '13px', padding: '4px 8px', minWidth: '200px' }}
+            >
+              {activeProvider.models.map((m) => (
+                <option key={m} value={m}>{m}</option>
+              ))}
+            </select>
+          )}
+
+          {activeProvider.requiresApiKey && !activeConfig.apiKey && activeProviderId !== 'groq' && (
+            <span style={{ fontSize: '11px', color: 'var(--danger)', fontWeight: 500 }}>
+              API key not set — configure in Settings
+            </span>
+          )}
+        </div>
+      )}
 
       {/* Tool Selector */}
       <div style={{ display: 'flex', gap: '12px', marginBottom: '32px', flexWrap: 'wrap' }}>
