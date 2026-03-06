@@ -16,8 +16,9 @@ import {
   Position,
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
-import { Save, Zap, Bot, Mail, Clock, GitFork, Tag, Flag, Loader2, ArrowLeft, ChevronRight } from 'lucide-react'
+import { Save, Zap, Bot, Mail, Clock, GitFork, Tag, Flag, Loader2, ArrowLeft, ChevronRight, Play } from 'lucide-react'
 import Link from 'next/link'
+import { toast } from 'sonner'
 
 // ── Node palette configuration ──
 const NODE_PALETTE = [
@@ -77,6 +78,8 @@ export default function WorkflowBuilderPage({ params }: { params: Promise<{ id: 
   const [saved, setSaved] = useState(false)
   const [loading, setLoading] = useState(true)
   const [selectedNode, setSelectedNode] = useState<Node | null>(null)
+  const [executing, setExecuting] = useState(false)
+  const [execOutputs, setExecOutputs] = useState<any>(null)
 
   // Load workflow
   useEffect(() => {
@@ -180,6 +183,31 @@ export default function WorkflowBuilderPage({ params }: { params: Promise<{ id: 
     }
   }
 
+  // Execute workflow
+  const handleExecute = async () => {
+    if (id === 'new') {
+      toast.error('Save the workflow first before executing')
+      return
+    }
+    setExecuting(true)
+    setExecOutputs(null)
+    try {
+      const res = await fetch(`/api/workflows/${id}/execute`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ inputs: {} }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Execution failed')
+      toast.success(data.message || 'Workflow executed successfully!')
+      setExecOutputs(data)
+    } catch (error: any) {
+      toast.error(error.message || 'Execution failed')
+    } finally {
+      setExecuting(false)
+    }
+  }
+
   if (loading) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '80vh' }}>
@@ -247,7 +275,7 @@ export default function WorkflowBuilderPage({ params }: { params: Promise<{ id: 
           </div>
         </div>
 
-        <div style={{ padding: '12px', borderTop: '1px solid var(--border-subtle)' }}>
+        <div style={{ padding: '12px', borderTop: '1px solid var(--border-subtle)', display: 'flex', flexDirection: 'column', gap: '6px' }}>
           <button
             className="btn-primary"
             onClick={handleSave}
@@ -262,33 +290,79 @@ export default function WorkflowBuilderPage({ params }: { params: Promise<{ id: 
               <><Save size={14} /> Save Workflow</>
             )}
           </button>
+          <button
+            className="btn-primary"
+            onClick={handleExecute}
+            disabled={executing || id === 'new'}
+            style={{
+              width: '100%',
+              background: executing ? undefined : '#059669',
+            }}
+          >
+            {executing ? (
+              <><Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} /> Executing…</>
+            ) : (
+              <><Play size={14} /> Execute Workflow</>
+            )}
+          </button>
         </div>
       </div>
 
-      {/* Canvas */}
-      <div style={{ flex: 1, background: '#f8fafc' }}>
-        <ReactFlow
-          nodes={nodes}
-          edges={edges}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          onConnect={onConnect}
-          onNodeClick={(_, node) => setSelectedNode(node)}
-          onPaneClick={() => setSelectedNode(null)}
-          nodeTypes={nodeTypes}
-          fitView
-          style={{ width: '100%', height: '100%' }}
-        >
-          <Background gap={16} size={1} color="#e2e8f0" />
-          <Controls />
-          <MiniMap
-            nodeColor={(n: any) => {
-              const palette = NODE_PALETTE.find(p => p.type === n.data?.nodeType)
-              return palette?.color || '#6b7280'
-            }}
-            style={{ borderRadius: '8px' }}
-          />
-        </ReactFlow>
+      {/* Canvas + Output */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: '#f8fafc' }}>
+        <div style={{ flex: 1 }}>
+          <ReactFlow
+            nodes={nodes}
+            edges={edges}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            onConnect={onConnect}
+            onNodeClick={(_, node) => setSelectedNode(node)}
+            onPaneClick={() => setSelectedNode(null)}
+            nodeTypes={nodeTypes}
+            fitView
+            style={{ width: '100%', height: '100%' }}
+          >
+            <Background gap={16} size={1} color="#e2e8f0" />
+            <Controls />
+            <MiniMap
+              nodeColor={(n: any) => {
+                const palette = NODE_PALETTE.find(p => p.type === n.data?.nodeType)
+                return palette?.color || '#6b7280'
+              }}
+              style={{ borderRadius: '8px' }}
+            />
+          </ReactFlow>
+        </div>
+
+        {/* Execution Output Panel */}
+        {execOutputs && (
+          <div style={{
+            borderTop: '1px solid var(--border-subtle)',
+            padding: '12px 16px',
+            background: 'var(--bg-elevated)',
+            maxHeight: '200px',
+            overflowY: 'auto',
+            fontSize: '13px',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+              <span style={{ fontWeight: 600 }}>
+                Execution Output
+                {execOutputs.engine && (
+                  <span style={{ fontSize: '11px', fontWeight: 500, marginLeft: '8px', padding: '2px 8px', borderRadius: '9999px', background: execOutputs.engine === 'n8n' ? '#dbeafe' : '#d1fae5', color: execOutputs.engine === 'n8n' ? '#1d4ed8' : '#065f46' }}>
+                    {execOutputs.engine}
+                  </span>
+                )}
+              </span>
+              <button className="btn-ghost" style={{ padding: '2px 6px', fontSize: '11px' }} onClick={() => setExecOutputs(null)}>
+                Clear
+              </button>
+            </div>
+            <pre style={{ fontSize: '12px', lineHeight: 1.5, whiteSpace: 'pre-wrap', wordBreak: 'break-word', color: 'var(--text-secondary)', margin: 0 }}>
+              {JSON.stringify(execOutputs, null, 2)}
+            </pre>
+          </div>
+        )}
       </div>
 
       {/* Node detail panel */}

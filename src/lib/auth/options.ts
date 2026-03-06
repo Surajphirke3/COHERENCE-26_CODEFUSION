@@ -1,11 +1,23 @@
 import type { NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
+import GoogleProvider from 'next-auth/providers/google'
 import { connectDB } from '@/lib/mongodb/client'
 import { User } from '@/lib/mongodb/models/User'
 import bcrypt from 'bcryptjs'
 
 export const authOptions: NextAuthOptions = {
   providers: [
+    // ── Google OAuth ──
+    ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
+      ? [
+          GoogleProvider({
+            clientId: process.env.GOOGLE_CLIENT_ID,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+          }),
+        ]
+      : []),
+
+    // ── Email / Password ──
     CredentialsProvider({
       name: 'credentials',
       credentials: {
@@ -39,10 +51,38 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async signIn({ user, account }) {
+      // Auto-create user in MongoDB on first Google sign-in
+      if (account?.provider === 'google' && user.email) {
+        await connectDB()
+        const existing = await User.findOne({ email: user.email.toLowerCase().trim() })
+        if (!existing) {
+          await User.create({
+            name: user.name || user.email.split('@')[0],
+            email: user.email.toLowerCase().trim(),
+            role: 'member',
+            avatarUrl: user.image || '',
+          })
+        }
+      }
+      return true
+    },
+    async jwt({ token, user, account }) {
       if (user) {
-        token.id = user.id
-        token.role = user.role
+        // For credentials provider, user.id is already the MongoDB _id
+        if (!account || account.provider === 'credentials') {
+          token.id = user.id
+          token.role = (user as any).role || 'member'
+        }
+        // For Google provider, look up the MongoDB user by email
+        if (account?.provider === 'google' && user.email) {
+          await connectDB()
+          const dbUser = await User.findOne({ email: user.email.toLowerCase().trim() })
+          if (dbUser) {
+            token.id = dbUser._id.toString()
+            token.role = dbUser.role || 'member'
+          }
+        }
       }
       return token
     },
