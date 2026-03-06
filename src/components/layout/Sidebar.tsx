@@ -4,7 +4,8 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useSession, signOut } from 'next-auth/react'
 import {
-  LayoutDashboard, FolderKanban, Users, FileText, Bot, Settings, LogOut, ChevronLeft, Rocket, MessageSquare
+  LayoutDashboard, FolderKanban, Users, FileText, Bot, Settings, LogOut, ChevronLeft, Rocket, MessageSquare,
+  GitBranch, Plus, Activity
 } from 'lucide-react'
 import { useState } from 'react'
 import { getInitials } from '@/lib/utils/format'
@@ -16,6 +17,15 @@ const navGroups = [
       { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
       { href: '/projects', label: 'Projects', icon: FolderKanban },
       { href: '/docs', label: 'Docs', icon: FileText },
+    ],
+  },
+  {
+    label: 'Outreach',
+    items: [
+      { href: '/outreach/leads', label: 'Leads', icon: Users },
+      { href: '/outreach/workflows', label: 'Workflows', icon: GitBranch },
+      { href: '/outreach/workflows/new/builder', label: 'New Workflow', icon: Plus },
+      { href: '/outreach/monitor', label: 'Live Monitor', icon: Activity },
     ],
   },
   {

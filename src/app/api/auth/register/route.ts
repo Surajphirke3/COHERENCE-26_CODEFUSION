@@ -5,7 +5,10 @@ import { NextResponse } from 'next/server'
 
 export async function POST(req: Request) {
   try {
-    const { name, email, password } = await req.json()
+    const body = await req.json()
+    const { name, email, password } = body
+
+    console.log('[Register] Received fields:', { name: !!name, email: !!email, password: !!password })
 
     if (!name || !email || !password) {
       return NextResponse.json(
@@ -23,7 +26,8 @@ export async function POST(req: Request) {
 
     await connectDB()
 
-    const existingUser = await User.findOne({ email })
+    const normalizedEmail = email.toLowerCase().trim()
+    const existingUser = await User.findOne({ email: normalizedEmail })
     if (existingUser) {
       return NextResponse.json(
         { error: 'An account with this email already exists' },
@@ -35,7 +39,7 @@ export async function POST(req: Request) {
 
     const user = await User.create({
       name,
-      email,
+      email: normalizedEmail,
       password: hashedPassword,
       role: 'member',
     })

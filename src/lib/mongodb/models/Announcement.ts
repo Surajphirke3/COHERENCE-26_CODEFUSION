@@ -13,4 +13,4 @@ const AnnouncementSchema = new Schema(
 
 AnnouncementSchema.index({ isActive: 1, expiresAt: 1 })
 
-export const Announcement = models.Announcement || model('Announcement', AnnouncementSchema)
+export const Announcement = (models.Announcement || model('Announcement', AnnouncementSchema)) as any
