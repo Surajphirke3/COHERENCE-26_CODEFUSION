@@ -15,4 +15,4 @@ const UserSchema = new Schema(
 
 UserSchema.index({ email: 1 }, { unique: true })
 
-export const User = models.User || model('User', UserSchema)
+export const User = (models.User || model('User', UserSchema)) as any

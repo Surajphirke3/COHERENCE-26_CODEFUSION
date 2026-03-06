@@ -16,4 +16,4 @@ const ProjectSchema = new Schema(
 ProjectSchema.index({ status: 1 })
 ProjectSchema.index({ ownerId: 1 })
 
-export const Project = models.Project || model('Project', ProjectSchema)
+export const Project = (models.Project || model('Project', ProjectSchema)) as any
