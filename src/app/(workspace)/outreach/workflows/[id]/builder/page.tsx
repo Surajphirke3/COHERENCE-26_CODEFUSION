@@ -16,7 +16,7 @@ import {
   Position,
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
-import { Save, Zap, Bot, Mail, Clock, GitFork, Tag, Flag, Loader2, ArrowLeft, ChevronRight, Play, X, UserPlus, Trash2, Settings, Key, Server } from 'lucide-react'
+import { Save, Zap, Bot, Mail, Clock, GitFork, Tag, Flag, Loader2, ArrowLeft, ChevronRight, Play, X, UserPlus, Trash2, Settings, Key, Server, CheckCircle, AlertCircle } from 'lucide-react'
 import Link from 'next/link'
 import { toast } from 'sonner'
 
@@ -31,61 +31,97 @@ const NODE_PALETTE = [
   { type: 'end', label: 'End', icon: Flag, color: '#374151' },
 ]
 
-// ── Custom Node Component with delete button ──
+// ── Custom Node Component with delete button + execution animation ──
 function CustomNode({ id, data }: { id: string; data: any }) {
   const palette = NODE_PALETTE.find(p => p.type === data.nodeType) || NODE_PALETTE[0]
   const Icon = palette.icon
+  const execStatus: string | undefined = data._execStatus // 'running' | 'done' | 'failed' | undefined
+
+  const isRunning = execStatus === 'running'
+  const isDone = execStatus === 'done'
+  const isFailed = execStatus === 'failed'
+
+  const borderColor = isRunning ? '#2563eb' : isDone ? '#16a34a' : isFailed ? '#dc2626' : palette.color
+  const glowShadow = isRunning
+    ? '0 0 16px rgba(37,99,235,0.5), 0 0 32px rgba(37,99,235,0.2)'
+    : isDone
+    ? '0 0 12px rgba(22,163,74,0.35)'
+    : isFailed
+    ? '0 0 12px rgba(220,38,38,0.35)'
+    : '0 2px 8px rgba(0,0,0,0.08)'
 
   return (
     <div style={{
-      background: '#fff',
-      border: `2px solid ${palette.color}`,
+      background: 'var(--bg-elevated, #fff)',
+      border: `2px solid ${borderColor}`,
       borderRadius: '10px',
       padding: '12px 16px',
       minWidth: '160px',
-      boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+      boxShadow: glowShadow,
       fontSize: '13px',
       position: 'relative',
+      transition: 'border-color 300ms ease, box-shadow 300ms ease',
+      animation: isRunning ? 'nodeRunPulse 1.2s ease-in-out infinite' : undefined,
     }}>
-      <Handle type="target" position={Position.Top} style={{ background: palette.color, width: 8, height: 8 }} />
+      <Handle type="target" position={Position.Top} style={{ background: borderColor, width: 8, height: 8 }} />
 
-      {/* Delete button on node */}
-      <button
-        onClick={(e) => {
-          e.stopPropagation()
-          if (data.onDelete) data.onDelete(id)
-        }}
-        style={{
-          position: 'absolute', top: '-8px', right: '-8px',
-          width: '20px', height: '20px', borderRadius: '50%',
-          background: '#ef4444', border: '2px solid #fff',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          cursor: 'pointer', padding: 0, color: '#fff',
-          boxShadow: '0 1px 4px rgba(0,0,0,0.2)',
-          transition: 'transform 100ms ease',
-        }}
-        onMouseOver={(e) => { e.currentTarget.style.transform = 'scale(1.15)' }}
-        onMouseOut={(e) => { e.currentTarget.style.transform = 'scale(1)' }}
-        title="Delete node"
-      >
-        <X size={10} strokeWidth={3} />
-      </button>
+      {/* Execution status badge */}
+      {execStatus && (
+        <div style={{
+          position: 'absolute', top: '-10px', left: '50%', transform: 'translateX(-50%)',
+          display: 'flex', alignItems: 'center', gap: '3px',
+          padding: '1px 8px', borderRadius: '9999px', fontSize: '10px', fontWeight: 600,
+          background: isRunning ? '#2563eb' : isDone ? '#16a34a' : '#dc2626',
+          color: '#fff', boxShadow: '0 1px 4px rgba(0,0,0,0.2)',
+          whiteSpace: 'nowrap',
+        }}>
+          {isRunning && <Loader2 size={9} style={{ animation: 'spin 1s linear infinite' }} />}
+          {isDone && <CheckCircle size={9} />}
+          {isFailed && <AlertCircle size={9} />}
+          {isRunning ? 'Running...' : isDone ? 'Done' : 'Failed'}
+        </div>
+      )}
+
+      {/* Delete button on node (hidden during execution) */}
+      {!execStatus && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation()
+            if (data.onDelete) data.onDelete(id)
+          }}
+          style={{
+            position: 'absolute', top: '-8px', right: '-8px',
+            width: '20px', height: '20px', borderRadius: '50%',
+            background: '#ef4444', border: '2px solid #fff',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: 'pointer', padding: 0, color: '#fff',
+            boxShadow: '0 1px 4px rgba(0,0,0,0.2)',
+            transition: 'transform 100ms ease',
+          }}
+          onMouseOver={(e) => { e.currentTarget.style.transform = 'scale(1.15)' }}
+          onMouseOut={(e) => { e.currentTarget.style.transform = 'scale(1)' }}
+          title="Delete node"
+        >
+          <X size={10} strokeWidth={3} />
+        </button>
+      )}
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
         <div style={{
           width: '28px', height: '28px', borderRadius: '6px',
-          background: palette.color + '15', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          background: (isRunning ? '#2563eb' : isDone ? '#16a34a' : isFailed ? '#dc2626' : palette.color) + '15',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
-          <Icon size={14} color={palette.color} />
+          <Icon size={14} color={isRunning ? '#2563eb' : isDone ? '#16a34a' : isFailed ? '#dc2626' : palette.color} />
         </div>
         <div>
-          <div style={{ fontWeight: 600, color: '#1f2937' }}>{data.label}</div>
+          <div style={{ fontWeight: 600, color: 'var(--text-primary, #1f2937)' }}>{data.label}</div>
           {data.description && (
-            <div style={{ fontSize: '11px', color: '#6b7280', marginTop: '2px' }}>{data.description}</div>
+            <div style={{ fontSize: '11px', color: 'var(--text-tertiary, #6b7280)', marginTop: '2px' }}>{data.description}</div>
           )}
         </div>
       </div>
-      <Handle type="source" position={Position.Bottom} style={{ background: palette.color, width: 8, height: 8 }} />
+      <Handle type="source" position={Position.Bottom} style={{ background: borderColor, width: 8, height: 8 }} />
     </div>
   )
 }
@@ -306,7 +342,65 @@ export default function WorkflowBuilderPage({ params }: { params: Promise<{ id: 
     }
   }
 
-  // Execute with selected leads — auto-saves first
+  // Animate execution visually through nodes
+  const animateExecution = useCallback(async (hasFailed: boolean) => {
+    // Get nodes in order by following edges from trigger
+    const nodeOrder: string[] = []
+    const triggerNode = nodes.find(n => (n.data as any).nodeType === 'trigger')
+    if (!triggerNode) return
+
+    // Walk edges to build ordered list
+    let currentNodeId: string | null = triggerNode.id
+    const visited = new Set<string>()
+    while (currentNodeId && !visited.has(currentNodeId)) {
+      visited.add(currentNodeId)
+      nodeOrder.push(currentNodeId)
+      const outEdge = edges.find(e => e.source === currentNodeId)
+      currentNodeId = outEdge ? outEdge.target : null
+    }
+
+    if (nodeOrder.length === 0) return
+
+    const delay = (ms: number) => new Promise(r => setTimeout(r, ms))
+
+    // Animate each node in sequence
+    for (let i = 0; i < nodeOrder.length; i++) {
+      const nid = nodeOrder[i]
+      const isLastNode = i === nodeOrder.length - 1
+
+      // Set current node to 'running'
+      setNodes(nds => nds.map(n =>
+        n.id === nid
+          ? { ...n, data: { ...n.data, _execStatus: 'running' } }
+          : n
+      ))
+
+      // Wait while "running"
+      await delay(800)
+
+      // Determine final status for this node
+      const finalStatus = (hasFailed && isLastNode) ? 'failed' : 'done'
+
+      // Set current node to done/failed
+      setNodes(nds => nds.map(n =>
+        n.id === nid
+          ? { ...n, data: { ...n.data, _execStatus: finalStatus } }
+          : n
+      ))
+
+      // Small gap before next node
+      if (!isLastNode) await delay(300)
+    }
+
+    // Clear all statuses after 4 seconds
+    await delay(4000)
+    setNodes(nds => nds.map(n => ({
+      ...n,
+      data: { ...n.data, _execStatus: undefined },
+    })))
+  }, [nodes, edges, setNodes])
+
+  // Execute with selected leads — auto-saves first, then animates
   const executeWithLeads = async () => {
     if (selectedLeadIds.size === 0) {
       toast.error('Select at least one lead')
@@ -317,13 +411,16 @@ export default function WorkflowBuilderPage({ params }: { params: Promise<{ id: 
     setExecuting(true)
     setExecOutputs(null)
 
+    // Start animation immediately (shows "running" state while API executes)
+    const animPromise = animateExecution(false)
+
     try {
       // Auto-save
       const saveNodes = nodes.map(n => ({
         id: n.id,
         type: (n.data as any).nodeType || 'trigger',
         position: n.position,
-        data: { ...n.data, onDelete: undefined },
+        data: { ...n.data, onDelete: undefined, _execStatus: undefined },
       }))
       const saveEdges = edges.map(e => ({
         id: e.id,
@@ -363,7 +460,21 @@ export default function WorkflowBuilderPage({ params }: { params: Promise<{ id: 
         body: JSON.stringify({ leadIds: Array.from(selectedLeadIds) }),
       })
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error || 'Execution failed')
+
+      // Wait for animation to finish
+      await animPromise
+
+      if (!res.ok) {
+        // Re-animate with failure on last node
+        await animateExecution(true)
+        throw new Error(data.error || 'Execution failed')
+      }
+
+      // If there were failures, show failed animation
+      if (data.failed > 0) {
+        await animateExecution(true)
+      }
+
       toast.success(data.message || 'Done!')
       setExecOutputs(data)
     } catch (error: any) {
@@ -1005,6 +1116,14 @@ export default function WorkflowBuilderPage({ params }: { params: Promise<{ id: 
           </div>
         </>
       )}
+
+      {/* Node execution animation keyframes */}
+      <style>{`
+        @keyframes nodeRunPulse {
+          0%, 100% { box-shadow: 0 0 12px rgba(37,99,235,0.3), 0 0 24px rgba(37,99,235,0.1); }
+          50% { box-shadow: 0 0 20px rgba(37,99,235,0.6), 0 0 40px rgba(37,99,235,0.25); }
+        }
+      `}</style>
     </div>
   )
 }
