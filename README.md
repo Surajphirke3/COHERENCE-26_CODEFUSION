@@ -2,7 +2,7 @@
 
 <img src="./public/logo.png" alt="Startup Workspace Logo" width="120" height="120" />
 
-# 🚀 Startup Workspace
+# 🚀 Chronos - Automate. Personalize. Scale
 
 **The all-in-one productivity platform built for modern startup teams.**  
 Manage projects, collaborate in real-time, write docs, and get AI-powered insights — all in one place.
@@ -18,7 +18,7 @@ Manage projects, collaborate in real-time, write docs, and get AI-powered insigh
 [![Last Commit](https://img.shields.io/github/last-commit/your-username/startup-workspace?style=flat-square)](https://github.com/your-username/startup-workspace/commits/main)
 [![Open Issues](https://img.shields.io/github/issues/your-username/startup-workspace?style=flat-square)](https://github.com/your-username/startup-workspace/issues)
 
-[🌐 Live Demo](https://suraj-workspaces.vercel.app) · [🐛 Report Bug](https://github.com/your-username/startup-workspace/issues/new?template=bug_report.md) · [✨ Request Feature](https://github.com/your-username/startup-workspace/issues/new?template=feature_request.md)
+[🌐 Live Demo](https://chronosworkflow.vercel.app/) · [🐛 Report Bug](https://github.com/your-username/startup-workspace/issues/new?template=bug_report.md) · [✨ Request Feature](https://github.com/your-username/startup-workspace/issues/new?template=feature_request.md)
 
 ---
 
