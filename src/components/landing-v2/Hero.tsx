@@ -947,9 +947,9 @@ export function Hero() {
               animate="visible"
               className="mt-10 hidden lg:block"
             >
-              <p className="text-base uppercase tracking-widest mb-3" style={{ color: 'var(--l-text-muted)' }}>Trusted by teams at</p>
+              <p className="text-base uppercase tracking-widest mb-3" style={{ color: 'var(--l-text-muted)' }}></p>
               <div className="flex items-center gap-6 opacity-40">
-                {['TechStart', 'InnovateCo', 'LaunchPad', 'BuildFast'].map((name) => (
+                {[].map((name) => (
                   <span key={name} className="text-base font-bold tracking-wide" style={{ color: 'var(--l-text-secondary)' }}>
                     {name}
                   </span>
