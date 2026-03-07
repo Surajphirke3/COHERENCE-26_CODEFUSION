@@ -54,6 +54,7 @@ export default function Sidebar() {
 
   return (
     <aside
+      className="sidebar-glass"
       style={{
         width: collapsed ? '64px' : 'var(--sidebar-width)',
         height: '100vh',

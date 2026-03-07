@@ -49,20 +49,20 @@ export function Hero() {
     <section className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden bg-[#0A0A0A]">
       
       {/* 3D Animated Background Grid */}
-      <div className="absolute inset-0 -z-10 h-full w-full bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:14px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]"></div>
+      <div className="absolute inset-0 -z-10 h-full w-full bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-size-[14px_24px] mask-[radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]"></div>
       
       {/* Glowing Orbs */}
       <motion.div 
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 2, repeat: Infinity, repeatType: "reverse" }}
-        className="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-indigo-600/20 rounded-full blur-[120px] -z-10" 
+        className="absolute top-1/4 left-1/4 w-100 h-100 bg-indigo-600/20 rounded-full blur-[120px] -z-10" 
       />
       <motion.div 
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 3, delay: 1, repeat: Infinity, repeatType: "reverse" }}
-        className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-violet-600/20 rounded-full blur-[150px] -z-10" 
+        className="absolute bottom-1/4 right-1/4 w-125 h-125 bg-violet-600/20 rounded-full blur-[150px] -z-10" 
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
@@ -81,7 +81,7 @@ export function Hero() {
           {/* Headline */}
           <motion.h1 variants={fadeIn} className="text-5xl md:text-6xl lg:text-7xl font-bold font-serif text-white tracking-tight mb-8 leading-[1.1]">
             A new dimension for <br/>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-violet-400 to-indigo-400 animate-gradient-x">
+            <span className="text-transparent bg-clip-text bg-linear-to-r from-indigo-400 via-violet-400 to-indigo-400 animate-gradient-x">
               startup teams
             </span>
           </motion.h1>
@@ -100,7 +100,7 @@ export function Hero() {
               <span className="relative z-10 flex items-center gap-2">
                 Start building free <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </span>
-              <div className="absolute inset-0 h-full w-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
+              <div className="absolute inset-0 h-full w-full bg-linear-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
             </Link>
             <Link 
               href="#demo" 
@@ -113,7 +113,7 @@ export function Hero() {
 
         {/* 3D Dashboard Mockup */}
         <motion.div 
-          className="mt-24 relative mx-auto max-w-5xl [perspective:2000px]"
+          className="mt-24 relative mx-auto max-w-5xl perspective-[2000px]"
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
           initial={{ opacity: 0, y: 100 }}
@@ -126,10 +126,10 @@ export function Hero() {
               rotateY,
               transformStyle: "preserve-3d",
             }}
-            className="w-full relative h-[400px] md:h-[600px] rounded-2xl border border-white/10 bg-black/40 backdrop-blur-xl p-4 shadow-2xl flex flex-col cursor-pointer"
+            className="w-full relative h-100 md:h-150 rounded-2xl border border-white/10 bg-black/40 backdrop-blur-xl p-4 shadow-2xl flex flex-col cursor-pointer"
           >
             {/* Absolute Glow behind the card */}
-            <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-violet-500 rounded-2xl blur-2xl opacity-20 -z-10 group-hover:opacity-40 transition duration-500"></div>
+            <div className="absolute -inset-1 bg-linear-to-r from-indigo-500 to-violet-500 rounded-2xl blur-2xl opacity-20 -z-10 group-hover:opacity-40 transition duration-500"></div>
 
             {/* Dummy Top Bar */}
             <div className="w-full h-12 border-b border-white/5 flex items-center justify-between px-4" style={{ transform: "translateZ(30px)" }}>
@@ -153,7 +153,7 @@ export function Hero() {
               {/* Main Content Dummy */}
               <div className="flex-1 flex flex-col gap-4">
                 <div className="flex gap-4 h-32">
-                  <div className="flex-1 bg-gradient-to-br from-indigo-500/10 to-violet-500/10 border border-white/10 rounded-xl p-4 flex flex-col justify-between" style={{ transform: "translateZ(20px)" }}>
+                  <div className="flex-1 bg-linear-to-br from-indigo-500/10 to-violet-500/10 border border-white/10 rounded-xl p-4 flex flex-col justify-between" style={{ transform: "translateZ(20px)" }}>
                     <Box className="w-6 h-6 text-indigo-400" />
                     <div className="w-24 h-4 bg-white/20 rounded-full"></div>
                   </div>
@@ -163,7 +163,7 @@ export function Hero() {
                   </div>
                 </div>
                 
-                <div className="flex-1 bg-white/[0.02] border border-white/5 rounded-xl p-6 relative overflow-hidden" style={{ transform: "translateZ(40px)" }}>
+                <div className="flex-1 bg-white/2 border border-white/5 rounded-xl p-6 relative overflow-hidden" style={{ transform: "translateZ(40px)" }}>
                   {/* Fake Code / Activity */}
                   <div className="space-y-4">
                     <div className="flex items-center gap-3">

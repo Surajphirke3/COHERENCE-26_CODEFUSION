@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { ArrowRight, Sparkles, Play } from 'lucide-react'
-import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion'
+import { motion, useMotionValue, useSpring, useTransform, type Variants } from 'framer-motion'
 import { useRef, useState, useCallback, useEffect } from 'react'
 import {
   ClipboardList,
@@ -296,7 +296,7 @@ function InteractiveWorkflowCanvas() {
 
                   <div className="flex items-center gap-2.5">
                     <div
-                      className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+                      className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
                       style={{ background: node.accentBg, border: `1px solid ${node.accentBorder}` }}
                     >
                       <Icon className="w-4 h-4" style={{ color: node.accent }} />
@@ -319,11 +319,11 @@ function InteractiveWorkflowCanvas() {
 
                   {/* Connection ports */}
                   <div
-                    className="absolute top-1/2 -left-[5px] w-[10px] h-[10px] rounded-full border-2 -translate-y-1/2"
+                    className="absolute top-1/2 -left-1.25 w-2.5 h-2.5 rounded-full border-2 -translate-y-1/2"
                     style={{ borderColor: node.accent, background: 'var(--l-bg, #090e23)' }}
                   />
                   <div
-                    className="absolute top-1/2 -right-[5px] w-[10px] h-[10px] rounded-full border-2 -translate-y-1/2"
+                    className="absolute top-1/2 -right-1.25 w-2.5 h-2.5 rounded-full border-2 -translate-y-1/2"
                     style={{ borderColor: node.accent, background: 'var(--l-bg, #090e23)' }}
                   />
                 </div>
@@ -391,7 +391,7 @@ function DashboardView() {
         ].map((stat) => (
           <div
             key={stat.label}
-            className={`rounded-xl p-3 bg-gradient-to-br ${stat.color}`}
+            className={`rounded-xl p-3 bg-linear-to-br ${stat.color}`}
             style={{ border: '1px solid var(--l-border)' }}
           >
             <div className="flex items-center justify-between mb-2">
@@ -412,9 +412,9 @@ function DashboardView() {
           { text: 'Ravi uploaded API v2 documentation', time: '4h ago', dot: 'bg-violet-500' },
         ].map((item, i) => (
           <div key={i} className="flex items-center gap-2.5">
-            <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${item.dot}`} />
+            <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${item.dot}`} />
             <span className="text-base flex-1 truncate" style={{ color: 'var(--l-text-secondary)' }}>{item.text}</span>
-            <span className="text-base flex-shrink-0" style={{ color: 'var(--l-text-muted)' }}>{item.time}</span>
+            <span className="text-base shrink-0" style={{ color: 'var(--l-text-muted)' }}>{item.time}</span>
           </div>
         ))}
       </div>
@@ -503,7 +503,7 @@ function TasksView() {
   return (
     <div className="flex gap-2.5 overflow-x-auto pb-1">
       {columns.map((col) => (
-        <div key={col.title} className="flex-1 min-w-[180px]">
+        <div key={col.title} className="flex-1 min-w-45">
           <div className="flex items-center gap-1.5 mb-2">
             <div className="w-2 h-2 rounded-full" style={{ background: col.color }} />
             <span className="text-base font-semibold" style={{ color: 'var(--l-text-secondary)' }}>{col.title}</span>
@@ -556,7 +556,7 @@ function MessagesView() {
         {messages.map((m, i) => (
           <div key={i} className={`flex gap-2 ${m.isMe ? 'flex-row-reverse' : ''}`}>
             <div
-              className="w-6 h-6 rounded-full flex items-center justify-center text-base font-bold text-white flex-shrink-0"
+              className="w-6 h-6 rounded-full flex items-center justify-center text-base font-bold text-white shrink-0"
               style={{ background: m.color }}
             >
               {m.avatar}
@@ -615,7 +615,7 @@ function DocsView() {
             <div className="text-base font-semibold truncate" style={{ color: 'var(--l-text)' }}>{d.title}</div>
             <div className="text-base" style={{ color: 'var(--l-text-muted)' }}>Edited {d.updated} by {d.author} · {d.pages} pages</div>
           </div>
-          <FileEdit className="w-3.5 h-3.5 flex-shrink-0" style={{ color: 'var(--l-text-muted)' }} />
+          <FileEdit className="w-3.5 h-3.5 shrink-0" style={{ color: 'var(--l-text-muted)' }} />
         </div>
       ))}
     </div>
@@ -745,9 +745,9 @@ function FloatingCard() {
           </div>
 
           {/* Dashboard Content */}
-          <div className="p-4 flex gap-4 min-h-[460px] lg:min-h-[580px]" style={{ transform: 'translateZ(40px)' }}>
+          <div className="p-4 flex gap-4 min-h-115 lg:min-h-145" style={{ transform: 'translateZ(40px)' }}>
             {/* Sidebar */}
-            <div className="hidden md:flex flex-col gap-1 w-64 pr-3 flex-shrink-0" style={{ borderRight: '1px solid var(--l-border)' }}>
+            <div className="hidden md:flex flex-col gap-1 w-64 pr-3 shrink-0" style={{ borderRight: '1px solid var(--l-border)' }}>
               {sidebarItems.map((item) => {
                 const Icon = item.icon
                 const isActive = activeView === item.key
@@ -850,21 +850,21 @@ export function Hero() {
   }
 
   return (
-    <section className="relative pt-20 lg:pt-24 pb-10 lg:pt-24 lg:pb-16 overflow-hidden">
+    <section className="relative pt-20 pb-10 lg:pt-24 lg:pb-16 overflow-hidden">
       {/* Background Grid */}
-      <div className="absolute inset-0 -z-10 bg-[linear-gradient(to_right,var(--l-border)_1px,transparent_1px),linear-gradient(to_bottom,var(--l-border)_1px,transparent_1px)] bg-[size:60px_60px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
+      <div className="absolute inset-0 -z-10 bg-[linear-gradient(to_right,var(--l-border)_1px,transparent_1px),linear-gradient(to_bottom,var(--l-border)_1px,transparent_1px)] bg-size-[60px_60px] mask-[radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
 
       {/* Animated Orbs */}
       <motion.div
         animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
         transition={{ duration: 8, repeat: Infinity }}
-        className="absolute top-20 left-[10%] w-[600px] h-[600px] rounded-full blur-[160px] -z-10"
+        className="absolute top-20 left-[10%] w-150 h-150 rounded-full blur-[160px] -z-10"
         style={{ background: 'var(--l-glow-1)' }}
       />
       <motion.div
         animate={{ scale: [1, 1.3, 1], opacity: [0.2, 0.4, 0.2] }}
         transition={{ duration: 10, repeat: Infinity, delay: 2 }}
-        className="absolute bottom-0 right-[10%] w-[500px] h-[500px] rounded-full blur-[140px] -z-10"
+        className="absolute bottom-0 right-[10%] w-125 h-125 rounded-full blur-[140px] -z-10"
         style={{ background: 'var(--l-glow-2)' }}
       />
 
@@ -895,7 +895,7 @@ export function Hero() {
             >
               Your startup&apos;s
               <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-violet-400 to-cyan-400 animate-gradient-x">
+              <span className="text-transparent bg-clip-text bg-linear-to-r from-indigo-400 via-violet-400 to-cyan-400 animate-gradient-x">
                 operating system
               </span>
             </motion.h1>
@@ -928,7 +928,7 @@ export function Hero() {
                   Start building free
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </span>
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
+                <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
               </Link>
               <a
                 href="#workflow"

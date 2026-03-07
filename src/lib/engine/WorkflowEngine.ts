@@ -2,6 +2,7 @@ import { connectDB } from '@/lib/mongodb/client'
 import { WorkflowExecution } from '@/lib/mongodb/models/WorkflowExecution'
 import { Workflow } from '@/lib/mongodb/models/Workflow'
 import { Lead } from '@/lib/mongodb/models/Lead'
+import { UserSettings } from '@/lib/mongodb/models/UserSettings'
 import { checkRateLimit } from './RateLimiter'
 import { computeDelay, nextExecTime } from './DelayScheduler'
 import { safetyCheck } from './SafetyGuards'
@@ -16,7 +17,7 @@ const AI_BASE_URLS: Record<string, string> = {
   together: 'https://api.together.xyz/v1',
 }
 
-// ── Call any OpenAI-compatible AI API with a user-provided key ──
+// ── Call any OpenAI-compatible AI API ──
 async function callAI(
   systemPrompt: string,
   userMessage: string,
@@ -28,7 +29,7 @@ async function callAI(
   const baseUrl = config.aiBaseUrl || AI_BASE_URLS[provider] || AI_BASE_URLS.groq
 
   if (!apiKey) {
-    throw new Error(`No API key configured for AI provider "${provider}". Add your API key in Workflow Settings.`)
+    throw new Error(`No API key configured. Go to Settings → AI Providers and add your API key.`)
   }
 
   const res = await fetch(`${baseUrl}/chat/completions`, {
@@ -50,7 +51,7 @@ async function callAI(
 
   if (!res.ok) {
     const errBody = await res.text().catch(() => '')
-    throw new Error(`AI API (${provider}) returned ${res.status}: ${errBody.slice(0, 200)}`)
+    throw new Error(`AI API (${provider}) error ${res.status}: ${errBody.slice(0, 200)}`)
   }
 
   const data = await res.json()
@@ -68,34 +69,33 @@ function substituteVars(template: string, lead: any): string {
     .replace(/\{\{fullName\}\}/g, `${lead.firstName || ''} ${lead.lastName || ''}`.trim())
 }
 
-// ── Send email via SMTP using workflow config ──
-async function sendEmailViaSMTP(
+// ── Send email via Gmail SMTP using user's App Password from Settings ──
+async function sendEmailViaGmail(
   to: string,
   subject: string,
   body: string,
-  smtpConfig: {
-    smtpHost?: string; smtpPort?: number; smtpUser?: string; smtpPass?: string;
-    smtpFromEmail?: string; smtpFromName?: string; smtpSecure?: boolean;
+  emailConfig: {
+    emailAddress?: string; emailAppPassword?: string; emailFromName?: string;
   }
 ): Promise<void> {
-  if (!smtpConfig.smtpHost || !smtpConfig.smtpUser || !smtpConfig.smtpPass) {
-    throw new Error('SMTP not configured. Add your SMTP credentials in Workflow Settings.')
+  if (!emailConfig.emailAddress || !emailConfig.emailAppPassword) {
+    throw new Error('Email not configured. Go to Settings → Email Configuration and add your Gmail + App Password.')
   }
 
   const transporter = nodemailer.createTransport({
-    host: smtpConfig.smtpHost,
-    port: smtpConfig.smtpPort || 587,
-    secure: smtpConfig.smtpSecure || false,
+    host: 'smtp.gmail.com',
+    port: 587,
+    secure: false,
     auth: {
-      user: smtpConfig.smtpUser,
-      pass: smtpConfig.smtpPass,
+      user: emailConfig.emailAddress,
+      pass: emailConfig.emailAppPassword,
     },
   })
 
   await transporter.sendMail({
-    from: smtpConfig.smtpFromName
-      ? `"${smtpConfig.smtpFromName}" <${smtpConfig.smtpFromEmail || smtpConfig.smtpUser}>`
-      : smtpConfig.smtpFromEmail || smtpConfig.smtpUser,
+    from: emailConfig.emailFromName
+      ? `"${emailConfig.emailFromName}" <${emailConfig.emailAddress}>`
+      : emailConfig.emailAddress,
     to,
     subject,
     html: body.replace(/\n/g, '<br>'),
@@ -103,9 +103,25 @@ async function sendEmailViaSMTP(
   })
 }
 
+// ── Load user's email & AI settings from DB ──
+async function getUserConfig(ownerId: string) {
+  const settings = await UserSettings.findOne({ userId: ownerId }).lean() as any
+  return {
+    // Email
+    emailAddress: settings?.emailAddress || '',
+    emailAppPassword: settings?.emailAppPassword || '',
+    emailFromName: settings?.emailFromName || '',
+    // AI
+    aiProvider: settings?.aiProvider || 'groq',
+    aiApiKey: settings?.aiApiKey || process.env.GROQ_API_KEY || '',
+    aiModel: settings?.aiModel || 'llama-3.3-70b-versatile',
+    aiBaseUrl: settings?.aiBaseUrl || '',
+  }
+}
+
 /**
  * Execute a single step in a workflow for a given execution.
- * Uses the workflow's own AI API key and SMTP credentials.
+ * Reads email and AI config from the user's Settings (not per-workflow).
  */
 export async function executeStep(executionId: string): Promise<void> {
   await connectDB()
@@ -156,6 +172,9 @@ export async function executeStep(executionId: string): Promise<void> {
   const edges = workflow.edges || []
   const wfConfig = workflow.config || {}
 
+  // Load user's email & AI config from Settings
+  const userConfig = await getUserConfig(execution.ownerId.toString())
+
   // Find current node
   let currentNode = nodes.find((n: any) => n.id === execution.currentNodeId)
   if (!currentNode && nodes.length > 0) {
@@ -199,11 +218,15 @@ Rules:
 - Return ONLY the message body
 - Make it personal and human, not templated`
 
-        const message = await callAI(systemPrompt, filledPrompt, wfConfig)
+        // Use AI config from user Settings (falls back to workflow config, then env)
+        const aiConfig = {
+          aiProvider: userConfig.aiProvider || wfConfig.aiProvider,
+          aiApiKey: userConfig.aiApiKey || wfConfig.aiApiKey,
+          aiModel: userConfig.aiModel || wfConfig.aiModel,
+          aiBaseUrl: userConfig.aiBaseUrl || wfConfig.aiBaseUrl,
+        }
+        const message = await callAI(systemPrompt, filledPrompt, aiConfig)
         messageGenerated = message
-
-        // Store generated message on the execution for later use by sendEmail
-        if (!execution._generatedMessages) execution._generatedMessages = {}
         execution.markModified('stepHistory')
         break
       }
@@ -216,14 +239,14 @@ Rules:
         const emailBody = lastAiStep?.messageGenerated || nodeData.emailBody || 'Hello, I wanted to reach out...'
         const subject = nodeData.subject || `Hey ${lead.firstName}, quick question`
 
-        if (wfConfig.smtpHost && wfConfig.smtpUser && wfConfig.smtpPass) {
-          // Real email via SMTP
-          await sendEmailViaSMTP(lead.email, subject, emailBody, wfConfig)
+        if (userConfig.emailAddress && userConfig.emailAppPassword) {
+          // Send real email via Gmail using user's Settings
+          await sendEmailViaGmail(lead.email, subject, emailBody, userConfig)
           messageGenerated = `Sent to ${lead.email}: "${subject}"`
         } else {
-          // No SMTP configured — log and mark as simulated
+          // No email configured — simulated
           console.log(`[Engine] Simulated email to ${lead.email}: ${subject}`)
-          messageGenerated = `[Simulated] To: ${lead.email} | Subject: ${subject}\n\n${emailBody}`
+          messageGenerated = `[Simulated] To: ${lead.email} | Subject: ${subject}\n\nConfigure email in Settings to send real emails.\n\n${emailBody}`
         }
         break
       }

@@ -8,18 +8,20 @@ const fetcher = (url: string) => fetch(url).then(r => r.json())
 
 const statusColors: Record<string, string> = {
   new: 'var(--brand-100)',
+  contacted: 'var(--info-bg)',
   in_sequence: 'var(--warning-bg)',
   replied: 'var(--success-bg)',
-  converted: '#d1fae5',
-  opted_out: 'var(--neutral-100)',
+  converted: 'var(--success-bg)',
+  opted_out: 'var(--bg-sunken)',
   bounced: 'var(--danger-bg)',
 }
 
 const statusTextColors: Record<string, string> = {
-  new: 'var(--brand-700)',
+  new: 'var(--text-brand)',
+  contacted: 'var(--info-text)',
   in_sequence: 'var(--warning-text)',
   replied: 'var(--success-text)',
-  converted: '#065f46',
+  converted: 'var(--success-text)',
   opted_out: 'var(--text-tertiary)',
   bounced: 'var(--danger-text)',
 }

@@ -21,6 +21,7 @@ export default function DocEditorPage({ params }: { params: Promise<{ id: string
   const [initialized, setInitialized] = useState(false)
 
   const editor = useEditor({
+    immediatelyRender: false,
     extensions: [
       StarterKit,
       Placeholder.configure({ placeholder: 'Start writing…' }),
