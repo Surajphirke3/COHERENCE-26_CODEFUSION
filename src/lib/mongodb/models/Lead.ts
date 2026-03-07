@@ -11,7 +11,7 @@ const LeadSchema = new Schema(
     phone: { type: String, trim: true },
     status: {
       type: String,
-      enum: ['new', 'in_sequence', 'replied', 'converted', 'opted_out', 'bounced'],
+      enum: ['new', 'contacted', 'in_sequence', 'replied', 'converted', 'opted_out', 'bounced'],
       default: 'new',
     },
     ownerId: { type: Schema.Types.ObjectId, ref: 'User', required: true },

@@ -23,7 +23,6 @@ import { toast } from 'sonner'
 // ── Node palette configuration ──
 const NODE_PALETTE = [
   { type: 'trigger', label: 'Trigger', icon: Zap, color: '#1A56DB' },
-  { type: 'generateLeads', label: 'Generate Leads', icon: UserPlus, color: '#0891B2' },
   { type: 'aiMessage', label: 'AI Message', icon: Bot, color: '#7C3AED' },
   { type: 'sendEmail', label: 'Send Email', icon: Mail, color: '#065F46' },
   { type: 'delay', label: 'Delay', icon: Clock, color: '#92400E' },
@@ -106,6 +105,10 @@ export default function WorkflowBuilderPage({ params }: { params: Promise<{ id: 
   const [execOutputs, setExecOutputs] = useState<any>(null)
   const [currentId, setCurrentId] = useState(id)
   const [sidebarTab, setSidebarTab] = useState<'nodes' | 'settings'>('nodes')
+  const [showLeadPicker, setShowLeadPicker] = useState(false)
+  const [availableLeads, setAvailableLeads] = useState<any[]>([])
+  const [selectedLeadIds, setSelectedLeadIds] = useState<Set<string>>(new Set())
+  const [loadingLeads, setLoadingLeads] = useState(false)
   const [wfConfig, setWfConfig] = useState({
     aiProvider: 'groq',
     aiApiKey: '',
@@ -269,21 +272,53 @@ export default function WorkflowBuilderPage({ params }: { params: Promise<{ id: 
     }
   }
 
-  // Execute workflow — auto-saves first, checks for API key
-  const handleExecute = async () => {
-    // Check if AI API key is set (needed for aiMessage nodes)
+  // Open lead picker — fetch real leads from DB
+  const openLeadPicker = async () => {
     const hasAiNodes = nodes.some(n => (n.data as any).nodeType === 'aiMessage')
-    if (hasAiNodes && !wfConfig.aiApiKey && !process.env.NEXT_PUBLIC_GROQ_API_KEY) {
-      toast.error('Add your AI API key in the Settings tab before executing', { duration: 5000 })
+    if (hasAiNodes && !wfConfig.aiApiKey) {
+      toast.error('Add your AI API key in the Settings tab first', { duration: 5000 })
       setSidebarTab('settings')
       return
     }
+    if (nodes.length === 0) {
+      toast.error('Add nodes to your workflow first')
+      return
+    }
 
+    setLoadingLeads(true)
+    try {
+      const res = await fetch('/api/leads')
+      const data = await res.json()
+      const leads = data.leads || []
+      if (leads.length === 0) {
+        toast.error('No leads found. Go to Leads page and import your CSV/Excel file first.', { duration: 6000 })
+        return
+      }
+      setAvailableLeads(leads)
+      // Pre-select leads with status 'new'
+      const newLeadIds = new Set<string>(leads.filter((l: any) => l.status === 'new').map((l: any) => l._id))
+      setSelectedLeadIds(newLeadIds)
+      setShowLeadPicker(true)
+    } catch {
+      toast.error('Failed to load leads')
+    } finally {
+      setLoadingLeads(false)
+    }
+  }
+
+  // Execute with selected leads — auto-saves first
+  const executeWithLeads = async () => {
+    if (selectedLeadIds.size === 0) {
+      toast.error('Select at least one lead')
+      return
+    }
+
+    setShowLeadPicker(false)
     setExecuting(true)
     setExecOutputs(null)
 
     try {
-      // Auto-save first so the server has the latest nodes, edges, and config
+      // Auto-save
       const saveNodes = nodes.map(n => ({
         id: n.id,
         type: (n.data as any).nodeType || 'trigger',
@@ -301,41 +336,35 @@ export default function WorkflowBuilderPage({ params }: { params: Promise<{ id: 
       let execId = currentId
 
       if (execId === 'new') {
-        // Create the workflow first
         const createRes = await fetch('/api/workflows', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ name: workflowName, nodes: saveNodes, edges: saveEdges, config: wfConfig }),
         })
         const createResult = await createRes.json()
-        if (!createRes.ok) throw new Error(createResult.error || 'Failed to save workflow')
+        if (!createRes.ok) throw new Error(createResult.error || 'Failed to save')
         execId = createResult.workflow._id
         setCurrentId(execId)
         window.history.replaceState(null, '', `/outreach/workflows/${execId}/builder`)
       } else {
-        // Update existing workflow
         const saveRes = await fetch(`/api/workflows/${execId}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ name: workflowName, nodes: saveNodes, edges: saveEdges, config: wfConfig }),
         })
-        if (!saveRes.ok) {
-          const saveResult = await saveRes.json()
-          throw new Error(saveResult.error || 'Failed to save before executing')
-        }
+        if (!saveRes.ok) throw new Error('Failed to save before executing')
       }
 
-      toast.info('Workflow saved. Executing...')
+      toast.info(`Running workflow for ${selectedLeadIds.size} lead${selectedLeadIds.size !== 1 ? 's' : ''}...`)
 
-      // Now execute
       const res = await fetch(`/api/workflows/${execId}/execute`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ inputs: {} }),
+        body: JSON.stringify({ leadIds: Array.from(selectedLeadIds) }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Execution failed')
-      toast.success(data.message || 'Workflow executed successfully!')
+      toast.success(data.message || 'Done!')
       setExecOutputs(data)
     } catch (error: any) {
       toast.error(error.message || 'Execution failed')
@@ -595,8 +624,8 @@ export default function WorkflowBuilderPage({ params }: { params: Promise<{ id: 
           </button>
           <button
             className="btn-primary"
-            onClick={handleExecute}
-            disabled={executing || nodes.length === 0}
+            onClick={openLeadPicker}
+            disabled={executing || loadingLeads || nodes.length === 0}
             style={{
               width: '100%',
               background: executing ? undefined : '#059669',
@@ -604,8 +633,10 @@ export default function WorkflowBuilderPage({ params }: { params: Promise<{ id: 
           >
             {executing ? (
               <><Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} /> Executing…</>
+            ) : loadingLeads ? (
+              <><Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} /> Loading leads…</>
             ) : (
-              <><Play size={14} /> Save &amp; Execute</>
+              <><Play size={14} /> Select Leads &amp; Run</>
             )}
           </button>
         </div>
@@ -786,48 +817,6 @@ export default function WorkflowBuilderPage({ params }: { params: Promise<{ id: 
               </div>
             )}
 
-            {(selectedNode.data as any).nodeType === 'generateLeads' && (
-              <>
-                <div>
-                  <label className="label">Number of Leads</label>
-                  <input
-                    className="input"
-                    type="number"
-                    min={1}
-                    max={100}
-                    value={(selectedNode.data as any).leadCount || 10}
-                    onChange={(e) => {
-                      setNodes(nds => nds.map(n =>
-                        n.id === selectedNode.id
-                          ? { ...n, data: { ...n.data, leadCount: parseInt(e.target.value) || 10 } }
-                          : n
-                      ))
-                    }}
-                  />
-                </div>
-                <div>
-                  <label className="label">Lead Source</label>
-                  <select
-                    className="input"
-                    value={(selectedNode.data as any).leadSource || 'manual'}
-                    onChange={(e) => {
-                      setNodes(nds => nds.map(n =>
-                        n.id === selectedNode.id
-                          ? { ...n, data: { ...n.data, leadSource: e.target.value } }
-                          : n
-                      ))
-                    }}
-                  >
-                    <option value="manual">Manual / CSV Import</option>
-                    <option value="ai_generated">AI Generated (Sample)</option>
-                  </select>
-                  <p style={{ fontSize: '11px', color: 'var(--text-tertiary)', marginTop: '4px' }}>
-                    AI Generated creates sample leads for testing
-                  </p>
-                </div>
-              </>
-            )}
-
             {(selectedNode.data as any).nodeType === 'sendEmail' && (
               <>
                 <div>
@@ -888,6 +877,133 @@ export default function WorkflowBuilderPage({ params }: { params: Promise<{ id: 
             </button>
           </div>
         </div>
+      )}
+
+      {/* ─── Lead Picker Modal ─── */}
+      {showLeadPicker && (
+        <>
+          <div
+            onClick={() => setShowLeadPicker(false)}
+            style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 100, backdropFilter: 'blur(2px)' }}
+          />
+          <div style={{
+            position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+            width: '560px', maxWidth: '90vw', maxHeight: '80vh',
+            background: 'var(--bg-elevated)', borderRadius: '16px',
+            border: '1px solid var(--border-subtle)', boxShadow: 'var(--shadow-2xl)',
+            zIndex: 101, display: 'flex', flexDirection: 'column', overflow: 'hidden',
+          }}>
+            {/* Modal header */}
+            <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--border-subtle)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div>
+                <h3 style={{ fontWeight: 700, fontSize: '16px', marginBottom: '2px' }}>Select Leads to Run</h3>
+                <p style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>
+                  The workflow will execute for each selected lead. {selectedLeadIds.size} of {availableLeads.length} selected.
+                </p>
+              </div>
+              <button onClick={() => setShowLeadPicker(false)} className="btn-ghost" style={{ padding: '6px' }}>
+                <X size={16} />
+              </button>
+            </div>
+
+            {/* Select all / none */}
+            <div style={{ padding: '10px 24px', borderBottom: '1px solid var(--border-subtle)', display: 'flex', gap: '8px', alignItems: 'center', fontSize: '12px' }}>
+              <button
+                onClick={() => setSelectedLeadIds(new Set<string>(availableLeads.map((l: any) => l._id)))}
+                style={{ padding: '4px 10px', borderRadius: '6px', border: '1px solid var(--border-default)', background: 'var(--bg-sunken)', cursor: 'pointer', fontSize: '12px', color: 'var(--text-secondary)' }}
+              >
+                Select All
+              </button>
+              <button
+                onClick={() => setSelectedLeadIds(new Set<string>())}
+                style={{ padding: '4px 10px', borderRadius: '6px', border: '1px solid var(--border-default)', background: 'var(--bg-sunken)', cursor: 'pointer', fontSize: '12px', color: 'var(--text-secondary)' }}
+              >
+                Select None
+              </button>
+              <button
+                onClick={() => setSelectedLeadIds(new Set<string>(availableLeads.filter((l: any) => l.status === 'new').map((l: any) => l._id)))}
+                style={{ padding: '4px 10px', borderRadius: '6px', border: '1px solid var(--border-default)', background: 'var(--bg-sunken)', cursor: 'pointer', fontSize: '12px', color: 'var(--text-secondary)' }}
+              >
+                Only New
+              </button>
+              <span style={{ marginLeft: 'auto', color: 'var(--text-tertiary)' }}>
+                {availableLeads.length} leads imported
+              </span>
+            </div>
+
+            {/* Lead list */}
+            <div style={{ flex: 1, overflowY: 'auto', padding: '8px 16px' }}>
+              {availableLeads.map((lead: any) => {
+                const isSelected = selectedLeadIds.has(lead._id)
+                return (
+                  <label
+                    key={lead._id}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: '12px',
+                      padding: '10px 8px', borderRadius: '8px', cursor: 'pointer',
+                      background: isSelected ? 'var(--brand-50)' : 'transparent',
+                      border: isSelected ? '1px solid var(--brand-100)' : '1px solid transparent',
+                      marginBottom: '2px', transition: 'all 100ms ease',
+                    }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => {
+                        setSelectedLeadIds(prev => {
+                          const next = new Set(prev)
+                          next.has(lead._id) ? next.delete(lead._id) : next.add(lead._id)
+                          return next
+                        })
+                      }}
+                      style={{ width: '16px', height: '16px', accentColor: 'var(--brand-600)', cursor: 'pointer' }}
+                    />
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontWeight: 500, fontSize: '13px' }}>
+                        {lead.firstName} {lead.lastName}
+                        {lead.company && <span style={{ color: 'var(--text-tertiary)', fontWeight: 400 }}> · {lead.company}</span>}
+                      </div>
+                      <div style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>{lead.email}</div>
+                    </div>
+                    <span style={{
+                      fontSize: '10px', fontWeight: 500, padding: '2px 6px', borderRadius: '9999px',
+                      background: lead.status === 'new' ? 'var(--brand-50)' : lead.status === 'contacted' ? 'var(--info-bg)' : 'var(--bg-sunken)',
+                      color: lead.status === 'new' ? 'var(--text-brand)' : lead.status === 'contacted' ? 'var(--info-text)' : 'var(--text-tertiary)',
+                    }}>
+                      {lead.status}
+                    </span>
+                  </label>
+                )
+              })}
+
+              {availableLeads.length === 0 && (
+                <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-tertiary)', fontSize: '13px' }}>
+                  No leads found. Import leads from CSV/Excel on the Leads page first.
+                </div>
+              )}
+            </div>
+
+            {/* Modal footer */}
+            <div style={{ padding: '16px 24px', borderTop: '1px solid var(--border-subtle)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
+                {selectedLeadIds.size} lead{selectedLeadIds.size !== 1 ? 's' : ''} selected
+              </span>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button onClick={() => setShowLeadPicker(false)} className="btn-ghost" style={{ padding: '8px 16px' }}>
+                  Cancel
+                </button>
+                <button
+                  onClick={executeWithLeads}
+                  className="btn-primary"
+                  disabled={selectedLeadIds.size === 0}
+                  style={{ padding: '8px 20px', background: '#059669' }}
+                >
+                  <Play size={14} /> Run for {selectedLeadIds.size} Lead{selectedLeadIds.size !== 1 ? 's' : ''}
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
       )}
     </div>
   )

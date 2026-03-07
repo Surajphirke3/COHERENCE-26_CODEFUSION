@@ -58,6 +58,8 @@
   --bg-base: #fafaf9;
   --bg-elevated: #ffffff;
   --bg-sunken: #f3f3f1;
+  --bg-surface: #f7f7f5;
+  --bg-hover: rgba(0, 0, 0, 0.035);
   --bg-overlay: rgba(0, 0, 0, 0.025);
   --bg-active: rgba(0, 0, 0, 0.04);
 
@@ -171,6 +173,8 @@ html[data-theme="dark"] {
   --bg-base: #0f0f0e;
   --bg-elevated: #1a1a18;
   --bg-sunken: #111110;
+  --bg-surface: #161614;
+  --bg-hover: rgba(255, 255, 255, 0.05);
   --bg-overlay: rgba(255, 255, 255, 0.04);
   --bg-active: rgba(255, 255, 255, 0.07);
 

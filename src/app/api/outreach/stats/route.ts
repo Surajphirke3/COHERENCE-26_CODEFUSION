@@ -4,6 +4,7 @@ import { WorkflowExecution } from '@/lib/mongodb/models/WorkflowExecution'
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth/options'
+import mongoose from 'mongoose'
 
 export async function GET() {
   try {
@@ -14,11 +15,17 @@ export async function GET() {
 
     await connectDB()
 
-    const ownerId = session.user.id
+    // Cast to ObjectId for aggregate $match (string won't match ObjectId fields)
+    let ownerObjId: any
+    try {
+      ownerObjId = new mongoose.Types.ObjectId(session.user.id)
+    } catch {
+      ownerObjId = session.user.id
+    }
 
     // Lead counts by status
     const leadCounts = await Lead.aggregate([
-      { $match: { ownerId: ownerId } },
+      { $match: { ownerId: ownerObjId } },
       { $group: { _id: '$status', count: { $sum: 1 } } },
     ])
 
@@ -31,7 +38,7 @@ export async function GET() {
 
     // Execution counts by status
     const execCounts = await WorkflowExecution.aggregate([
-      { $match: { ownerId: ownerId } },
+      { $match: { ownerId: ownerObjId } },
       { $group: { _id: '$status', count: { $sum: 1 } } },
     ])
 
@@ -41,7 +48,7 @@ export async function GET() {
     }
 
     // Recent executions with lead info
-    const executions = await WorkflowExecution.find({ ownerId })
+    const executions = await WorkflowExecution.find({ ownerId: session.user.id })
       .sort({ updatedAt: -1 })
       .limit(100)
       .populate('leadId', 'firstName lastName email company status')
@@ -50,12 +57,15 @@ export async function GET() {
 
     return NextResponse.json({
       total: totalLeads,
-      new: leadStats['new'] || 0,
-      in_sequence: leadStats['in_sequence'] || 0,
-      replied: leadStats['replied'] || 0,
-      converted: leadStats['converted'] || 0,
-      opted_out: leadStats['opted_out'] || 0,
-      bounced: leadStats['bounced'] || 0,
+      leads: {
+        new: leadStats['new'] || 0,
+        contacted: leadStats['contacted'] || 0,
+        in_sequence: leadStats['in_sequence'] || 0,
+        replied: leadStats['replied'] || 0,
+        converted: leadStats['converted'] || 0,
+        opted_out: leadStats['opted_out'] || 0,
+        bounced: leadStats['bounced'] || 0,
+      },
       executions: {
         pending: execStats['pending'] || 0,
         running: execStats['running'] || 0,
