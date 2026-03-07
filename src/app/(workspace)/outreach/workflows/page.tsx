@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import useSWR, { mutate } from 'swr'
-import { Plus, GitBranch, Trash2, Play, Pause, Loader2, Mail, Users, Repeat, Zap, X, FileText } from 'lucide-react'
+import { Plus, GitBranch, Trash2, Play, Pause, Loader2, Mail, Users, Repeat, Zap, X, FileText, Handshake, CalendarCheck } from 'lucide-react'
 
 const fetcher = (url: string) => fetch(url).then(r => r.json())
 
@@ -85,6 +85,46 @@ const WORKFLOW_TEMPLATES = [
       { id: 'e5', source: 'send_1', target: 'tag_yes' },
       { id: 'e6', source: 'tag_yes', target: 'end_1' },
       { id: 'e7', source: 'tag_no', target: 'end_1' },
+    ],
+  },
+  {
+    key: 'warm-intro',
+    name: 'Warm Introduction',
+    description: 'AI writes a friendly, warm intro email referencing common ground. Great for networking leads.',
+    icon: Handshake,
+    color: '#f59e0b',
+    nodes: [
+      { id: 'trigger_1', type: 'trigger', position: { x: 300, y: 50 }, data: { label: 'For Each Lead', nodeType: 'trigger', description: 'Runs for every selected lead' } },
+      { id: 'ai_1', type: 'aiMessage', position: { x: 300, y: 200 }, data: { label: 'AI Warm Intro', nodeType: 'aiMessage', description: 'Writes a friendly intro finding common ground', promptTemplate: 'Write a warm, friendly introduction email to {{firstName}} who is {{title}} at {{company}}. Find common ground based on their role. Be genuine, not salesy. Mention you admire their work. Keep it to 3-4 sentences. End with a simple question to start a conversation.' } },
+      { id: 'send_1', type: 'sendEmail', position: { x: 300, y: 350 }, data: { label: 'Send Intro', nodeType: 'sendEmail', subject: '' } },
+      { id: 'tag_1', type: 'tagLead', position: { x: 300, y: 500 }, data: { label: 'Mark Contacted', nodeType: 'tagLead', tag: 'contacted' } },
+      { id: 'end_1', type: 'end', position: { x: 300, y: 650 }, data: { label: 'Done', nodeType: 'end' } },
+    ],
+    edges: [
+      { id: 'e1', source: 'trigger_1', target: 'ai_1' },
+      { id: 'e2', source: 'ai_1', target: 'send_1' },
+      { id: 'e3', source: 'send_1', target: 'tag_1' },
+      { id: 'e4', source: 'tag_1', target: 'end_1' },
+    ],
+  },
+  {
+    key: 'meeting-request',
+    name: 'Meeting Request',
+    description: 'AI writes a concise email requesting a 15-min call, personalized to the lead\'s role and company.',
+    icon: CalendarCheck,
+    color: '#8b5cf6',
+    nodes: [
+      { id: 'trigger_1', type: 'trigger', position: { x: 300, y: 50 }, data: { label: 'For Each Lead', nodeType: 'trigger', description: 'Runs for every selected lead' } },
+      { id: 'ai_1', type: 'aiMessage', position: { x: 300, y: 200 }, data: { label: 'AI Meeting Request', nodeType: 'aiMessage', description: 'Writes a short meeting request email', promptTemplate: 'Write a short email to {{firstName}}, {{title}} at {{company}}, requesting a 15-minute call. Mention one specific reason relevant to their role why the call would be valuable. Include 2 suggested time slots (this week). Keep it to 3 sentences max. Be direct and respectful of their time.' } },
+      { id: 'send_1', type: 'sendEmail', position: { x: 300, y: 350 }, data: { label: 'Send Request', nodeType: 'sendEmail', subject: '' } },
+      { id: 'tag_1', type: 'tagLead', position: { x: 300, y: 500 }, data: { label: 'Mark In Sequence', nodeType: 'tagLead', tag: 'in_sequence' } },
+      { id: 'end_1', type: 'end', position: { x: 300, y: 650 }, data: { label: 'Done', nodeType: 'end' } },
+    ],
+    edges: [
+      { id: 'e1', source: 'trigger_1', target: 'ai_1' },
+      { id: 'e2', source: 'ai_1', target: 'send_1' },
+      { id: 'e3', source: 'send_1', target: 'tag_1' },
+      { id: 'e4', source: 'tag_1', target: 'end_1' },
     ],
   },
 ]

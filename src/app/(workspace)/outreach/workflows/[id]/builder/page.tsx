@@ -310,12 +310,6 @@ export default function WorkflowBuilderPage({ params }: { params: Promise<{ id: 
 
   // Open lead picker — fetch real leads from DB
   const openLeadPicker = async () => {
-    const hasAiNodes = nodes.some(n => (n.data as any).nodeType === 'aiMessage')
-    if (hasAiNodes && !wfConfig.aiApiKey) {
-      toast.error('Add your AI API key in the Settings tab first', { duration: 5000 })
-      setSidebarTab('settings')
-      return
-    }
     if (nodes.length === 0) {
       toast.error('Add nodes to your workflow first')
       return
@@ -583,138 +577,49 @@ export default function WorkflowBuilderPage({ params }: { params: Promise<{ id: 
               </div>
             </>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              {/* AI Provider Settings */}
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-tertiary)', marginBottom: '10px' }}>
-                  <Key size={12} /> AI Provider
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  <div>
-                    <label className="label" style={{ fontSize: '11px' }}>Provider</label>
-                    <select
-                      className="input"
-                      value={wfConfig.aiProvider}
-                      onChange={(e) => {
-                        const prov = AI_PROVIDERS.find(p => p.id === e.target.value)
-                        setWfConfig(c => ({ ...c, aiProvider: e.target.value, aiModel: prov?.models[0] || c.aiModel }))
-                      }}
-                    >
-                      {AI_PROVIDERS.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="label" style={{ fontSize: '11px' }}>API Key</label>
-                    <input
-                      className="input"
-                      type="password"
-                      placeholder="sk-... or gsk_..."
-                      value={wfConfig.aiApiKey}
-                      onChange={(e) => setWfConfig(c => ({ ...c, aiApiKey: e.target.value }))}
-                    />
-                    <p style={{ fontSize: '10px', color: 'var(--text-tertiary)', marginTop: '2px' }}>
-                      {wfConfig.aiApiKey ? '\u2713 Key set' : 'Required for AI nodes to work'}
-                    </p>
-                  </div>
-                  <div>
-                    <label className="label" style={{ fontSize: '11px' }}>Model</label>
-                    <select
-                      className="input"
-                      value={wfConfig.aiModel}
-                      onChange={(e) => setWfConfig(c => ({ ...c, aiModel: e.target.value }))}
-                    >
-                      {(AI_PROVIDERS.find(p => p.id === wfConfig.aiProvider)?.models || []).map(m => (
-                        <option key={m} value={m}>{m}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="label" style={{ fontSize: '11px' }}>Custom Base URL (optional)</label>
-                    <input
-                      className="input"
-                      placeholder="Leave empty for default"
-                      value={wfConfig.aiBaseUrl}
-                      onChange={(e) => setWfConfig(c => ({ ...c, aiBaseUrl: e.target.value }))}
-                    />
-                  </div>
-                </div>
-              </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <p style={{ fontSize: '12px', color: 'var(--text-tertiary)', lineHeight: 1.5 }}>
+                Email and AI settings are configured in the global Settings page. All workflows use the same configuration.
+              </p>
 
-              <div style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: '16px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-tertiary)', marginBottom: '10px' }}>
-                  <Server size={12} /> Email (SMTP)
+              <Link
+                href="/settings"
+                style={{
+                  display: 'flex', alignItems: 'center', gap: '8px',
+                  padding: '12px', borderRadius: 'var(--radius-md)',
+                  border: '1px solid var(--border-default)', background: 'var(--bg-sunken)',
+                  textDecoration: 'none', color: 'var(--text-primary)',
+                  fontSize: '13px', fontWeight: 500,
+                }}
+              >
+                <Mail size={16} color="var(--brand-600)" />
+                <div>
+                  <div>Email Configuration</div>
+                  <div style={{ fontSize: '11px', color: 'var(--text-tertiary)', fontWeight: 400 }}>Gmail + App Password</div>
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  <div>
-                    <label className="label" style={{ fontSize: '11px' }}>SMTP Host</label>
-                    <input
-                      className="input"
-                      placeholder="smtp.gmail.com"
-                      value={wfConfig.smtpHost}
-                      onChange={(e) => setWfConfig(c => ({ ...c, smtpHost: e.target.value }))}
-                    />
-                  </div>
-                  <div style={{ display: 'flex', gap: '6px' }}>
-                    <div style={{ flex: 1 }}>
-                      <label className="label" style={{ fontSize: '11px' }}>Port</label>
-                      <input
-                        className="input"
-                        type="number"
-                        value={wfConfig.smtpPort}
-                        onChange={(e) => setWfConfig(c => ({ ...c, smtpPort: parseInt(e.target.value) || 587 }))}
-                      />
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'flex-end', paddingBottom: '4px' }}>
-                      <label style={{ fontSize: '11px', display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}>
-                        <input
-                          type="checkbox"
-                          checked={wfConfig.smtpSecure}
-                          onChange={(e) => setWfConfig(c => ({ ...c, smtpSecure: e.target.checked }))}
-                        /> SSL
-                      </label>
-                    </div>
-                  </div>
-                  <div>
-                    <label className="label" style={{ fontSize: '11px' }}>Username / Email</label>
-                    <input
-                      className="input"
-                      placeholder="you@company.com"
-                      value={wfConfig.smtpUser}
-                      onChange={(e) => setWfConfig(c => ({ ...c, smtpUser: e.target.value }))}
-                    />
-                  </div>
-                  <div>
-                    <label className="label" style={{ fontSize: '11px' }}>Password / App Password</label>
-                    <input
-                      className="input"
-                      type="password"
-                      placeholder="App password"
-                      value={wfConfig.smtpPass}
-                      onChange={(e) => setWfConfig(c => ({ ...c, smtpPass: e.target.value }))}
-                    />
-                  </div>
-                  <div>
-                    <label className="label" style={{ fontSize: '11px' }}>From Name</label>
-                    <input
-                      className="input"
-                      placeholder="Your Name"
-                      value={wfConfig.smtpFromName}
-                      onChange={(e) => setWfConfig(c => ({ ...c, smtpFromName: e.target.value }))}
-                    />
-                  </div>
-                  <div>
-                    <label className="label" style={{ fontSize: '11px' }}>From Email</label>
-                    <input
-                      className="input"
-                      placeholder="you@company.com"
-                      value={wfConfig.smtpFromEmail}
-                      onChange={(e) => setWfConfig(c => ({ ...c, smtpFromEmail: e.target.value }))}
-                    />
-                  </div>
-                  <p style={{ fontSize: '10px', color: 'var(--text-tertiary)', margin: 0 }}>
-                    {wfConfig.smtpHost ? '\u2713 SMTP configured — emails will be sent' : 'No SMTP — emails will be simulated'}
-                  </p>
+                <ChevronRight size={14} style={{ marginLeft: 'auto', color: 'var(--text-tertiary)' }} />
+              </Link>
+
+              <Link
+                href="/settings"
+                style={{
+                  display: 'flex', alignItems: 'center', gap: '8px',
+                  padding: '12px', borderRadius: 'var(--radius-md)',
+                  border: '1px solid var(--border-default)', background: 'var(--bg-sunken)',
+                  textDecoration: 'none', color: 'var(--text-primary)',
+                  fontSize: '13px', fontWeight: 500,
+                }}
+              >
+                <Key size={16} color="var(--brand-600)" />
+                <div>
+                  <div>AI Provider & API Key</div>
+                  <div style={{ fontSize: '11px', color: 'var(--text-tertiary)', fontWeight: 400 }}>Groq, OpenAI, etc.</div>
                 </div>
+                <ChevronRight size={14} style={{ marginLeft: 'auto', color: 'var(--text-tertiary)' }} />
+              </Link>
+
+              <div style={{ padding: '10px', borderRadius: 'var(--radius)', background: 'var(--info-bg)', border: '1px solid var(--info-border)', fontSize: '11px', color: 'var(--info-text)', lineHeight: 1.5 }}>
+                <strong>How it works:</strong> Configure your Gmail and AI key once in Settings. Every workflow you run will automatically use those credentials — no need to set them per-workflow.
               </div>
             </div>
           )}

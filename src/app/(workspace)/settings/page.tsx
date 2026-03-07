@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
-import { Settings as SettingsIcon, User, Shield, Palette, Sun, Moon, Bot, Key, Eye, EyeOff, Check, Trash2 } from 'lucide-react'
+import { Settings as SettingsIcon, User, Shield, Palette, Sun, Moon, Bot, Key, Eye, EyeOff, Check, Trash2, Mail, Loader2, CheckCircle } from 'lucide-react'
 import { toast } from 'sonner'
 import { useTheme } from '@/components/providers'
 import { useAIProviderStore } from '@/lib/store/aiProviderStore'
@@ -18,7 +18,82 @@ export default function SettingsPage() {
     title: '',
   })
 
+  // Email & AI settings from server
+  const [emailConfig, setEmailConfig] = useState({
+    emailAddress: '',
+    emailAppPassword: '',
+    emailFromName: '',
+  })
+  const [savingEmail, setSavingEmail] = useState(false)
+  const [savingAI, setSavingAI] = useState(false)
+  const [emailSaved, setEmailSaved] = useState(false)
+  const [aiSaved, setAISaved] = useState(false)
+
   useEffect(() => { hydrate() }, [hydrate])
+
+  // Load user settings from server
+  useEffect(() => {
+    fetch('/api/user/settings')
+      .then(r => r.json())
+      .then(data => {
+        if (data.settings) {
+          setEmailConfig({
+            emailAddress: data.settings.emailAddress || session?.user?.email || '',
+            emailAppPassword: data.settings.emailAppPassword || '',
+            emailFromName: data.settings.emailFromName || session?.user?.name || '',
+          })
+        }
+      })
+      .catch(() => {})
+  }, [session])
+
+  // Save email config to server
+  const handleSaveEmail = async () => {
+    setSavingEmail(true)
+    try {
+      const res = await fetch('/api/user/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(emailConfig),
+      })
+      if (res.ok) {
+        setEmailSaved(true)
+        toast.success('Email settings saved! Workflows will use this to send emails.')
+        setTimeout(() => setEmailSaved(false), 3000)
+      } else {
+        toast.error('Failed to save email settings')
+      }
+    } finally {
+      setSavingEmail(false)
+    }
+  }
+
+  // Save AI config to server (so workflows can read it)
+  const handleSaveAI = async () => {
+    setSavingAI(true)
+    try {
+      const activeCfg = configs[activeProviderId]
+      const res = await fetch('/api/user/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          aiProvider: activeProviderId,
+          aiApiKey: activeCfg?.apiKey || '',
+          aiModel: activeCfg?.model || '',
+          aiBaseUrl: activeCfg?.baseUrl || '',
+        }),
+      })
+      if (res.ok) {
+        setAISaved(true)
+        toast.success('AI settings saved! Workflows will use this provider.')
+        setTimeout(() => setAISaved(false), 3000)
+      } else {
+        toast.error('Failed to save AI settings')
+      }
+    } finally {
+      setSavingAI(false)
+    }
+  }
 
   const handleSaveProfile = async () => {
     toast.success('Profile updated!')
@@ -74,6 +149,62 @@ export default function SettingsPage() {
             </span>
             {session?.user?.role === 'admin' && (
               <span style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>Full access to team management and settings</span>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* Email Configuration */}
+      <section className="card" style={{ padding: '24px', marginBottom: '20px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+          <Mail size={18} color="var(--brand-600)" />
+          <h2>Email Configuration</h2>
+        </div>
+        <p style={{ fontSize: '12px', color: 'var(--text-tertiary)', marginBottom: '20px' }}>
+          Connect your Gmail to send outreach emails. All workflows will use this email automatically.
+          You need a <a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noreferrer" style={{ color: 'var(--text-brand)', textDecoration: 'underline' }}>Google App Password</a> (not your regular password).
+        </p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+          <div>
+            <label className="label">Gmail Address</label>
+            <input
+              className="input"
+              type="email"
+              placeholder="you@gmail.com"
+              value={emailConfig.emailAddress}
+              onChange={(e) => setEmailConfig({ ...emailConfig, emailAddress: e.target.value })}
+            />
+          </div>
+          <div>
+            <label className="label">App Password</label>
+            <input
+              className="input"
+              type="password"
+              placeholder="16-character app password from Google"
+              value={emailConfig.emailAppPassword}
+              onChange={(e) => setEmailConfig({ ...emailConfig, emailAppPassword: e.target.value })}
+            />
+            <p style={{ fontSize: '11px', color: 'var(--text-tertiary)', marginTop: '4px' }}>
+              Go to <a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noreferrer" style={{ color: 'var(--text-brand)' }}>Google App Passwords</a> → Create one for &quot;Chronos&quot; → Paste the 16 characters here.
+            </p>
+          </div>
+          <div>
+            <label className="label">From Name</label>
+            <input
+              className="input"
+              placeholder="Your Name"
+              value={emailConfig.emailFromName}
+              onChange={(e) => setEmailConfig({ ...emailConfig, emailFromName: e.target.value })}
+            />
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <button className="btn-primary" onClick={handleSaveEmail} disabled={savingEmail} style={{ alignSelf: 'flex-start' }}>
+              {savingEmail ? <><Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} /> Saving...</> : emailSaved ? <><CheckCircle size={14} /> Saved!</> : 'Save Email Settings'}
+            </button>
+            {emailConfig.emailAppPassword && (
+              <span style={{ fontSize: '12px', color: 'var(--success-text)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <CheckCircle size={12} /> Email configured
+              </span>
             )}
           </div>
         </div>
@@ -262,6 +393,15 @@ export default function SettingsPage() {
                 </div>
               )
             })}
+          </div>
+
+          <div style={{ marginTop: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <button className="btn-primary" onClick={handleSaveAI} disabled={savingAI}>
+              {savingAI ? <><Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} /> Saving...</> : aiSaved ? <><CheckCircle size={14} /> Saved!</> : 'Save AI Settings for Workflows'}
+            </button>
+            <span style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>
+              Saves the active provider so workflows can use it
+            </span>
           </div>
         </section>
       )}
