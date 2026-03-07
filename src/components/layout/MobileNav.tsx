@@ -2,8 +2,9 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, FolderKanban, Users, FileText, Bot, Settings, X } from 'lucide-react'
+import { LayoutDashboard, FolderKanban, Users, FileText, Bot, Settings, X, Sun, Moon } from 'lucide-react'
 import Image from 'next/image'
+import { useTheme } from '@/components/providers'
 
 const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -21,6 +22,7 @@ interface MobileNavProps {
 
 export default function MobileNav({ isOpen, onClose }: MobileNavProps) {
   const pathname = usePathname()
+  const { theme, toggleTheme } = useTheme()
   if (!isOpen) return null
 
   return (
@@ -91,6 +93,18 @@ export default function MobileNav({ isOpen, onClose }: MobileNavProps) {
             })}
           </div>
         </nav>
+
+        {/* Theme toggle */}
+        <div style={{ padding: '8px', borderTop: '1px solid var(--border-subtle)' }}>
+          <button
+            onClick={toggleTheme}
+            className="btn-ghost"
+            style={{ width: '100%', justifyContent: 'flex-start', color: 'var(--text-tertiary)', fontSize: '13px' }}
+          >
+            {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+            {theme === 'dark' ? 'Light mode' : 'Dark mode'}
+          </button>
+        </div>
       </div>
     </>
   )

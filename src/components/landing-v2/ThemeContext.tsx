@@ -22,14 +22,21 @@ export function LandingThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<Theme>('dark')
 
   useEffect(() => {
-    const saved = localStorage.getItem('landing-theme') as Theme | null
+    const saved = (localStorage.getItem('theme') || localStorage.getItem('landing-theme')) as Theme | null
     if (saved) setTheme(saved)
   }, [])
 
   const toggleTheme = () => {
     setTheme((prev) => {
       const next = prev === 'dark' ? 'light' : 'dark'
+      localStorage.setItem('theme', next)
       localStorage.setItem('landing-theme', next)
+      document.documentElement.setAttribute('data-theme', next)
+      if (next === 'dark') {
+        document.documentElement.classList.add('dark')
+      } else {
+        document.documentElement.classList.remove('dark')
+      }
       return next
     })
   }

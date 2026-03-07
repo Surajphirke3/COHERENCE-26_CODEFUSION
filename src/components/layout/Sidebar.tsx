@@ -5,11 +5,12 @@ import { usePathname } from 'next/navigation'
 import { useSession, signOut } from 'next-auth/react'
 import {
   LayoutDashboard, FolderKanban, Users, FileText, Bot, Settings, LogOut, ChevronLeft, MessageSquare,
-  GitBranch, Plus, Activity
+  GitBranch, Plus, Activity, Sun, Moon
 } from 'lucide-react'
 import Image from 'next/image'
 import { useState } from 'react'
 import { getInitials } from '@/lib/utils/format'
+import { useTheme } from '@/components/providers'
 
 const navGroups = [
   {
@@ -49,6 +50,7 @@ export default function Sidebar() {
   const pathname = usePathname()
   const { data: session } = useSession()
   const [collapsed, setCollapsed] = useState(false)
+  const { theme, toggleTheme } = useTheme()
 
   return (
     <aside
@@ -201,6 +203,16 @@ export default function Sidebar() {
             )}
           </div>
         )}
+
+        <button
+          onClick={toggleTheme}
+          className="btn-ghost"
+          style={{ width: '100%', justifyContent: collapsed ? 'center' : 'flex-start', color: 'var(--text-tertiary)', fontSize: '13px' }}
+          title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+        >
+          {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+          {!collapsed && (theme === 'dark' ? 'Light mode' : 'Dark mode')}
+        </button>
 
         <button
           onClick={() => signOut({ callbackUrl: '/login' })}
