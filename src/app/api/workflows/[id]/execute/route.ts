@@ -7,12 +7,46 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth/options'
 
+// ── Sample lead data for AI-generated leads ──
+const SAMPLE_FIRST_NAMES = ['Alex', 'Jordan', 'Taylor', 'Morgan', 'Casey', 'Riley', 'Avery', 'Quinn', 'Skyler', 'Dakota', 'Jamie', 'Drew', 'Reese', 'Hayden', 'Peyton', 'Cameron', 'Parker', 'Finley', 'Rowan', 'Sage']
+const SAMPLE_LAST_NAMES = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez', 'Anderson', 'Taylor', 'Thomas', 'Moore', 'Jackson', 'Martin', 'Lee', 'Harris', 'Clark', 'Lewis']
+const SAMPLE_COMPANIES = ['TechNova Inc', 'CloudScale Labs', 'DataPulse AI', 'GreenLeaf Solutions', 'QuantumBridge', 'NexGen Systems', 'BlueShift Analytics', 'PivotPoint SaaS', 'Horizon Digital', 'StackForge', 'BrightPath Co', 'VeloCity Tech', 'Aperture Labs', 'SilverLine Solutions', 'OmniCore']
+const SAMPLE_TITLES = ['CEO', 'CTO', 'VP of Sales', 'Head of Marketing', 'Product Manager', 'Director of Engineering', 'CMO', 'Sales Manager', 'Growth Lead', 'Head of Operations', 'VP of Business Development', 'Founder', 'Co-Founder', 'Chief Revenue Officer', 'Head of Partnerships']
+
+function randomPick<T>(arr: T[]): T {
+  return arr[Math.floor(Math.random() * arr.length)]
+}
+
+function generateSampleLeads(count: number, ownerId: string) {
+  const leads = []
+  for (let i = 0; i < count; i++) {
+    const first = randomPick(SAMPLE_FIRST_NAMES)
+    const last = randomPick(SAMPLE_LAST_NAMES)
+    const company = randomPick(SAMPLE_COMPANIES)
+    leads.push({
+      firstName: first,
+      lastName: last,
+      email: `${first.toLowerCase()}.${last.toLowerCase()}@${company.toLowerCase().replace(/\s+/g, '')}.com`,
+      company,
+      title: randomPick(SAMPLE_TITLES),
+      linkedinUrl: '',
+      phone: '',
+      status: 'new',
+      ownerId,
+    })
+  }
+  return leads
+}
+
 /**
  * Execute a workflow.
  * 
  * If N8N_EXECUTE_WEBHOOK_URL is set, the workflow payload is forwarded
  * to the n8n webhook for external execution (email, AI, etc.).
  * Otherwise, the built-in local engine is used as a fallback.
+ * 
+ * If the workflow contains a "generateLeads" node with source "ai_generated",
+ * sample leads are created in the database before the workflow runs.
  */
 export async function POST(
   req: Request,
@@ -39,9 +73,26 @@ export async function POST(
     // Parse optional runtime inputs from request body
     const body = await req.json().catch(() => ({}))
 
-    // ── n8n Webhook Execution Path ──
+    // ── Pre-process: Handle generateLeads nodes ──
+    let leadsGenerated = 0
+    const generateLeadNodes = (workflow.nodes as any[]).filter((n: any) => n.type === 'generateLeads')
+    for (const glNode of generateLeadNodes) {
+      const nodeData = glNode.data || {}
+      const count = Math.min(nodeData.leadCount || 10, 100)
+      const source = nodeData.leadSource || 'manual'
+
+      if (source === 'ai_generated') {
+        const sampleLeads = generateSampleLeads(count, session.user.id)
+        await Lead.insertMany(sampleLeads)
+        leadsGenerated += sampleLeads.length
+      }
+      // For 'manual' source, leads should already exist (imported via CSV)
+    }
+
+    // ── n8n Webhook Execution Path (optional — only if explicitly configured) ──
     const n8nUrl = process.env.N8N_EXECUTE_WEBHOOK_URL
-    if (n8nUrl) {
+    const useN8n = n8nUrl && body.engine === 'n8n'
+    if (useN8n) {
       const n8nPayload = {
         workflowId: workflow._id,
         workflowName: workflow.name,
@@ -50,6 +101,7 @@ export async function POST(
         edges: workflow.edges,
         config: workflow.config,
         inputs: body.inputs || {},
+        leadsGenerated,
       }
 
       const headers: Record<string, string> = { 'Content-Type': 'application/json' }
@@ -74,7 +126,6 @@ export async function POST(
       // Log execution to MongoDB
       await WorkflowExecution.create({
         workflowId: workflow._id,
-        leadId: null,
         ownerId: session.user.id,
         status: 'completed',
         currentNodeId: 'n8n',
@@ -90,14 +141,17 @@ export async function POST(
       workflow.status = 'active'
       await workflow.save()
 
-      return NextResponse.json({ success: true, outputs, engine: 'n8n' })
+      return NextResponse.json({ success: true, outputs, engine: 'n8n', leadsGenerated })
     }
 
     // ── Local Engine Execution Path (fallback) ──
     const leads = await Lead.find({ ownerId: session.user.id, status: 'new' }).limit(50)
 
     if (leads.length === 0) {
-      return NextResponse.json({ error: 'No new leads to enroll' }, { status: 400 })
+      return NextResponse.json({
+        error: 'No new leads to enroll. Import leads or add a "Generate Leads" node with AI Generated source.',
+        leadsGenerated,
+      }, { status: 400 })
     }
 
     const executions = await WorkflowExecution.insertMany(
@@ -130,6 +184,7 @@ export async function POST(
     return NextResponse.json({
       message: `Workflow started for ${leads.length} leads`,
       executionCount: executions.length,
+      leadsGenerated,
       engine: 'local',
     })
   } catch (error) {

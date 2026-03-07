@@ -15,7 +15,7 @@ const StepHistorySchema = new Schema(
 const WorkflowExecutionSchema = new Schema(
   {
     workflowId: { type: Schema.Types.ObjectId, ref: 'Workflow', required: true },
-    leadId: { type: Schema.Types.ObjectId, ref: 'Lead', required: true },
+    leadId: { type: Schema.Types.ObjectId, ref: 'Lead' },
     ownerId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     currentNodeId: { type: String },
     status: {
