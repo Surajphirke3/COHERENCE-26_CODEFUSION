@@ -111,7 +111,7 @@ const problems = [
 /* ─── Main Stats Section ──────────────────────────────────── */
 export function Stats() {
   return (
-    <section className="relative py-28 overflow-hidden">
+    <section className="relative py-16 lg:py-20 overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 -z-10" style={{ background: 'var(--l-glow-1)' }} />
 

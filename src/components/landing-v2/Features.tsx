@@ -50,7 +50,7 @@ const features = [
 
 export function Features() {
   return (
-    <section id="features" className="relative py-32 overflow-hidden">
+    <section id="features" className="relative py-16 lg:py-24 overflow-hidden">
       {/* Background Glow */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] rounded-full blur-[120px] -z-10" style={{ background: 'var(--l-glow-1)' }} />
 

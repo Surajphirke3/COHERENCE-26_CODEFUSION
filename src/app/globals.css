@@ -1230,6 +1230,8 @@ html[data-theme="dark"] .overlay {
   --l-footer-bg: #060a1a;
   --l-nav-scrolled: rgba(9, 14, 35, 0.75);
   --l-mobile-menu: rgba(9, 14, 35, 0.95);
+  --l-nav-glass-rgb: 9, 14, 35;
+  --l-nav-border-rgb: 250, 228, 207;
 
   background-color: var(--l-bg);
   color: var(--l-text);
@@ -1257,6 +1259,8 @@ html[data-theme="dark"] .overlay {
   --l-footer-bg: #f0d5b8;
   --l-nav-scrolled: rgba(250, 228, 207, 0.8);
   --l-mobile-menu: rgba(250, 228, 207, 0.97);
+  --l-nav-glass-rgb: 250, 228, 207;
+  --l-nav-border-rgb: 9, 14, 35;
 
   background-color: var(--l-bg);
   color: var(--l-text);

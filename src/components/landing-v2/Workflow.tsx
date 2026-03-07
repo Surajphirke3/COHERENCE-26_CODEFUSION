@@ -264,7 +264,7 @@ export function Workflow() {
   const row2 = steps.slice(3, 6)
 
   return (
-    <section id="workflow" className="relative py-32 overflow-hidden">
+    <section id="workflow" className="relative py-16 lg:py-24 overflow-hidden">
       {/* Dotted grid background */}
       <div
         className="absolute inset-0 -z-10"

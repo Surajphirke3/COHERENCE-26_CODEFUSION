@@ -147,7 +147,7 @@ function InteractiveWorkflowCanvas() {
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.8, delay: 0.3 }}
       className="relative w-full"
-      style={{ maxWidth: '620px' }}
+      style={{ maxWidth: '800px' }}
     >
       {/* Canvas container */}
       <div
@@ -183,7 +183,7 @@ function InteractiveWorkflowCanvas() {
               <Maximize2 className="w-3 h-3" />
             </button>
             <span
-              className="px-2 py-0.5 rounded-full text-[9px] font-semibold"
+              className="px-2 py-0.5 rounded-full text-base font-semibold"
               style={{ background: 'rgba(34,197,94,0.15)', color: '#22c55e', border: '1px solid rgba(34,197,94,0.3)' }}
             >
               ● Active
@@ -303,13 +303,13 @@ function InteractiveWorkflowCanvas() {
                     </div>
                     <div className="min-w-0">
                       <div
-                        className="text-[11px] font-semibold truncate"
+                        className="text-base font-semibold truncate"
                         style={{ color: 'var(--l-text)', lineHeight: 1.3 }}
                       >
                         {node.title}
                       </div>
                       <div
-                        className="text-[9px] font-medium uppercase tracking-wider"
+                        className="text-base font-medium uppercase tracking-wider"
                         style={{ color: node.accent }}
                       >
                         {node.type}
@@ -339,7 +339,7 @@ function InteractiveWorkflowCanvas() {
             className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-2 px-3 py-1.5 rounded-full"
             style={{ background: 'var(--l-badge-bg)', border: '1px solid var(--l-border)', zIndex: 50 }}
           >
-            <span className="text-[10px]" style={{ color: 'var(--l-text-tertiary)' }}>
+            <span className="text-base" style={{ color: 'var(--l-text-tertiary)' }}>
               🖱️ Drag nodes • Pan canvas
             </span>
           </motion.div>
@@ -396,15 +396,15 @@ function DashboardView() {
           >
             <div className="flex items-center justify-between mb-2">
               <stat.icon className="w-4 h-4" style={{ color: stat.iconColor }} />
-              <span className="text-[10px]" style={{ color: 'var(--l-text-muted)' }}>{stat.change}</span>
+              <span className="text-base" style={{ color: 'var(--l-text-muted)' }}>{stat.change}</span>
             </div>
             <div className="text-xl font-bold" style={{ color: 'var(--l-text)' }}>{stat.value}</div>
-            <div className="text-[10px] mt-0.5" style={{ color: 'var(--l-text-tertiary)' }}>{stat.label}</div>
+            <div className="text-base mt-0.5" style={{ color: 'var(--l-text-tertiary)' }}>{stat.label}</div>
           </div>
         ))}
       </div>
       <div className="rounded-xl p-4 space-y-2.5" style={{ border: '1px solid var(--l-border)', background: 'var(--l-bg-card)' }}>
-        <div className="text-xs font-semibold" style={{ color: 'var(--l-text-secondary)' }}>Recent Activity</div>
+        <div className="text-base font-semibold" style={{ color: 'var(--l-text-secondary)' }}>Recent Activity</div>
         {[
           { text: 'Emily merged PR #142 — Auth flow refactor', time: '3m ago', dot: 'bg-emerald-500' },
           { text: 'Sprint 8 planning meeting at 2:00 PM', time: '1h ago', dot: 'bg-indigo-500' },
@@ -413,8 +413,8 @@ function DashboardView() {
         ].map((item, i) => (
           <div key={i} className="flex items-center gap-2.5">
             <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${item.dot}`} />
-            <span className="text-[11px] flex-1 truncate" style={{ color: 'var(--l-text-secondary)' }}>{item.text}</span>
-            <span className="text-[10px] flex-shrink-0" style={{ color: 'var(--l-text-muted)' }}>{item.time}</span>
+            <span className="text-base flex-1 truncate" style={{ color: 'var(--l-text-secondary)' }}>{item.text}</span>
+            <span className="text-base flex-shrink-0" style={{ color: 'var(--l-text-muted)' }}>{item.time}</span>
           </div>
         ))}
       </div>
@@ -434,10 +434,10 @@ function ProjectsView() {
   return (
     <div className="space-y-2.5">
       <div className="flex items-center justify-between mb-1">
-        <span className="text-xs font-semibold" style={{ color: 'var(--l-text-secondary)' }}>5 Active Projects</span>
+        <span className="text-base font-semibold" style={{ color: 'var(--l-text-secondary)' }}>5 Active Projects</span>
         <div className="flex items-center gap-1 px-2 py-1 rounded-md" style={{ background: 'var(--l-badge-bg)', border: '1px solid var(--l-border)' }}>
           <Search className="w-3 h-3" style={{ color: 'var(--l-text-muted)' }} />
-          <span className="text-[10px]" style={{ color: 'var(--l-text-muted)' }}>Search...</span>
+          <span className="text-base" style={{ color: 'var(--l-text-muted)' }}>Search...</span>
         </div>
       </div>
       {projects.map((p) => (
@@ -449,10 +449,10 @@ function ProjectsView() {
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full" style={{ background: p.color }} />
-              <span className="text-[11px] font-semibold" style={{ color: 'var(--l-text)' }}>{p.name}</span>
+              <span className="text-base font-semibold" style={{ color: 'var(--l-text)' }}>{p.name}</span>
             </div>
             <span
-              className="text-[9px] px-2 py-0.5 rounded-full font-medium"
+              className="text-base px-2 py-0.5 rounded-full font-medium"
               style={{ background: `${p.color}20`, color: p.color, border: `1px solid ${p.color}30` }}
             >
               {p.status}
@@ -462,9 +462,9 @@ function ProjectsView() {
             <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'var(--l-border)' }}>
               <div className="h-full rounded-full transition-all" style={{ width: `${p.progress}%`, background: p.color }} />
             </div>
-            <span className="text-[10px]" style={{ color: 'var(--l-text-muted)' }}>{p.tasks} tasks</span>
+            <span className="text-base" style={{ color: 'var(--l-text-muted)' }}>{p.tasks} tasks</span>
           </div>
-          <div className="text-[10px] mt-1.5" style={{ color: 'var(--l-text-muted)' }}>{p.team}</div>
+          <div className="text-base mt-1.5" style={{ color: 'var(--l-text-muted)' }}>{p.team}</div>
         </div>
       ))}
     </div>
@@ -503,11 +503,11 @@ function TasksView() {
   return (
     <div className="flex gap-2.5 overflow-x-auto pb-1">
       {columns.map((col) => (
-        <div key={col.title} className="flex-1 min-w-[140px]">
+        <div key={col.title} className="flex-1 min-w-[180px]">
           <div className="flex items-center gap-1.5 mb-2">
             <div className="w-2 h-2 rounded-full" style={{ background: col.color }} />
-            <span className="text-[10px] font-semibold" style={{ color: 'var(--l-text-secondary)' }}>{col.title}</span>
-            <span className="text-[9px] ml-auto" style={{ color: 'var(--l-text-muted)' }}>{col.tasks.length}</span>
+            <span className="text-base font-semibold" style={{ color: 'var(--l-text-secondary)' }}>{col.title}</span>
+            <span className="text-base ml-auto" style={{ color: 'var(--l-text-muted)' }}>{col.tasks.length}</span>
           </div>
           <div className="space-y-2">
             {col.tasks.map((task, i) => (
@@ -516,13 +516,13 @@ function TasksView() {
                 className="rounded-lg p-2.5 cursor-pointer transition-all"
                 style={{ border: '1px solid var(--l-border)', background: 'var(--l-bg-card)', borderLeft: `3px solid ${col.color}` }}
               >
-                <div className="text-[10px] font-medium mb-1.5 leading-tight" style={{ color: 'var(--l-text)' }}>{task.title}</div>
+                <div className="text-base font-medium mb-1.5 leading-tight" style={{ color: 'var(--l-text)' }}>{task.title}</div>
                 <div className="flex items-center justify-between">
-                  <span className="text-[9px] px-1.5 py-0.5 rounded" style={{ background: `${priorityColor[task.priority]}15`, color: priorityColor[task.priority] }}>
+                  <span className="text-base px-1.5 py-0.5 rounded" style={{ background: `${priorityColor[task.priority]}15`, color: priorityColor[task.priority] }}>
                     {task.priority}
                   </span>
                   <div
-                    className="w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold"
+                    className="w-5 h-5 rounded-full flex items-center justify-center text-base font-bold"
                     style={{ background: 'var(--l-accent-muted)', color: 'var(--l-accent)' }}
                   >
                     {task.assignee}
@@ -549,25 +549,25 @@ function MessagesView() {
   return (
     <div className="flex flex-col h-full">
       <div className="flex items-center gap-2 mb-3 pb-2" style={{ borderBottom: '1px solid var(--l-border)' }}>
-        <span className="text-[11px] font-semibold" style={{ color: 'var(--l-text)' }}># engineering-team</span>
-        <span className="text-[10px] ml-auto" style={{ color: 'var(--l-text-muted)' }}>5 members</span>
+        <span className="text-base font-semibold" style={{ color: 'var(--l-text)' }}># engineering-team</span>
+        <span className="text-base ml-auto" style={{ color: 'var(--l-text-muted)' }}>5 members</span>
       </div>
       <div className="space-y-3 flex-1">
         {messages.map((m, i) => (
           <div key={i} className={`flex gap-2 ${m.isMe ? 'flex-row-reverse' : ''}`}>
             <div
-              className="w-6 h-6 rounded-full flex items-center justify-center text-[8px] font-bold text-white flex-shrink-0"
+              className="w-6 h-6 rounded-full flex items-center justify-center text-base font-bold text-white flex-shrink-0"
               style={{ background: m.color }}
             >
               {m.avatar}
             </div>
             <div className={`max-w-[75%] ${m.isMe ? 'text-right' : ''}`}>
               <div className="flex items-center gap-1.5 mb-0.5" style={{ flexDirection: m.isMe ? 'row-reverse' : 'row' }}>
-                <span className="text-[10px] font-semibold" style={{ color: 'var(--l-text)' }}>{m.name}</span>
-                <span className="text-[9px]" style={{ color: 'var(--l-text-muted)' }}>{m.time}</span>
+                <span className="text-base font-semibold" style={{ color: 'var(--l-text)' }}>{m.name}</span>
+                <span className="text-base" style={{ color: 'var(--l-text-muted)' }}>{m.time}</span>
               </div>
               <div
-                className="text-[10px] px-2.5 py-1.5 rounded-lg inline-block leading-relaxed"
+                className="text-base px-2.5 py-1.5 rounded-lg inline-block leading-relaxed"
                 style={{
                   background: m.isMe ? 'var(--l-accent-muted)' : 'var(--l-bg-card)',
                   border: `1px solid ${m.isMe ? 'var(--l-accent)' : 'var(--l-border)'}`,
@@ -582,7 +582,7 @@ function MessagesView() {
         ))}
       </div>
       <div className="mt-3 flex items-center gap-2 p-2 rounded-lg" style={{ background: 'var(--l-badge-bg)', border: '1px solid var(--l-border)' }}>
-        <span className="text-[10px] flex-1" style={{ color: 'var(--l-text-muted)' }}>Type a message…</span>
+        <span className="text-base flex-1" style={{ color: 'var(--l-text-muted)' }}>Type a message…</span>
         <Send className="w-3.5 h-3.5" style={{ color: 'var(--l-text-muted)' }} />
       </div>
     </div>
@@ -601,8 +601,8 @@ function DocsView() {
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between mb-1">
-        <span className="text-xs font-semibold" style={{ color: 'var(--l-text-secondary)' }}>Team Docs</span>
-        <span className="text-[10px]" style={{ color: 'var(--l-text-muted)' }}>5 documents</span>
+        <span className="text-base font-semibold" style={{ color: 'var(--l-text-secondary)' }}>Team Docs</span>
+        <span className="text-base" style={{ color: 'var(--l-text-muted)' }}>5 documents</span>
       </div>
       {docs.map((d) => (
         <div
@@ -612,8 +612,8 @@ function DocsView() {
         >
           <span className="text-base">{d.icon}</span>
           <div className="flex-1 min-w-0">
-            <div className="text-[11px] font-semibold truncate" style={{ color: 'var(--l-text)' }}>{d.title}</div>
-            <div className="text-[9px]" style={{ color: 'var(--l-text-muted)' }}>Edited {d.updated} by {d.author} · {d.pages} pages</div>
+            <div className="text-base font-semibold truncate" style={{ color: 'var(--l-text)' }}>{d.title}</div>
+            <div className="text-base" style={{ color: 'var(--l-text-muted)' }}>Edited {d.updated} by {d.author} · {d.pages} pages</div>
           </div>
           <FileEdit className="w-3.5 h-3.5 flex-shrink-0" style={{ color: 'var(--l-text-muted)' }} />
         </div>
@@ -634,8 +634,8 @@ function AIChatView() {
     <div className="flex flex-col h-full">
       <div className="flex items-center gap-2 mb-3 pb-2" style={{ borderBottom: '1px solid var(--l-border)' }}>
         <Bot className="w-3.5 h-3.5" style={{ color: '#f97316' }} />
-        <span className="text-[11px] font-semibold" style={{ color: 'var(--l-text)' }}>Chronos AI</span>
-        <span className="text-[9px] px-1.5 py-0.5 rounded-full ml-auto" style={{ background: 'rgba(249,115,22,0.15)', color: '#f97316' }}>Powered by Groq</span>
+        <span className="text-base font-semibold" style={{ color: 'var(--l-text)' }}>Chronos AI</span>
+        <span className="text-base px-1.5 py-0.5 rounded-full ml-auto" style={{ background: 'rgba(249,115,22,0.15)', color: '#f97316' }}>Powered by Groq</span>
       </div>
       <div className="space-y-3 flex-1">
         {conversation.map((m, i) => (
@@ -646,12 +646,12 @@ function AIChatView() {
               ) : (
                 <div className="w-3 h-3 rounded-full bg-indigo-500" />
               )}
-              <span className="text-[9px] font-semibold" style={{ color: 'var(--l-text-secondary)' }}>
+              <span className="text-base font-semibold" style={{ color: 'var(--l-text-secondary)' }}>
                 {m.role === 'ai' ? 'Chronos AI' : 'You'}
               </span>
             </div>
             <div
-              className="text-[10px] px-3 py-2 rounded-lg leading-relaxed whitespace-pre-line"
+              className="text-base px-3 py-2 rounded-lg leading-relaxed whitespace-pre-line"
               style={{
                 background: m.role === 'ai' ? 'rgba(249,115,22,0.08)' : 'var(--l-bg-card)',
                 border: `1px solid ${m.role === 'ai' ? 'rgba(249,115,22,0.2)' : 'var(--l-border)'}`,
@@ -665,7 +665,7 @@ function AIChatView() {
       </div>
       <div className="mt-3 flex items-center gap-2 p-2 rounded-lg" style={{ background: 'var(--l-badge-bg)', border: '1px solid var(--l-border)' }}>
         <Bot className="w-3.5 h-3.5" style={{ color: '#f97316' }} />
-        <span className="text-[10px] flex-1" style={{ color: 'var(--l-text-muted)' }}>Ask Chronos AI anything…</span>
+        <span className="text-base flex-1" style={{ color: 'var(--l-text-muted)' }}>Ask Chronos AI anything…</span>
         <Send className="w-3.5 h-3.5" style={{ color: 'var(--l-text-muted)' }} />
       </div>
     </div>
@@ -713,7 +713,7 @@ function FloatingCard() {
       whileInView={{ opacity: 1, y: 0, scale: 1 }}
       viewport={{ once: true }}
       transition={{ duration: 1.2, delay: 0.3, ease: 'easeOut' }}
-      className="mt-24 lg:mt-32 relative mx-auto max-w-5xl"
+      className="mt-24 lg:mt-32 relative mx-auto max-w-7xl"
       style={{ perspective: 2000 }}
     >
       {/* Glow */}
@@ -738,16 +738,16 @@ function FloatingCard() {
               <div className="w-3 h-3 rounded-full bg-green-500/80" />
             </div>
             <div className="flex-1 flex justify-center">
-              <div className="px-4 py-1 rounded-md text-xs font-mono transition-all" style={{ background: 'var(--l-badge-bg)', color: 'var(--l-text-tertiary)' }}>
+              <div className="px-4 py-1 rounded-md text-base font-mono transition-all" style={{ background: 'var(--l-badge-bg)', color: 'var(--l-text-tertiary)' }}>
                 {urlMap[activeView]}
               </div>
             </div>
           </div>
 
           {/* Dashboard Content */}
-          <div className="p-4 flex gap-4 min-h-[340px] lg:min-h-[420px]" style={{ transform: 'translateZ(40px)' }}>
+          <div className="p-4 flex gap-4 min-h-[460px] lg:min-h-[580px]" style={{ transform: 'translateZ(40px)' }}>
             {/* Sidebar */}
-            <div className="hidden md:flex flex-col gap-1 w-44 pr-3 flex-shrink-0" style={{ borderRight: '1px solid var(--l-border)' }}>
+            <div className="hidden md:flex flex-col gap-1 w-64 pr-3 flex-shrink-0" style={{ borderRight: '1px solid var(--l-border)' }}>
               {sidebarItems.map((item) => {
                 const Icon = item.icon
                 const isActive = activeView === item.key
@@ -755,7 +755,7 @@ function FloatingCard() {
                   <button
                     key={item.key}
                     onClick={() => setActiveView(item.key)}
-                    className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-[12px] transition-all text-left cursor-pointer"
+                    className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-base transition-all text-left cursor-pointer"
                     style={{
                       background: isActive ? 'var(--l-accent-muted)' : 'transparent',
                       color: isActive ? 'var(--l-accent)' : 'var(--l-text-tertiary)',
@@ -771,14 +771,14 @@ function FloatingCard() {
               {/* Mini stats in sidebar */}
               <div className="mt-auto pt-3" style={{ borderTop: '1px solid var(--l-border)' }}>
                 <div className="px-3 py-2 rounded-lg" style={{ background: 'var(--l-badge-bg)' }}>
-                  <div className="text-[9px] uppercase tracking-wider mb-1" style={{ color: 'var(--l-text-muted)' }}>Sprint 8</div>
+                  <div className="text-base uppercase tracking-wider mb-1" style={{ color: 'var(--l-text-muted)' }}>Sprint 8</div>
                   <div className="flex items-center gap-2">
                     <div className="flex-1 h-1 rounded-full overflow-hidden" style={{ background: 'var(--l-border)' }}>
                       <div className="h-full rounded-full bg-indigo-500" style={{ width: '65%' }} />
                     </div>
-                    <span className="text-[10px] font-semibold" style={{ color: 'var(--l-text-secondary)' }}>65%</span>
+                    <span className="text-base font-semibold" style={{ color: 'var(--l-text-secondary)' }}>65%</span>
                   </div>
-                  <div className="text-[9px] mt-1" style={{ color: 'var(--l-text-muted)' }}>4 days remaining</div>
+                  <div className="text-base mt-1" style={{ color: 'var(--l-text-muted)' }}>4 days remaining</div>
                 </div>
               </div>
             </div>
@@ -791,7 +791,7 @@ function FloatingCard() {
                   <button
                     key={item.key}
                     onClick={() => setActiveView(item.key)}
-                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[10px] whitespace-nowrap transition-all cursor-pointer"
+                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-base whitespace-nowrap transition-all cursor-pointer"
                     style={{
                       background: activeView === item.key ? 'var(--l-accent-muted)' : 'transparent',
                       color: activeView === item.key ? 'var(--l-accent)' : 'var(--l-text-tertiary)',
@@ -826,7 +826,7 @@ function FloatingCard() {
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
         transition={{ delay: 1.5 }}
-        className="text-center mt-4 text-[11px]"
+        className="text-center mt-4 text-base"
         style={{ color: 'var(--l-text-muted)' }}
       >
         👆 Click sidebar items to explore the dashboard
@@ -850,7 +850,7 @@ export function Hero() {
   }
 
   return (
-    <section className="relative pt-28 pb-10 lg:pt-36 lg:pb-16 overflow-hidden">
+    <section className="relative pt-20 lg:pt-24 pb-10 lg:pt-24 lg:pb-16 overflow-hidden">
       {/* Background Grid */}
       <div className="absolute inset-0 -z-10 bg-[linear-gradient(to_right,var(--l-border)_1px,transparent_1px),linear-gradient(to_bottom,var(--l-border)_1px,transparent_1px)] bg-[size:60px_60px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
 
@@ -878,7 +878,7 @@ export function Hero() {
               variants={fadeUp}
               initial="hidden"
               animate="visible"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium mb-8 backdrop-blur-md"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-base font-medium mb-8 backdrop-blur-md"
               style={{ background: 'var(--l-badge-bg)', border: '1px solid var(--l-badge-border)', color: 'var(--l-text-secondary)' }}
             >
               <Sparkles className="w-4 h-4" />
@@ -947,10 +947,10 @@ export function Hero() {
               animate="visible"
               className="mt-10 hidden lg:block"
             >
-              <p className="text-xs uppercase tracking-widest mb-3" style={{ color: 'var(--l-text-muted)' }}>Trusted by teams at</p>
+              <p className="text-base uppercase tracking-widest mb-3" style={{ color: 'var(--l-text-muted)' }}>Trusted by teams at</p>
               <div className="flex items-center gap-6 opacity-40">
                 {['TechStart', 'InnovateCo', 'LaunchPad', 'BuildFast'].map((name) => (
-                  <span key={name} className="text-sm font-bold tracking-wide" style={{ color: 'var(--l-text-secondary)' }}>
+                  <span key={name} className="text-base font-bold tracking-wide" style={{ color: 'var(--l-text-secondary)' }}>
                     {name}
                   </span>
                 ))}
@@ -974,7 +974,7 @@ export function Hero() {
           transition={{ delay: 2, duration: 1 }}
           className="mt-16 text-center lg:hidden"
         >
-          <p className="text-xs uppercase tracking-widest mb-4" style={{ color: 'var(--l-text-muted)' }}>Trusted by teams at</p>
+          <p className="text-base uppercase tracking-widest mb-4" style={{ color: 'var(--l-text-muted)' }}>Trusted by teams at</p>
           <div className="flex items-center justify-center gap-8 flex-wrap opacity-40">
             {['TechStart', 'InnovateCo', 'LaunchPad', 'BuildFast', 'ScaleUp'].map((name) => (
               <span key={name} className="text-lg font-bold tracking-wide" style={{ color: 'var(--l-text-secondary)' }}>

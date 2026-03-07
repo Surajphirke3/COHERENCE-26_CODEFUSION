@@ -190,7 +190,7 @@ export function Solutions() {
   const active = items[activeIndex]
 
   return (
-    <section id="solutions" className="relative py-32 overflow-hidden">
+    <section id="solutions" className="relative py-16 lg:py-24 overflow-hidden">
       {/* Background */}
       <div className="absolute bottom-0 left-0 w-[500px] h-[500px] rounded-full blur-[140px] -z-10" style={{ background: 'var(--l-glow-1)' }} />
       <div className="absolute top-0 right-0 w-[400px] h-[400px] rounded-full blur-[120px] -z-10" style={{ background: 'var(--l-glow-2)' }} />

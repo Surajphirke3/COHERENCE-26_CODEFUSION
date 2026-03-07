@@ -55,7 +55,7 @@ const tiers = [
 
 export function Pricing() {
   return (
-    <section id="pricing" className="relative py-32 overflow-hidden">
+    <section id="pricing" className="relative py-16 lg:py-24 overflow-hidden">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full blur-[160px] -z-10" style={{ background: 'var(--l-glow-1)' }} />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

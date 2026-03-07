@@ -6,7 +6,7 @@ import { ArrowRight, Sparkles } from 'lucide-react'
 
 export function CTA() {
   return (
-    <section className="relative py-32 overflow-hidden">
+    <section className="relative py-16 lg:py-24 overflow-hidden">
       {/* Background Glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] rounded-full blur-[180px] -z-10" style={{ background: 'var(--l-glow-1)' }} />
       <div className="absolute bottom-0 right-[10%] w-[400px] h-[400px] rounded-full blur-[140px] -z-10" style={{ background: 'var(--l-glow-2)' }} />
