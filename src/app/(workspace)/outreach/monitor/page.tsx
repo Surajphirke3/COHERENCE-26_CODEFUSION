@@ -37,25 +37,45 @@ interface Execution {
   updatedAt: string
 }
 
+// Use CSS variable names — actual values come from the theme (globals.css)
+// These are fallback/accent colors that work in both themes
 const COLUMNS = [
-  { key: 'pending', label: 'Queued', icon: Clock, color: '#6b7280', bg: '#f3f4f6', bgLight: '#f9fafb' },
-  { key: 'running', label: 'Running', icon: Activity, color: '#2563eb', bg: '#dbeafe', bgLight: '#eff6ff' },
-  { key: 'paused', label: 'Delayed', icon: Pause, color: '#d97706', bg: '#fef3c7', bgLight: '#fffbeb' },
-  { key: 'completed', label: 'Completed', icon: CheckCircle, color: '#059669', bg: '#d1fae5', bgLight: '#ecfdf5' },
-  { key: 'failed', label: 'Failed', icon: XCircle, color: '#dc2626', bg: '#fee2e2', bgLight: '#fef2f2' },
-  { key: 'opted_out', label: 'Opted Out', icon: Ban, color: '#6b7280', bg: '#e5e7eb', bgLight: '#f3f4f6' },
+  { key: 'pending', label: 'Queued', icon: Clock, cssVar: 'gray' },
+  { key: 'running', label: 'Running', icon: Activity, cssVar: 'info' },
+  { key: 'paused', label: 'Delayed', icon: Pause, cssVar: 'warning' },
+  { key: 'completed', label: 'Completed', icon: CheckCircle, cssVar: 'success' },
+  { key: 'failed', label: 'Failed', icon: XCircle, cssVar: 'danger' },
+  { key: 'opted_out', label: 'Opted Out', icon: Ban, cssVar: 'gray' },
 ]
 
-const NODE_TYPE_ICONS: Record<string, { icon: any; color: string }> = {
-  trigger: { icon: Zap, color: '#1A56DB' },
-  generateLeads: { icon: UserPlus, color: '#0891B2' },
-  aiMessage: { icon: Bot, color: '#7C3AED' },
-  sendEmail: { icon: Mail, color: '#065F46' },
-  delay: { icon: Timer, color: '#92400E' },
-  condition: { icon: GitBranch, color: '#991B1B' },
-  tagLead: { icon: Tag, color: '#1F2937' },
-  end: { icon: Flag, color: '#374151' },
-  n8n: { icon: Zap, color: '#FF6D5A' },
+const NODE_TYPE_ICONS: Record<string, { icon: any; cssVar: string }> = {
+  trigger: { icon: Zap, cssVar: 'info' },
+  generateLeads: { icon: UserPlus, cssVar: 'info' },
+  aiMessage: { icon: Bot, cssVar: 'brand' },
+  sendEmail: { icon: Mail, cssVar: 'success' },
+  delay: { icon: Timer, cssVar: 'warning' },
+  condition: { icon: GitBranch, cssVar: 'danger' },
+  tagLead: { icon: Tag, cssVar: 'gray' },
+  end: { icon: Flag, cssVar: 'gray' },
+  n8n: { icon: Zap, cssVar: 'warning' },
+}
+
+// Map cssVar names to actual CSS variable references for bg/text/border
+function themeColor(cssVar: string, type: 'text' | 'bg' | 'border'): string {
+  if (cssVar === 'gray') {
+    if (type === 'text') return 'var(--text-secondary)'
+    if (type === 'bg') return 'var(--bg-sunken)'
+    return 'var(--border-subtle)'
+  }
+  if (cssVar === 'brand') {
+    if (type === 'text') return 'var(--text-brand)'
+    if (type === 'bg') return 'var(--brand-50)'
+    return 'var(--brand-100)'
+  }
+  // info, success, warning, danger
+  if (type === 'text') return `var(--${cssVar}-text)`
+  if (type === 'bg') return `var(--${cssVar}-bg)`
+  return `var(--${cssVar}-border)`
 }
 
 function timeAgo(date: string | Date): string {
@@ -132,8 +152,8 @@ export default function MonitorPage() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
             <h1 style={{ fontSize: '1.5rem', fontWeight: 700 }}>Live Monitor</h1>
             {(execStats.running || 0) > 0 && (
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '3px 10px', borderRadius: '9999px', background: '#dbeafe', color: '#1d4ed8', fontSize: '11px', fontWeight: 600 }}>
-                <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#2563eb', animation: 'pulse 2s infinite' }} />
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '3px 10px', borderRadius: '9999px', background: 'var(--info-bg)', color: 'var(--info-text)', fontSize: '11px', fontWeight: 600, border: '1px solid var(--info-border)' }}>
+                <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--info-text)', animation: 'pulse 2s infinite' }} />
                 {execStats.running} active
               </span>
             )}
@@ -180,8 +200,8 @@ export default function MonitorPage() {
 
         {/* Total executions card */}
         <div className="card" style={{ padding: '16px', position: 'relative', overflow: 'hidden' }}>
-          <div style={{ position: 'absolute', top: '-8px', right: '-8px', width: '48px', height: '48px', borderRadius: '50%', background: '#f3e8ff', opacity: 0.5 }} />
-          <Activity size={16} color="#7c3aed" style={{ marginBottom: '8px' }} />
+          <div style={{ position: 'absolute', top: '-8px', right: '-8px', width: '48px', height: '48px', borderRadius: '50%', background: 'var(--brand-50)', opacity: 0.5 }} />
+          <Activity size={16} color="var(--text-brand)" style={{ marginBottom: '8px' }} />
           <div style={{ fontSize: '24px', fontWeight: 800, lineHeight: 1 }}>{totalExecs}</div>
           <div style={{ fontSize: '11px', color: 'var(--text-tertiary)', marginTop: '4px' }}>Total Executions</div>
         </div>
@@ -193,13 +213,13 @@ export default function MonitorPage() {
           const pct = totalExecs > 0 ? Math.round((count / totalExecs) * 100) : 0
           return (
             <div key={col.key} className="card" style={{ padding: '16px', position: 'relative', overflow: 'hidden' }}>
-              <div style={{ position: 'absolute', top: '-8px', right: '-8px', width: '48px', height: '48px', borderRadius: '50%', background: col.bg, opacity: 0.4 }} />
-              <Icon size={16} color={col.color} style={{ marginBottom: '8px' }} />
-              <div style={{ fontSize: '24px', fontWeight: 800, lineHeight: 1, color: col.color }}>{count}</div>
+              <div style={{ position: 'absolute', top: '-8px', right: '-8px', width: '48px', height: '48px', borderRadius: '50%', background: themeColor(col.cssVar, 'bg'), opacity: 0.4 }} />
+              <Icon size={16} color={themeColor(col.cssVar, 'text')} style={{ marginBottom: '8px' }} />
+              <div style={{ fontSize: '24px', fontWeight: 800, lineHeight: 1, color: themeColor(col.cssVar, 'text') }}>{count}</div>
               <div style={{ fontSize: '11px', color: 'var(--text-tertiary)', marginTop: '4px' }}>{col.label}</div>
               {totalExecs > 0 && (
-                <div style={{ marginTop: '8px', height: '3px', borderRadius: '2px', background: col.bg }}>
-                  <div style={{ height: '100%', borderRadius: '2px', background: col.color, width: `${pct}%`, transition: 'width 500ms ease' }} />
+                <div style={{ marginTop: '8px', height: '3px', borderRadius: '2px', background: themeColor(col.cssVar, 'bg') }}>
+                  <div style={{ height: '100%', borderRadius: '2px', background: themeColor(col.cssVar, 'text'), width: `${pct}%`, transition: 'width 500ms ease' }} />
                 </div>
               )}
             </div>
@@ -228,7 +248,7 @@ export default function MonitorPage() {
                 style={{
                   minWidth: '240px',
                   flex: 1,
-                  background: col.bgLight,
+                  background: 'var(--bg-sunken)',
                   borderRadius: '12px',
                   border: '1px solid var(--border-subtle)',
                   display: 'flex',
@@ -246,14 +266,14 @@ export default function MonitorPage() {
                 }}>
                   <div style={{
                     width: '28px', height: '28px', borderRadius: '8px',
-                    background: col.bg, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    background: themeColor(col.cssVar, 'bg'), display: 'flex', alignItems: 'center', justifyContent: 'center',
                   }}>
-                    <Icon size={14} color={col.color} />
+                    <Icon size={14} color={themeColor(col.cssVar, 'text')} />
                   </div>
                   <span style={{ fontWeight: 600, fontSize: '13px', flex: 1 }}>{col.label}</span>
                   <span style={{
                     fontSize: '12px', fontWeight: 700,
-                    background: col.bg, color: col.color,
+                    background: themeColor(col.cssVar, 'bg'), color: themeColor(col.cssVar, 'text'),
                     padding: '2px 8px', borderRadius: '9999px', minWidth: '24px', textAlign: 'center',
                   }}>
                     {execStats[col.key] || 0}
@@ -280,13 +300,13 @@ export default function MonitorPage() {
                             borderRadius: '10px',
                             background: 'var(--bg-elevated)',
                             border: '1px solid var(--border-subtle)',
-                            boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+                            boxShadow: 'var(--shadow-xs)',
                           }}
-                          onMouseOver={(e) => { e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)'; e.currentTarget.style.borderColor = col.color + '60' }}
-                          onMouseOut={(e) => { e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.04)'; e.currentTarget.style.borderColor = 'var(--border-subtle)' }}
+                          onMouseOver={(e) => { e.currentTarget.style.boxShadow = 'var(--shadow-md)'; e.currentTarget.style.borderColor = 'var(--border-strong)' }}
+                          onMouseOut={(e) => { e.currentTarget.style.boxShadow = 'var(--shadow-xs)'; e.currentTarget.style.borderColor = 'var(--border-subtle)' }}
                         >
                           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-                            <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: col.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: '11px', fontWeight: 700, color: col.color }}>
+                            <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: themeColor(col.cssVar, 'bg'), display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: '11px', fontWeight: 700, color: themeColor(col.cssVar, 'text') }}>
                               {lead ? lead.firstName?.charAt(0).toUpperCase() : '?'}
                             </div>
                             <div style={{ flex: 1, minWidth: 0 }}>
@@ -310,12 +330,12 @@ export default function MonitorPage() {
                                     title={`${s.nodeType}: ${s.result}`}
                                     style={{
                                       width: '18px', height: '18px', borderRadius: '4px',
-                                      background: s.result === 'success' ? nodeInfo.color + '20' : s.result === 'failed' ? '#fee2e2' : '#f3f4f6',
-                                      border: `1px solid ${s.result === 'success' ? nodeInfo.color + '40' : s.result === 'failed' ? '#fecaca' : '#e5e7eb'}`,
+                                      background: s.result === 'success' ? themeColor(nodeInfo.cssVar, 'bg') : s.result === 'failed' ? 'var(--danger-bg)' : 'var(--bg-sunken)',
+                                      border: `1px solid ${s.result === 'success' ? themeColor(nodeInfo.cssVar, 'border') : s.result === 'failed' ? 'var(--danger-border)' : 'var(--border-subtle)'}`,
                                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                                     }}
                                   >
-                                    {(() => { const SIcon = nodeInfo.icon; return <SIcon size={9} color={s.result === 'failed' ? '#dc2626' : nodeInfo.color} /> })()}
+                                    {(() => { const SIcon = nodeInfo.icon; return <SIcon size={9} color={s.result === 'failed' ? 'var(--danger-text)' : themeColor(nodeInfo.cssVar, 'text')} /> })()}
                                   </div>
                                 )
                               })}
@@ -328,7 +348,7 @@ export default function MonitorPage() {
                           </div>
 
                           {exec.errorMessage && (
-                            <div style={{ marginTop: '6px', padding: '4px 8px', borderRadius: '6px', background: '#fef2f2', fontSize: '10px', color: '#dc2626', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <div style={{ marginTop: '6px', padding: '4px 8px', borderRadius: '6px', background: 'var(--danger-bg)', fontSize: '10px', color: 'var(--danger-text)', display: 'flex', alignItems: 'center', gap: '4px', border: '1px solid var(--danger-border)' }}>
                               <AlertTriangle size={10} /> {exec.errorMessage.slice(0, 60)}{exec.errorMessage.length > 60 ? '...' : ''}
                             </div>
                           )}
@@ -376,7 +396,7 @@ export default function MonitorPage() {
                     <td style={{ padding: '10px 14px' }}>
                       <span style={{
                         padding: '2px 8px', borderRadius: '9999px', fontSize: '11px', fontWeight: 600,
-                        background: col.bg, color: col.color,
+                        background: themeColor(col.cssVar, 'bg'), color: themeColor(col.cssVar, 'text'),
                       }}>
                         {col.label}
                       </span>
@@ -412,7 +432,7 @@ export default function MonitorPage() {
             width: '460px', maxWidth: '100vw',
             background: 'var(--bg-elevated)',
             borderLeft: '1px solid var(--border-subtle)',
-            boxShadow: '-8px 0 30px rgba(0,0,0,0.12)',
+            boxShadow: 'var(--shadow-2xl)',
             zIndex: 50,
             display: 'flex',
             flexDirection: 'column',
@@ -423,7 +443,7 @@ export default function MonitorPage() {
               padding: '16px 20px',
               borderBottom: '1px solid var(--border-subtle)',
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              background: 'var(--bg-surface)',
+              background: 'var(--bg-sunken)',
             }}>
               <div>
                 <h3 style={{ fontWeight: 700, fontSize: '15px', marginBottom: '2px' }}>Execution Details</h3>
@@ -462,7 +482,7 @@ export default function MonitorPage() {
                       </div>
                     </div>
                     <div style={{ display: 'flex', gap: '6px', marginTop: '12px' }}>
-                      <span style={{ padding: '2px 8px', borderRadius: '6px', fontSize: '10px', fontWeight: 600, background: '#dbeafe', color: '#1d4ed8' }}>
+                      <span style={{ padding: '2px 8px', borderRadius: '6px', fontSize: '10px', fontWeight: 600, background: 'var(--info-bg)', color: 'var(--info-text)' }}>
                         {lead.status}
                       </span>
                     </div>
@@ -479,8 +499,8 @@ export default function MonitorPage() {
                     const Icon = col.icon
                     return (
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <Icon size={14} color={col.color} />
-                        <span style={{ fontWeight: 600, fontSize: '13px', color: col.color }}>{col.label}</span>
+                        <Icon size={14} color={themeColor(col.cssVar, 'text')} />
+                        <span style={{ fontWeight: 600, fontSize: '13px', color: themeColor(col.cssVar, 'text') }}>{col.label}</span>
                       </div>
                     )
                   })()}
@@ -500,11 +520,11 @@ export default function MonitorPage() {
               {selectedExec.errorMessage && (
                 <div style={{
                   padding: '12px 14px', borderRadius: '10px', marginBottom: '20px',
-                  background: '#fef2f2', border: '1px solid #fecaca',
+                  background: 'var(--danger-bg)', border: '1px solid var(--danger-border)',
                   display: 'flex', gap: '10px', alignItems: 'flex-start',
                 }}>
-                  <AlertTriangle size={16} color="#dc2626" style={{ flexShrink: 0, marginTop: '1px' }} />
-                  <div style={{ fontSize: '12px', color: '#991b1b', lineHeight: 1.5 }}>{selectedExec.errorMessage}</div>
+                  <AlertTriangle size={16} color="var(--danger-text)" style={{ flexShrink: 0, marginTop: '1px' }} />
+                  <div style={{ fontSize: '12px', color: 'var(--danger-text)', lineHeight: 1.5 }}>{selectedExec.errorMessage}</div>
                 </div>
               )}
 
@@ -537,12 +557,12 @@ export default function MonitorPage() {
                         <div style={{
                           position: 'absolute', left: '-24px', top: '2px',
                           width: '22px', height: '22px', borderRadius: '50%',
-                          background: isFailed ? '#fee2e2' : isSuccess ? nodeInfo.color + '15' : '#f3f4f6',
-                          border: `2px solid ${isFailed ? '#dc2626' : isSuccess ? nodeInfo.color : '#d1d5db'}`,
+                          background: isFailed ? 'var(--danger-bg)' : isSuccess ? themeColor(nodeInfo.cssVar, 'bg') : 'var(--bg-sunken)',
+                          border: `2px solid ${isFailed ? 'var(--danger-text)' : isSuccess ? themeColor(nodeInfo.cssVar, 'text') : 'var(--border-default)'}`,
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
                           zIndex: 1,
                         }}>
-                          <StepIcon size={10} color={isFailed ? '#dc2626' : nodeInfo.color} />
+                          <StepIcon size={10} color={isFailed ? 'var(--danger-text)' : themeColor(nodeInfo.cssVar, 'text')} />
                         </div>
 
                         {/* Step content */}
@@ -563,8 +583,8 @@ export default function MonitorPage() {
                             <span style={{
                               fontSize: '10px', fontWeight: 600,
                               padding: '2px 8px', borderRadius: '9999px',
-                              background: isSuccess ? '#d1fae5' : isFailed ? '#fee2e2' : '#f3f4f6',
-                              color: isSuccess ? '#065f46' : isFailed ? '#dc2626' : '#6b7280',
+                              background: isSuccess ? 'var(--success-bg)' : isFailed ? 'var(--danger-bg)' : 'var(--bg-sunken)',
+                              color: isSuccess ? 'var(--success-text)' : isFailed ? 'var(--danger-text)' : 'var(--text-tertiary)',
                             }}>
                               {step.result}
                             </span>
@@ -575,7 +595,7 @@ export default function MonitorPage() {
                           </div>
 
                           {step.delayUsedSeconds != null && step.delayUsedSeconds > 0 && (
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '4px', fontSize: '11px', color: '#d97706' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '4px', fontSize: '11px', color: 'var(--warning-text)' }}>
                               <Timer size={10} /> Waited {step.delayUsedSeconds >= 3600 ? `${Math.round(step.delayUsedSeconds / 3600)}h` : `${Math.round(step.delayUsedSeconds / 60)}m`}
                             </div>
                           )}
