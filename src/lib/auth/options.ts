@@ -1,24 +1,14 @@
 import type { NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
-import GoogleProvider from 'next-auth/providers/google'
 import { connectDB } from '@/lib/mongodb/client'
 import { User } from '@/lib/mongodb/models/User'
 import bcrypt from 'bcryptjs'
 
 export const authOptions: NextAuthOptions = {
   providers: [
-    // ── Google OAuth ──
-    ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
-      ? [
-          GoogleProvider({
-            clientId: process.env.GOOGLE_CLIENT_ID,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-          }),
-        ]
-      : []),
-
     // ── Email / Password ──
     CredentialsProvider({
+      id: 'credentials',
       name: 'credentials',
       credentials: {
         email: { label: 'Email', type: 'email' },
@@ -49,40 +39,54 @@ export const authOptions: NextAuthOptions = {
         }
       },
     }),
-  ],
-  callbacks: {
-    async signIn({ user, account }) {
-      // Auto-create user in MongoDB on first Google sign-in
-      if (account?.provider === 'google' && user.email) {
+
+    // ── Firebase Google Sign-In ──
+    // Firebase handles the Google OAuth popup on the client side.
+    // After Firebase auth succeeds, the client calls signIn('firebase-google')
+    // with the Firebase user's email/name/avatar. This provider finds or
+    // creates the MongoDB user and returns a NextAuth session.
+    CredentialsProvider({
+      id: 'firebase-google',
+      name: 'Google',
+      credentials: {
+        email: { label: 'Email', type: 'email' },
+        name: { label: 'Name', type: 'text' },
+        avatar: { label: 'Avatar', type: 'text' },
+      },
+      async authorize(credentials) {
+        if (!credentials?.email) {
+          throw new Error('Email is required')
+        }
+
         await connectDB()
-        const existing = await User.findOne({ email: user.email.toLowerCase().trim() })
-        if (!existing) {
-          await User.create({
-            name: user.name || user.email.split('@')[0],
-            email: user.email.toLowerCase().trim(),
+
+        const email = credentials.email.toLowerCase().trim()
+        let user = await User.findOne({ email })
+
+        if (!user) {
+          // Auto-create user on first Google sign-in
+          user = await User.create({
+            name: credentials.name || email.split('@')[0],
+            email,
             role: 'member',
-            avatarUrl: user.image || '',
+            avatarUrl: credentials.avatar || '',
           })
         }
-      }
-      return true
-    },
-    async jwt({ token, user, account }) {
+
+        return {
+          id: user._id.toString(),
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        }
+      },
+    }),
+  ],
+  callbacks: {
+    async jwt({ token, user }) {
       if (user) {
-        // For credentials provider, user.id is already the MongoDB _id
-        if (!account || account.provider === 'credentials') {
-          token.id = user.id
-          token.role = (user as any).role || 'member'
-        }
-        // For Google provider, look up the MongoDB user by email
-        if (account?.provider === 'google' && user.email) {
-          await connectDB()
-          const dbUser = await User.findOne({ email: user.email.toLowerCase().trim() })
-          if (dbUser) {
-            token.id = dbUser._id.toString()
-            token.role = dbUser.role || 'member'
-          }
-        }
+        token.id = user.id
+        token.role = (user as any).role || 'member'
       }
       return token
     },
