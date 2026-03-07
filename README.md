@@ -68,6 +68,34 @@ It is built on top of the **Next.js 16 App Router** and leverages **Server Compo
 
 ---
 
+## 🆕 Latest Product Updates (Mar 2026)
+
+### Outreach Automation Engine (Major Upgrade)
+- Reworked workflow execution to use **real imported leads** instead of generated placeholders.
+- Added **human-like randomized delay** between lead executions for safer bulk outreach.
+- Added **live node execution animation** in workflow builder for real-time visual feedback.
+- Expanded workflow library to **25 templates** across practical sales/outreach scenarios.
+- Added a **lead picker search** inside workflow execution modal (with Select All / Select None support).
+
+### Centralized Settings (User-Friendly)
+- Added centralized **Email Configuration** (Gmail + App Password) in Settings.
+- Added centralized **AI Provider Configuration** using collapsible sections (accordion UX).
+- Workflow execution now reads configuration from user settings instead of per-workflow duplication.
+
+### Full Multi-Language UI
+- Added translation system with `useT()` + language store hydration.
+- Added **10 language options**: English, Hindi, Spanish, French, German, Japanese, Portuguese, Chinese, Arabic, Korean.
+- Wired translations across key workspace screens: Dashboard, Sidebar, Topbar, Projects, Docs, Team, AI, Outreach pages, and Settings.
+- Non-English dictionaries extend English fallback keys to prevent runtime missing-string issues.
+
+### UI/Theme & Reliability Fixes
+- Improved theme consistency (light/dark variable coverage and component color fixes).
+- Added dot-grid canvas background in outreach workflow builder.
+- Fixed Tiptap hydration mismatch by explicitly using `immediatelyRender: false`.
+- Fixed outreach stats aggregation owner ID matching issues in MongoDB queries.
+
+---
+
 ## ✨ Features
 
 ### 🔐 Authentication & Security
@@ -104,6 +132,12 @@ It is built on top of the **Next.js 16 App Router** and leverages **Server Compo
 - Unified dashboard showing active projects, pending tasks, recent messages, and activity
 - Team-level activity feed for transparency and async-first culture
 - Progress indicators and completion rates per project
+
+### 🚀 Outreach & Automation
+- **Visual Workflow Builder** for designing complex outreach sequences
+- Automated email sending with configurable delays and safety guards
+- Real-time execution monitoring and analytics
+- Template library for common sales and marketing scenarios
 
 ### 🎨 Modern UI/UX
 - Fully responsive layout — works on mobile, tablet, and desktop
@@ -161,7 +195,7 @@ Startup Workspace follows a **monolithic full-stack architecture** using the Nex
 │   React 19 (RSC + Client Components)  ←→  SWR Data Fetching   │
 │                       Zustand (Global State)                   │
 └──────────────────────────────┬─────────────────────────────────┘
-                               │ HTTPS
+                              │ HTTPS
 ┌──────────────────────────────▼─────────────────────────────────┐
 │                     NEXT.JS 16 (App Router)                    │
 │                                                                │
@@ -201,14 +235,14 @@ startup-workspace/
 │   │   ├── (auth)/                   # Route group: Login, Register pages
 │   │   │   ├── login/page.tsx
 │   │   │   └── register/page.tsx
-│   │   ├── (dashboard)/              # Route group: Protected app pages
-│   │   │   ├── layout.tsx            # Shared dashboard layout (Sidebar, Nav)
-│   │   │   ├── page.tsx              # Main dashboard/home
+│   │   ├── (workspace)/              # Route group: Protected app pages (Dashboard, Projects, etc.)
+│   │   │   ├── layout.tsx            # Shared workspace layout (Sidebar, Nav)
+│   │   │   ├── dashboard/            # Main dashboard/home
 │   │   │   ├── projects/             # Project list and detail pages
-│   │   │   ├── tasks/                # Kanban board view
-│   │   │   ├── chats/                # Messaging interface
+│   │   │   ├── outreach/             # Workflow automation & leads
+│   │   │   ├── messages/             # Messaging interface
 │   │   │   ├── docs/                 # Documentation editor
-│   │   │   └── activity/             # Team activity log
+│   │   │   └── team/                 # Team management
 │   │   └── api/                      # Backend API Route Handlers
 │   │       ├── auth/[...nextauth]/   # NextAuth.js handler
 │   │       ├── projects/             # CRUD for projects
@@ -216,25 +250,27 @@ startup-workspace/
 │   │       ├── chats/                # Chat and message endpoints
 │   │       ├── docs/                 # Documentation endpoints
 │   │       ├── ai/                   # Groq AI interaction endpoint
-│   │       └── activity/             # Activity log endpoint
+│   │       ├── outreach/             # Outreach & lead generation endpoints
+│   │       └── workflows/            # Workflow execution endpoints
 │   │
 │   ├── components/                   # Reusable UI components
 │   │   ├── ui/                       # Low-level primitives (Button, Input, Modal)
 │   │   ├── layout/                   # Sidebar, Navbar, Header
 │   │   ├── projects/                 # ProjectCard, ProjectForm, etc.
-│   │   ├── tasks/                    # KanbanBoard, TaskCard, TaskForm
-│   │   ├── chats/                    # ChatWindow, MessageBubble, etc.
-│   │   ├── docs/                     # TiptapEditor, DocCard
-│   │   └── ai/                       # AIChat, AIMessageBubble
+│   │   ├── dashboard/                # ActivityFeed, QuickStats
+│   │   ├── landing-v2/               # Updated landing page components
+│   │   ├── shared/                   # Common utilities (Loaders, EmptyStates)
+│   │   └── ai/                       # AI-specific components
 │   │
 │   ├── lib/                          # Core utilities and shared logic
 │   │   ├── db.ts                     # MongoDB connection singleton
-│   │   ├── auth.ts                   # NextAuth config & options
-│   │   ├── models/                   # Mongoose schemas (User, Project, Task, etc.)
-│   │   ├── hooks/                    # Custom React hooks (useTasks, useChats, etc.)
+│   │   ├── auth/                     # NextAuth config & options
+│   │   ├── engine/                   # Workflow execution engine logic
+│   │   ├── mongodb/                  # Mongoose models & client
+│   │   ├── hooks/                    # Custom React hooks (useTasks, useNotifications, etc.)
 │   │   ├── store/                    # Zustand stores
-│   │   ├── validators/               # Zod schemas for API input validation
-│   │   └── utils.ts                  # General utility functions
+│   │   ├── i18n/                     # Internationalization logic
+│   │   └── utils/                    # General utility functions
 │   │
 │   └── middleware.ts                 # Route protection logic
 │
@@ -390,6 +426,15 @@ All API routes live under `/api/` and follow RESTful conventions. Every protecte
 | `PATCH` | `/api/docs/:id` | Save/update document content | ✅ |
 | `DELETE` | `/api/docs/:id` | Delete a document | ✅ |
 
+### Outreach & Workflows
+| Method | Endpoint | Description | Auth |
+| :--- | :--- | :--- | :---: |
+| `GET` | `/api/workflows` | List all outreach workflows | ✅ |
+| `POST` | `/api/workflows` | Create a new workflow | ✅ |
+| `GET` | `/api/workflows/:id` | Get details of a specific workflow | ✅ |
+| `POST` | `/api/workflows/:id/execute` | Execute a workflow run | ✅ |
+| `POST` | `/api/outreach/generate` | Generate personalized outreach messages using AI | ✅ |
+
 ### AI & Activity
 | Method | Endpoint | Description | Auth |
 | :--- | :--- | :--- | :---: |
@@ -432,6 +477,7 @@ The application uses **MongoDB Atlas** with **Mongoose** for schema enforcement.
 | `chats` | `type` (dm/group), `participants[]`, `name`, `createdAt` | Chat threads |
 | `messages` | `chatId`, `sender`, `content`, `createdAt` | Individual chat messages |
 | `docs` | `title`, `content` (Tiptap JSON), `projectId`, `author`, `updatedAt` | Rich text documents |
+| `workflows` | `name`, `ownerId`, `nodes[]`, `edges[]`, `status` | Automation workflows |
 | `activity` | `userId`, `action`, `resourceType`, `resourceId`, `createdAt` | Audit trail events |
 
 **Connection Strategy:**
