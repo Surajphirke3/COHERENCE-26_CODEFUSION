@@ -16,7 +16,7 @@ import {
   Position,
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
-import { Save, Zap, Bot, Mail, Clock, GitFork, Tag, Flag, Loader2, ArrowLeft, ChevronRight, Play, X, UserPlus, Trash2, Settings, Key, Server, CheckCircle, AlertCircle } from 'lucide-react'
+import { Save, Zap, Bot, Mail, Clock, GitFork, Tag, Flag, Loader2, ArrowLeft, ChevronRight, Play, X, UserPlus, Trash2, Settings, Key, Server, CheckCircle, AlertCircle, Search } from 'lucide-react'
 import Link from 'next/link'
 import { toast } from 'sonner'
 
@@ -145,6 +145,7 @@ export default function WorkflowBuilderPage({ params }: { params: Promise<{ id: 
   const [availableLeads, setAvailableLeads] = useState<any[]>([])
   const [selectedLeadIds, setSelectedLeadIds] = useState<Set<string>>(new Set())
   const [loadingLeads, setLoadingLeads] = useState(false)
+  const [leadSearch, setLeadSearch] = useState('')
   const [wfConfig, setWfConfig] = useState({
     aiProvider: 'groq',
     aiApiKey: '',
@@ -325,6 +326,7 @@ export default function WorkflowBuilderPage({ params }: { params: Promise<{ id: 
         return
       }
       setAvailableLeads(leads)
+      setLeadSearch('')
       // Pre-select leads with status 'new'
       const newLeadIds = new Set<string>(leads.filter((l: any) => l.status === 'new').map((l: any) => l._id))
       setSelectedLeadIds(newLeadIds)
@@ -674,7 +676,7 @@ export default function WorkflowBuilderPage({ params }: { params: Promise<{ id: 
             fitView
             style={{ width: '100%', height: '100%' }}
           >
-            <Background gap={16} size={1} color="#e2e8f0" />
+            <Background variant={'dots' as any} gap={20} size={1.5} color="var(--gray-300)" />
             <Controls />
             <MiniMap
               nodeColor={(n: any) => {
@@ -943,13 +945,38 @@ export default function WorkflowBuilderPage({ params }: { params: Promise<{ id: 
                 Only New
               </button>
               <span style={{ marginLeft: 'auto', color: 'var(--text-tertiary)' }}>
-                {availableLeads.length} leads imported
+                {availableLeads.length} leads
               </span>
+            </div>
+
+            {/* Search */}
+            <div style={{ padding: '8px 24px', borderBottom: '1px solid var(--border-subtle)' }}>
+              <div style={{ position: 'relative' }}>
+                <Search size={14} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-tertiary)' }} />
+                <input
+                  className="input"
+                  placeholder="Search by name, email, or company..."
+                  value={leadSearch}
+                  onChange={(e) => setLeadSearch(e.target.value)}
+                  style={{ paddingLeft: '32px', fontSize: '13px' }}
+                  autoFocus
+                />
+              </div>
             </div>
 
             {/* Lead list */}
             <div style={{ flex: 1, overflowY: 'auto', padding: '8px 16px' }}>
-              {availableLeads.map((lead: any) => {
+              {availableLeads.filter((lead: any) => {
+                if (!leadSearch) return true
+                const q = leadSearch.toLowerCase()
+                return (
+                  lead.firstName?.toLowerCase().includes(q) ||
+                  lead.lastName?.toLowerCase().includes(q) ||
+                  lead.email?.toLowerCase().includes(q) ||
+                  lead.company?.toLowerCase().includes(q) ||
+                  lead.title?.toLowerCase().includes(q)
+                )
+              }).map((lead: any) => {
                 const isSelected = selectedLeadIds.has(lead._id)
                 return (
                   <label

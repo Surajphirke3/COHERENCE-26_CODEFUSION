@@ -86,10 +86,20 @@ export async function POST(
     workflow.status = 'active'
     await workflow.save()
 
-    // ── Execute workflow for each lead ──
+    // ── Execute workflow for each lead with randomized delays ──
+    // When sending to multiple leads, add a random delay (3-8s) between each
+    // to simulate human-like sending behavior and avoid email provider rate limits
     const results: { leadName: string; status: string; error?: string }[] = []
 
-    for (const exec of executions) {
+    for (let i = 0; i < executions.length; i++) {
+      const exec = executions[i]
+
+      // Random delay between leads (skip for the first one)
+      if (i > 0 && executions.length > 1) {
+        const delayMs = 3000 + Math.floor(Math.random() * 5000) // 3-8 seconds
+        await new Promise(resolve => setTimeout(resolve, delayMs))
+      }
+
       try {
         await executeStep(exec._id.toString())
         const updated = await WorkflowExecution.findById(exec._id).lean() as any
