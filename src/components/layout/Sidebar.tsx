@@ -8,9 +8,10 @@ import {
   GitBranch, Plus, Activity, Sun, Moon
 } from 'lucide-react'
 import Image from 'next/image'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { getInitials } from '@/lib/utils/format'
 import { useTheme } from '@/components/providers'
+import { useT, useLanguageStore } from '@/lib/i18n/useLanguage'
 
 const navGroups = [
   {
