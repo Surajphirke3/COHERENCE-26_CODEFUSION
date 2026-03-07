@@ -194,6 +194,7 @@ html[data-theme="dark"] {
   --shadow-focus: 0 0 0 3px rgba(124, 158, 255, 0.25);
 }
 
+@layer base {
 /* ═══ BASE RESET ═════════════════════════════════════════════ */
 *,
 *::before,
@@ -282,7 +283,9 @@ a:hover {
 html[data-theme="dark"] a:hover {
   color: var(--brand-300);
 }
+} /* end @layer base */
 
+@layer components {
 /* ═══ SCROLLBAR ══════════════════════════════════════════════ */
 ::-webkit-scrollbar {
   width: 6px;
@@ -1102,6 +1105,7 @@ html[data-theme="dark"] .overlay {
     grid-template-columns: 1fr !important;
   }
 }
+} /* end @layer components */
 
 @theme inline {
   --font-sans: var(--font-sans);
