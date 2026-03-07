@@ -51,7 +51,7 @@ const testimonials = [
 export function Testimonials() {
   return (
     <section id="testimonials" className="relative py-32 overflow-hidden">
-      <div className="absolute top-0 right-[20%] w-[400px] h-[400px] bg-indigo-600/5 rounded-full blur-[140px] -z-10" />
+      <div className="absolute top-0 right-[20%] w-[400px] h-[400px] rounded-full blur-[140px] -z-10" style={{ background: 'var(--l-glow-1)' }} />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
@@ -61,13 +61,16 @@ export function Testimonials() {
           transition={{ duration: 0.7 }}
           className="text-center mb-20"
         >
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/10 text-amber-300 text-xs font-medium uppercase tracking-wider mb-6">
+          <div
+            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium uppercase tracking-wider mb-6"
+            style={{ background: 'var(--l-badge-bg)', border: '1px solid var(--l-badge-border)', color: 'var(--l-text-secondary)' }}
+          >
             Testimonials
           </div>
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white tracking-tight mb-6">
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6" style={{ color: 'var(--l-text)' }}>
             Loved by modern teams
           </h2>
-          <p className="text-lg text-gray-400 max-w-2xl mx-auto">
+          <p className="text-lg max-w-2xl mx-auto" style={{ color: 'var(--l-text-secondary)' }}>
             Join thousands of startups and agile teams building the next generation of products with Chronos.
           </p>
         </motion.div>
@@ -81,7 +84,8 @@ export function Testimonials() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-30px' }}
               transition={{ duration: 0.6, delay: i * 0.08 }}
-              className="break-inside-avoid rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 backdrop-blur-sm hover:border-white/15 transition-all duration-500"
+              className="break-inside-avoid rounded-2xl p-6 backdrop-blur-sm transition-all duration-500"
+              style={{ background: 'var(--l-bg-card)', border: '1px solid var(--l-border)' }}
             >
               {/* Stars */}
               <div className="flex gap-1 mb-4">
@@ -91,7 +95,7 @@ export function Testimonials() {
               </div>
 
               {/* Quote */}
-              <p className="text-gray-300 text-sm leading-relaxed mb-6">&quot;{t.quote}&quot;</p>
+              <p className="text-sm leading-relaxed mb-6" style={{ color: 'var(--l-text-secondary)' }}>&quot;{t.quote}&quot;</p>
 
               {/* Author */}
               <div className="flex items-center gap-3">
@@ -99,8 +103,8 @@ export function Testimonials() {
                   {t.avatar}
                 </div>
                 <div>
-                  <div className="text-sm font-medium text-white">{t.name}</div>
-                  <div className="text-xs text-gray-500">{t.role}</div>
+                  <div className="text-sm font-medium" style={{ color: 'var(--l-text)' }}>{t.name}</div>
+                  <div className="text-xs" style={{ color: 'var(--l-text-tertiary)' }}>{t.role}</div>
                 </div>
               </div>
             </motion.div>

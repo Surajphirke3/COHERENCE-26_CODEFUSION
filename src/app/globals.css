@@ -1203,3 +1203,67 @@ html[data-theme="dark"] .overlay {
     @apply font-sans;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════
+   LANDING PAGE THEME — #fae4cf (Cream) & #090e23 (Navy)
+   ═══════════════════════════════════════════════════════════ */
+
+/* ─── DARK MODE (default) ─────────────────────────────────── */
+.landing-dark {
+  --l-bg: #090e23;
+  --l-bg-alt: #0d1330;
+  --l-bg-card: rgba(255, 255, 255, 0.03);
+  --l-bg-card-hover: rgba(255, 255, 255, 0.06);
+  --l-text: #fae4cf;
+  --l-text-secondary: rgba(250, 228, 207, 0.65);
+  --l-text-tertiary: rgba(250, 228, 207, 0.4);
+  --l-text-muted: rgba(250, 228, 207, 0.25);
+  --l-border: rgba(250, 228, 207, 0.08);
+  --l-border-hover: rgba(250, 228, 207, 0.15);
+  --l-badge-bg: rgba(250, 228, 207, 0.06);
+  --l-badge-border: rgba(250, 228, 207, 0.12);
+  --l-glow-1: rgba(250, 228, 207, 0.06);
+  --l-glow-2: rgba(250, 228, 207, 0.04);
+  --l-selection-bg: rgba(250, 228, 207, 0.2);
+  --l-accent: #fae4cf;
+  --l-accent-muted: rgba(250, 228, 207, 0.15);
+  --l-footer-bg: #060a1a;
+  --l-nav-scrolled: rgba(9, 14, 35, 0.75);
+  --l-mobile-menu: rgba(9, 14, 35, 0.95);
+
+  background-color: var(--l-bg);
+  color: var(--l-text);
+}
+
+/* ─── LIGHT MODE ──────────────────────────────────────────── */
+.landing-light {
+  --l-bg: #fae4cf;
+  --l-bg-alt: #f5dbc2;
+  --l-bg-card: rgba(9, 14, 35, 0.04);
+  --l-bg-card-hover: rgba(9, 14, 35, 0.08);
+  --l-text: #090e23;
+  --l-text-secondary: rgba(9, 14, 35, 0.7);
+  --l-text-tertiary: rgba(9, 14, 35, 0.45);
+  --l-text-muted: rgba(9, 14, 35, 0.25);
+  --l-border: rgba(9, 14, 35, 0.1);
+  --l-border-hover: rgba(9, 14, 35, 0.18);
+  --l-badge-bg: rgba(9, 14, 35, 0.06);
+  --l-badge-border: rgba(9, 14, 35, 0.12);
+  --l-glow-1: rgba(9, 14, 35, 0.04);
+  --l-glow-2: rgba(9, 14, 35, 0.03);
+  --l-selection-bg: rgba(9, 14, 35, 0.15);
+  --l-accent: #090e23;
+  --l-accent-muted: rgba(9, 14, 35, 0.12);
+  --l-footer-bg: #f0d5b8;
+  --l-nav-scrolled: rgba(250, 228, 207, 0.8);
+  --l-mobile-menu: rgba(250, 228, 207, 0.97);
+
+  background-color: var(--l-bg);
+  color: var(--l-text);
+}
+
+/* Smooth transition for all landing elements */
+.landing-light *,
+.landing-dark * {
+  transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+}

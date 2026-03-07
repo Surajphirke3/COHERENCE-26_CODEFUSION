@@ -52,7 +52,7 @@ export function Features() {
   return (
     <section id="features" className="relative py-32 overflow-hidden">
       {/* Background Glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-indigo-600/5 rounded-full blur-[120px] -z-10" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] rounded-full blur-[120px] -z-10" style={{ background: 'var(--l-glow-1)' }} />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
@@ -63,13 +63,16 @@ export function Features() {
           transition={{ duration: 0.7 }}
           className="text-center mb-20"
         >
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/10 text-indigo-300 text-xs font-medium uppercase tracking-wider mb-6">
+          <div
+            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium uppercase tracking-wider mb-6"
+            style={{ background: 'var(--l-badge-bg)', border: '1px solid var(--l-badge-border)', color: 'var(--l-text-secondary)' }}
+          >
             Features
           </div>
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white tracking-tight mb-6">
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6" style={{ color: 'var(--l-text)' }}>
             Everything your team needs
           </h2>
-          <p className="text-lg text-gray-400 max-w-2xl mx-auto">
+          <p className="text-lg max-w-2xl mx-auto" style={{ color: 'var(--l-text-secondary)' }}>
             One platform that replaces five different tools. Quit juggling between tabs and bring your focus back to what matters.
           </p>
         </motion.div>
@@ -84,7 +87,11 @@ export function Features() {
               viewport={{ once: true, margin: '-50px' }}
               transition={{ duration: 0.6, delay: i * 0.1 }}
               whileHover={{ y: -8, transition: { duration: 0.3 } }}
-              className="group relative rounded-2xl border border-white/[0.06] bg-white/[0.02] p-8 backdrop-blur-sm hover:border-white/15 transition-all duration-500"
+              className="group relative rounded-2xl p-8 backdrop-blur-sm transition-all duration-500"
+              style={{
+                background: 'var(--l-bg-card)',
+                border: '1px solid var(--l-border)',
+              }}
             >
               {/* Hover Glow */}
               <div className={`absolute inset-0 rounded-2xl ${feature.glow} opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500 -z-10`} />
@@ -95,8 +102,8 @@ export function Features() {
               </div>
 
               {/* Content */}
-              <h3 className="text-xl font-semibold text-white mb-3">{feature.title}</h3>
-              <p className="text-gray-400 leading-relaxed text-sm">{feature.description}</p>
+              <h3 className="text-xl font-semibold mb-3" style={{ color: 'var(--l-text)' }}>{feature.title}</h3>
+              <p className="leading-relaxed text-sm" style={{ color: 'var(--l-text-secondary)' }}>{feature.description}</p>
             </motion.div>
           ))}
         </div>

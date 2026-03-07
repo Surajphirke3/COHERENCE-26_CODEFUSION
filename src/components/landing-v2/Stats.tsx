@@ -12,7 +12,7 @@ const stats = [
 export function Stats() {
   return (
     <section className="relative py-24 overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-r from-indigo-600/5 via-violet-600/5 to-cyan-600/5 -z-10" />
+      <div className="absolute inset-0 -z-10" style={{ background: 'var(--l-glow-1)' }} />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
@@ -25,8 +25,8 @@ export function Stats() {
               transition={{ duration: 0.6, delay: i * 0.1 }}
               className="text-center"
             >
-              <div className="text-4xl md:text-5xl font-bold text-white mb-2">{stat.value}</div>
-              <div className="text-sm text-gray-400">{stat.label}</div>
+              <div className="text-4xl md:text-5xl font-bold mb-2" style={{ color: 'var(--l-text)' }}>{stat.value}</div>
+              <div className="text-sm" style={{ color: 'var(--l-text-secondary)' }}>{stat.label}</div>
             </motion.div>
           ))}
         </div>

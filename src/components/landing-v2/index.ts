@@ -8,3 +8,6 @@ export { Stats } from './Stats'
 export { Testimonials } from './Testimonials'
 export { CTA } from './CTA'
 export { Footer } from './Footer'
+export { LandingThemeProvider, useTheme } from './ThemeContext'
+export { LandingPageClient } from './LandingPageClient'
+
