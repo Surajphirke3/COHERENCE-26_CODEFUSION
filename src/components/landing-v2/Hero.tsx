@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { ArrowRight, Sparkles, Play } from 'lucide-react'
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion'
 import { useRef } from 'react'
+import type { Variants } from 'framer-motion'
 
 /* ─── Floating 3D Card ────────────────────────────────────────── */
 function FloatingCard() {
@@ -125,12 +126,12 @@ function FloatingCard() {
 
 /* ─── Hero Section ─────────────────────────────────────────────── */
 export function Hero() {
-  const fadeUp = {
+  const fadeUp: Variants = {
     hidden: { opacity: 0, y: 30 },
     visible: (i: number) => ({
       opacity: 1,
       y: 0,
-      transition: { duration: 0.7, delay: i * 0.15, ease: 'easeOut' },
+      transition: { duration: 0.7, delay: i * 0.15, ease: [0.16, 1, 0.3, 1] },
     }),
   }
 
