@@ -7,6 +7,13 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth/options'
 
+/**
+ * Execute a workflow.
+ * 
+ * If N8N_EXECUTE_WEBHOOK_URL is set, the workflow payload is forwarded
+ * to the n8n webhook for external execution (email, AI, etc.).
+ * Otherwise, the built-in local engine is used as a fallback.
+ */
 export async function POST(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -29,14 +36,70 @@ export async function POST(
       return NextResponse.json({ error: 'Workflow has no nodes' }, { status: 400 })
     }
 
-    // Find leads with status 'new' to enroll
+    // Parse optional runtime inputs from request body
+    const body = await req.json().catch(() => ({}))
+
+    // ── n8n Webhook Execution Path ──
+    const n8nUrl = process.env.N8N_EXECUTE_WEBHOOK_URL
+    if (n8nUrl) {
+      const n8nPayload = {
+        workflowId: workflow._id,
+        workflowName: workflow.name,
+        userId: session.user.id,
+        nodes: workflow.nodes,
+        edges: workflow.edges,
+        config: workflow.config,
+        inputs: body.inputs || {},
+      }
+
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+      if (process.env.N8N_WEBHOOK_SECRET) {
+        headers['Authorization'] = `Bearer ${process.env.N8N_WEBHOOK_SECRET}`
+      }
+
+      const n8nRes = await fetch(n8nUrl, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(n8nPayload),
+      })
+
+      if (!n8nRes.ok) {
+        const errText = await n8nRes.text().catch(() => '')
+        console.error(`[n8n] Webhook returned ${n8nRes.status}: ${errText.slice(0, 300)}`)
+        throw new Error(`n8n responded with status ${n8nRes.status}`)
+      }
+
+      const outputs = await n8nRes.json()
+
+      // Log execution to MongoDB
+      await WorkflowExecution.create({
+        workflowId: workflow._id,
+        leadId: null,
+        ownerId: session.user.id,
+        status: 'completed',
+        currentNodeId: 'n8n',
+        stepHistory: [{
+          nodeId: 'n8n-webhook',
+          nodeType: 'n8n',
+          executedAt: new Date(),
+          result: 'success',
+          messageGenerated: JSON.stringify(outputs).slice(0, 500),
+        }],
+      })
+
+      workflow.status = 'active'
+      await workflow.save()
+
+      return NextResponse.json({ success: true, outputs, engine: 'n8n' })
+    }
+
+    // ── Local Engine Execution Path (fallback) ──
     const leads = await Lead.find({ ownerId: session.user.id, status: 'new' }).limit(50)
 
     if (leads.length === 0) {
       return NextResponse.json({ error: 'No new leads to enroll' }, { status: 400 })
     }
 
-    // Create execution records
     const executions = await WorkflowExecution.insertMany(
       leads.map((lead: any) => ({
         workflowId: workflow._id,
@@ -47,17 +110,14 @@ export async function POST(
       }))
     )
 
-    // Update lead statuses
     await Lead.updateMany(
       { _id: { $in: leads.map((l: any) => l._id) } },
       { $set: { status: 'in_sequence' } }
     )
 
-    // Mark workflow as active
     workflow.status = 'active'
     await workflow.save()
 
-    // Execute first batch (up to 5) immediately
     const firstBatch = executions.slice(0, 5)
     for (const exec of firstBatch) {
       try {
@@ -70,9 +130,10 @@ export async function POST(
     return NextResponse.json({
       message: `Workflow started for ${leads.length} leads`,
       executionCount: executions.length,
+      engine: 'local',
     })
   } catch (error) {
     console.error('Workflow execution error:', error)
-    return NextResponse.json({ error: 'Failed to start workflow' }, { status: 500 })
+    return NextResponse.json({ error: 'Failed to execute workflow' }, { status: 500 })
   }
 }
