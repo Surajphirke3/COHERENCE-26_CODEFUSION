@@ -3,7 +3,8 @@
 import { useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { Rocket, Mail, Lock, User, ArrowRight, Loader2 } from 'lucide-react'
+import { Mail, Lock, User, ArrowRight, Loader2 } from 'lucide-react'
+import Image from 'next/image'
 import Link from 'next/link'
 
 export default function RegisterPage() {
@@ -77,7 +78,7 @@ export default function RegisterPage() {
             boxShadow: 'var(--shadow-sm)',
           }}
         >
-          <Rocket size={26} color="var(--brand-600)" />
+          <Image src="/logo.png" alt="Chronos" width={26} height={26} style={{ objectFit: 'contain' }} />
         </div>
         <h1 style={{ fontSize: '1.5rem', marginBottom: '8px', fontFamily: "'Fraunces', serif" }}>
           Create your account

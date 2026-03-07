@@ -3,7 +3,8 @@
 import { useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { Rocket, Mail, Lock, User, ArrowRight, Loader2 } from 'lucide-react'
+import { Mail, Lock, User, ArrowRight, Loader2 } from 'lucide-react'
+import Image from 'next/image'
 import { signInWithPopup } from 'firebase/auth'
 import { auth, googleProvider } from '@/lib/firebase'
 
@@ -92,7 +93,7 @@ export default function LoginPage() {
             border: '1px solid var(--l-border)',
           }}
         >
-          <Rocket size={26} color="var(--l-accent)" />
+          <Image src="/logo.png" alt="Chronos" width={26} height={26} style={{ objectFit: 'contain' }} />
         </div>
         <h1 style={{ fontSize: '1.5rem', marginBottom: '8px', fontFamily: "'Fraunces', serif", color: 'var(--l-text)' }}>
           {isLogin ? 'Welcome back' : 'Create your account'}
