@@ -255,7 +255,7 @@ export default function Sidebar() {
         </button>
 
         <button
-          onClick={() => signOut({ callbackUrl: '/login' })}
+          onClick={() => signOut({ callbackUrl: '/' })}
           className="btn-ghost"
           style={{ width: '100%', justifyContent: collapsed ? 'center' : 'flex-start', color: 'var(--text-tertiary)', fontSize: '13px' }}
           title="Sign out"

@@ -1,7 +1,8 @@
 'use client'
 
-import { Sun, Moon } from 'lucide-react'
+import { Sun, Moon, ArrowLeft } from 'lucide-react'
 import { motion } from 'framer-motion'
+import Link from 'next/link'
 import { LandingThemeProvider, useTheme } from '@/components/landing-v2/ThemeContext'
 import { AuthBackground } from '@/components/auth/AuthBackground'
 
@@ -23,6 +24,20 @@ function AuthLayoutContent({ children }: { children: React.ReactNode }) {
     >
       {/* Interactive workflow background */}
       <AuthBackground />
+
+      {/* Back to home */}
+      <Link
+        href="/"
+        className="fixed top-4 left-4 p-2 px-3 rounded-xl transition-all duration-300 z-50 flex items-center gap-1.5 text-sm no-underline"
+        style={{
+          background: 'var(--l-bg-card)',
+          border: '1px solid var(--l-border)',
+          color: 'var(--l-text-secondary)',
+        }}
+      >
+        <ArrowLeft className="w-4 h-4" />
+        Home
+      </Link>
 
       {/* Theme Toggle */}
       <button
