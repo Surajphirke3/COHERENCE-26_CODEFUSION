@@ -53,6 +53,7 @@ export default function ActivityFeed({ activities }: ActivityFeedProps) {
             {/* Connecting timeline line */}
             {i < activities.length - 1 && (
               <div
+                className="activity-timeline-line"
                 style={{
                   position: 'absolute',
                   left: '29px',

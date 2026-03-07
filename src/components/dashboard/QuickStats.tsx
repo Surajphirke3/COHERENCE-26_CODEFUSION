@@ -26,7 +26,7 @@ export default function QuickStats({ stats }: QuickStatsProps) {
         return (
           <div
             key={item.label}
-            className="card stagger-item"
+            className="card stagger-item stat-card"
             style={{
               padding: '20px 24px',
               position: 'relative',

@@ -10,7 +10,8 @@ type Theme = 'light' | 'dark'
 const ThemeContext = createContext<{
   theme: Theme
   setTheme: (t: Theme) => void
-}>({ theme: 'light', setTheme: () => {} })
+  toggleTheme: () => void
+}>({ theme: 'light', setTheme: () => {}, toggleTheme: () => {} })
 
 export function useTheme() {
   return useContext(ThemeContext)
@@ -23,21 +24,34 @@ function ThemeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const stored = localStorage.getItem('theme') as Theme | null
     const initial = stored || 'light'
-    setTheme(initial)
-    document.documentElement.setAttribute('data-theme', initial)
+    applyTheme(initial)
     setMounted(true)
   }, [])
 
-  const handleSetTheme = (t: Theme) => {
+  const applyTheme = (t: Theme) => {
     setTheme(t)
     localStorage.setItem('theme', t)
+    localStorage.setItem('landing-theme', t)
     document.documentElement.setAttribute('data-theme', t)
+    if (t === 'dark') {
+      document.documentElement.classList.add('dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+    }
+  }
+
+  const handleSetTheme = (t: Theme) => {
+    applyTheme(t)
+  }
+
+  const toggleTheme = () => {
+    applyTheme(theme === 'dark' ? 'light' : 'dark')
   }
 
   if (!mounted) return null
 
   return (
-    <ThemeContext.Provider value={{ theme, setTheme: handleSetTheme }}>
+    <ThemeContext.Provider value={{ theme, setTheme: handleSetTheme, toggleTheme }}>
       {children}
     </ThemeContext.Provider>
   )

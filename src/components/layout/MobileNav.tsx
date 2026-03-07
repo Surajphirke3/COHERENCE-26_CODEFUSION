@@ -2,7 +2,9 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, FolderKanban, Users, FileText, Bot, Settings, X, Rocket } from 'lucide-react'
+import { LayoutDashboard, FolderKanban, Users, FileText, Bot, Settings, X, Sun, Moon } from 'lucide-react'
+import Image from 'next/image'
+import { useTheme } from '@/components/providers'
 
 const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -20,6 +22,7 @@ interface MobileNavProps {
 
 export default function MobileNav({ isOpen, onClose }: MobileNavProps) {
   const pathname = usePathname()
+  const { theme, toggleTheme } = useTheme()
   if (!isOpen) return null
 
   return (
@@ -45,9 +48,9 @@ export default function MobileNav({ isOpen, onClose }: MobileNavProps) {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 8px', marginBottom: '16px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '30px', height: '30px', background: 'var(--brand-50)', borderRadius: 'var(--radius)' }}>
-              <Rocket size={16} color="var(--brand-600)" />
+              <Image src="/logo.png" alt="Chronos" width={18} height={18} style={{ objectFit: 'contain' }} />
             </div>
-            <span style={{ fontWeight: 700, fontSize: '15px', color: 'var(--text-primary)' }}>Workspace</span>
+            <span style={{ fontWeight: 700, fontSize: '15px', color: 'var(--text-primary)' }}>Chronos</span>
           </div>
           <button className="btn-ghost" onClick={onClose} style={{ padding: '4px' }}>
             <X size={18} />
@@ -90,6 +93,18 @@ export default function MobileNav({ isOpen, onClose }: MobileNavProps) {
             })}
           </div>
         </nav>
+
+        {/* Theme toggle */}
+        <div style={{ padding: '8px', borderTop: '1px solid var(--border-subtle)' }}>
+          <button
+            onClick={toggleTheme}
+            className="btn-ghost"
+            style={{ width: '100%', justifyContent: 'flex-start', color: 'var(--text-tertiary)', fontSize: '13px' }}
+          >
+            {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+            {theme === 'dark' ? 'Light mode' : 'Dark mode'}
+          </button>
+        </div>
       </div>
     </>
   )

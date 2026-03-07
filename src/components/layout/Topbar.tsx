@@ -19,6 +19,7 @@ export default function Topbar() {
   return (
     <>
       <header
+        className="topbar-glass"
         style={{
           height: 'var(--topbar-height)',
           background: 'color-mix(in srgb, var(--bg-base) 85%, transparent)',

@@ -4,13 +4,47 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useSession, signOut } from 'next-auth/react'
 import {
-  LayoutDashboard, FolderKanban, Users, FileText, Bot, Settings, LogOut, ChevronLeft, Rocket, MessageSquare,
-  GitBranch, Plus, Activity
+  LayoutDashboard, FolderKanban, Users, FileText, Bot, Settings, LogOut, ChevronLeft, MessageSquare,
+  GitBranch, Plus, Activity, Sun, Moon
 } from 'lucide-react'
-import { useState, useEffect } from 'react'
+import Image from 'next/image'
+import { useState } from 'react'
 import { getInitials } from '@/lib/utils/format'
-import { useT } from '@/lib/i18n/useLanguage'
-import { useLanguageStore } from '@/lib/i18n/useLanguage'
+import { useTheme } from '@/components/providers'
+
+const navGroups = [
+  {
+    label: 'Workspace',
+    items: [
+      { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+      { href: '/projects', label: 'Projects', icon: FolderKanban },
+      { href: '/docs', label: 'Docs', icon: FileText },
+    ],
+  },
+  {
+    label: 'Outreach',
+    items: [
+      { href: '/outreach/leads', label: 'Leads', icon: Users },
+      { href: '/outreach/workflows', label: 'Workflows', icon: GitBranch },
+      { href: '/outreach/workflows/new/builder', label: 'New Workflow', icon: Plus },
+      { href: '/outreach/monitor', label: 'Live Monitor', icon: Activity },
+    ],
+  },
+  {
+    label: 'Team',
+    items: [
+      { href: '/team', label: 'Members', icon: Users },
+      { href: '/messages', label: 'Messages', icon: MessageSquare },
+      { href: '/ai', label: 'AI Assistant', icon: Bot },
+    ],
+  },
+  {
+    label: 'Account',
+    items: [
+      { href: '/settings', label: 'Settings', icon: Settings },
+    ],
+  },
+]
 
 export default function Sidebar() {
   const t = useT()
@@ -54,9 +88,11 @@ export default function Sidebar() {
   const pathname = usePathname()
   const { data: session } = useSession()
   const [collapsed, setCollapsed] = useState(false)
+  const { theme, toggleTheme } = useTheme()
 
   return (
     <aside
+      className="sidebar-glass"
       style={{
         width: collapsed ? '64px' : 'var(--sidebar-width)',
         height: '100vh',
@@ -95,11 +131,11 @@ export default function Sidebar() {
             flexShrink: 0,
           }}
         >
-          <Rocket size={18} color="var(--brand-600)" />
+          <Image src="/logo.png" alt="Chronos" width={20} height={20} style={{ objectFit: 'contain' }} />
         </div>
         {!collapsed && (
           <span style={{ fontWeight: 700, fontSize: '15px', color: 'var(--text-primary)', letterSpacing: '-0.01em' }}>
-            Workspace
+            Chronos
           </span>
         )}
       </div>
@@ -206,6 +242,16 @@ export default function Sidebar() {
             )}
           </div>
         )}
+
+        <button
+          onClick={toggleTheme}
+          className="btn-ghost"
+          style={{ width: '100%', justifyContent: collapsed ? 'center' : 'flex-start', color: 'var(--text-tertiary)', fontSize: '13px' }}
+          title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+        >
+          {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+          {!collapsed && (theme === 'dark' ? 'Light mode' : 'Dark mode')}
+        </button>
 
         <button
           onClick={() => signOut({ callbackUrl: '/login' })}
