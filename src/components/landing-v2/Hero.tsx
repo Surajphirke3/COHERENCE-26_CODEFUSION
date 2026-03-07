@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { ArrowRight, Sparkles, Play } from 'lucide-react'
-import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion'
+import { motion, useMotionValue, useSpring, useTransform, type Variants } from 'framer-motion'
 import { useRef, useState, useCallback, useEffect } from 'react'
 import {
   ClipboardList,
