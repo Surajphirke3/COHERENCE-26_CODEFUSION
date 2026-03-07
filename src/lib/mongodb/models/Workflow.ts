@@ -5,7 +5,7 @@ const WorkflowNodeSchema = new Schema(
     id: { type: String, required: true },
     type: {
       type: String,
-      enum: ['trigger', 'aiMessage', 'sendEmail', 'delay', 'condition', 'tagLead', 'end'],
+      enum: ['trigger', 'generateLeads', 'aiMessage', 'sendEmail', 'delay', 'condition', 'tagLead', 'end'],
       required: true,
     },
     position: {
@@ -47,6 +47,19 @@ const WorkflowSchema = new Schema(
       minDelaySeconds: { type: Number, default: 120 },
       businessHoursOnly: { type: Boolean, default: false },
       timezone: { type: String, default: 'UTC' },
+      // AI provider credentials
+      aiProvider: { type: String, default: 'groq' },
+      aiApiKey: { type: String, default: '' },
+      aiModel: { type: String, default: 'llama-3.3-70b-versatile' },
+      aiBaseUrl: { type: String, default: '' },
+      // SMTP email credentials
+      smtpHost: { type: String, default: '' },
+      smtpPort: { type: Number, default: 587 },
+      smtpUser: { type: String, default: '' },
+      smtpPass: { type: String, default: '' },
+      smtpFromEmail: { type: String, default: '' },
+      smtpFromName: { type: String, default: '' },
+      smtpSecure: { type: Boolean, default: false },
     },
   },
   { timestamps: true }
