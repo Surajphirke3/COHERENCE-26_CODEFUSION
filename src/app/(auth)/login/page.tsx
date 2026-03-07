@@ -7,8 +7,11 @@ import { Rocket, Mail, Lock, User, ArrowRight, Loader2 } from 'lucide-react'
 import { signInWithPopup } from 'firebase/auth'
 import { auth, googleProvider } from '@/lib/firebase'
 
+import { useTheme } from '@/components/landing-v2/ThemeContext'
+
 export default function LoginPage() {
   const router = useRouter()
+  const { theme } = useTheme()
   const [isLogin, setIsLogin] = useState(true)
   const [loading, setLoading] = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
@@ -73,7 +76,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div style={{ width: '100%', maxWidth: '400px' }}>
+    <div style={{ width: '100%', maxWidth: '560px' }}>
       {/* Logo */}
       <div style={{ textAlign: 'center', marginBottom: '40px' }}>
         <div
@@ -83,65 +86,65 @@ export default function LoginPage() {
             justifyContent: 'center',
             width: '52px',
             height: '52px',
-            background: 'var(--brand-50)',
-            borderRadius: 'var(--radius-lg)',
+            background: 'var(--l-bg-card)',
+            borderRadius: '16px',
             marginBottom: '16px',
-            boxShadow: 'var(--shadow-sm)',
+            border: '1px solid var(--l-border)',
           }}
         >
-          <Rocket size={26} color="var(--brand-600)" />
+          <Rocket size={26} color="var(--l-accent)" />
         </div>
-        <h1 style={{ fontSize: '1.5rem', marginBottom: '8px', fontFamily: "'Fraunces', serif" }}>
+        <h1 style={{ fontSize: '1.5rem', marginBottom: '8px', fontFamily: "'Fraunces', serif", color: 'var(--l-text)' }}>
           {isLogin ? 'Welcome back' : 'Create your account'}
         </h1>
-        <p style={{ color: 'var(--text-tertiary)', fontSize: '14px' }}>
+        <p style={{ color: 'var(--l-text-tertiary)', fontSize: '14px' }}>
           {isLogin ? 'Sign in to your workspace' : 'Get started with your startup workspace'}
         </p>
       </div>
 
       {/* Form */}
       <form onSubmit={handleSubmit}>
-        <div className="card" style={{ padding: '28px', marginBottom: '16px', boxShadow: 'var(--shadow-lg)' }}>
+        <div className="card" style={{ padding: '40px', marginBottom: '20px', background: 'var(--l-bg-card)', border: '1px solid var(--l-border)', borderRadius: '18px', backdropFilter: 'blur(20px)' }}>
           {error && (
             <div
               style={{
                 padding: '10px 14px',
-                background: 'var(--danger-bg)',
-                color: 'var(--danger-text)',
-                borderRadius: 'var(--radius-md)',
+                background: 'rgba(239, 68, 68, 0.1)',
+                color: '#ef4444',
+                borderRadius: '8px',
                 fontSize: '13px',
                 marginBottom: '20px',
-                borderLeft: '3px solid var(--danger)',
+                borderLeft: '3px solid #ef4444',
               }}
             >
               {error}
             </div>
           )}
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
             {!isLogin && (
               <div>
-                <label className="label" htmlFor="name">Full Name</label>
+                <label className="label" htmlFor="name" style={{ color: 'var(--l-text-secondary)' }}>Full Name</label>
                 <div style={{ position: 'relative' }}>
-                  <User size={15} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-tertiary)' }} />
-                  <input id="name" className="input" type="text" placeholder="John Doe" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} style={{ paddingLeft: '38px' }} required={!isLogin} />
+                  <User size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--l-text-secondary)' }} />
+                  <input id="name" className="input" type="text" placeholder="John Doe" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} style={{ paddingLeft: '42px', padding: '12px 14px 12px 42px', fontSize: '15px', background: 'var(--l-bg-card)', color: 'var(--l-text)', border: '1px solid var(--l-border)' }} required={!isLogin} />
                 </div>
               </div>
             )}
 
             <div>
-              <label className="label" htmlFor="email">Email</label>
+              <label className="label" htmlFor="email" style={{ color: 'var(--l-text-secondary)' }}>Email</label>
               <div style={{ position: 'relative' }}>
-                <Mail size={15} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-tertiary)' }} />
-                <input id="email" className="input" type="email" placeholder="you@startup.com" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} style={{ paddingLeft: '38px' }} required />
+                <Mail size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--l-text-secondary)' }} />
+                <input id="email" className="input" type="email" placeholder="you@startup.com" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} style={{ paddingLeft: '42px', padding: '12px 14px 12px 42px', fontSize: '15px', background: 'var(--l-bg-card)', color: 'var(--l-text)', border: '1px solid var(--l-border)' }} required />
               </div>
             </div>
 
             <div>
-              <label className="label" htmlFor="password">Password</label>
+              <label className="label" htmlFor="password" style={{ color: 'var(--l-text-secondary)' }}>Password</label>
               <div style={{ position: 'relative' }}>
-                <Lock size={15} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-tertiary)' }} />
-                <input id="password" className="input" type="password" placeholder="••••••••" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} style={{ paddingLeft: '38px' }} required minLength={6} />
+                <Lock size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--l-text-secondary)' }} />
+                <input id="password" className="input" type="password" placeholder="••••••••" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} style={{ paddingLeft: '42px', padding: '12px 14px 12px 42px', fontSize: '15px', background: 'var(--l-bg-card)', color: 'var(--l-text)', border: '1px solid var(--l-border)' }} required minLength={6} />
               </div>
             </div>
           </div>
@@ -159,9 +162,9 @@ export default function LoginPage() {
 
           {/* Divider */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '20px 0 4px' }}>
-            <div style={{ flex: 1, height: '1px', background: 'var(--border-default)' }} />
-            <span style={{ fontSize: '12px', color: 'var(--text-tertiary)', whiteSpace: 'nowrap' }}>or continue with</span>
-            <div style={{ flex: 1, height: '1px', background: 'var(--border-default)' }} />
+            <div style={{ flex: 1, height: '1px', background: 'var(--l-border)' }} />
+            <span style={{ fontSize: '12px', color: 'var(--l-text-tertiary)', whiteSpace: 'nowrap' }}>or continue with</span>
+            <div style={{ flex: 1, height: '1px', background: 'var(--l-border)' }} />
           </div>
 
           {/* Google Sign-In via Firebase */}
@@ -204,19 +207,19 @@ export default function LoginPage() {
               justifyContent: 'center',
               gap: '10px',
               padding: '10px',
-              border: '1px solid var(--border-default)',
-              borderRadius: 'var(--radius-md)',
-              background: 'var(--bg-surface)',
+              border: '1px solid var(--l-border)',
+              borderRadius: '8px',
+              background: 'var(--l-bg-card)',
               cursor: googleLoading ? 'wait' : 'pointer',
               fontSize: '13.5px',
               fontWeight: 500,
-              color: 'var(--text-primary)',
+              color: 'var(--l-text)',
               transition: 'background 120ms ease, border-color 120ms ease',
               marginTop: '8px',
               opacity: googleLoading ? 0.7 : 1,
             }}
-            onMouseOver={(e) => { if (!googleLoading) { e.currentTarget.style.background = 'var(--bg-hover)'; e.currentTarget.style.borderColor = 'var(--border-strong)' } }}
-            onMouseOut={(e) => { e.currentTarget.style.background = 'var(--bg-surface)'; e.currentTarget.style.borderColor = 'var(--border-default)' }}
+            onMouseOver={(e) => { if (!googleLoading) { e.currentTarget.style.background = 'var(--l-bg-card-hover)'; e.currentTarget.style.borderColor = 'var(--l-border-hover)' } }}
+            onMouseOut={(e) => { e.currentTarget.style.background = 'var(--l-bg-card)'; e.currentTarget.style.borderColor = 'var(--l-border)' }}
           >
             {googleLoading ? (
               <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} />
@@ -234,12 +237,12 @@ export default function LoginPage() {
       </form>
 
       {/* Toggle */}
-      <p style={{ textAlign: 'center', fontSize: '13px', color: 'var(--text-tertiary)' }}>
+      <p style={{ textAlign: 'center', fontSize: '13px', color: 'var(--l-text-tertiary)' }}>
         {isLogin ? "Don't have an account? " : 'Already have an account? '}
         <button
           type="button"
           onClick={() => { setIsLogin(!isLogin); setError('') }}
-          style={{ background: 'none', border: 'none', color: 'var(--text-brand)', cursor: 'pointer', fontWeight: 500, fontSize: 'inherit' }}
+          style={{ background: 'none', border: 'none', color: 'var(--l-accent)', cursor: 'pointer', fontWeight: 500, fontSize: 'inherit' }}
         >
           {isLogin ? 'Sign up' : 'Sign in'}
         </button>

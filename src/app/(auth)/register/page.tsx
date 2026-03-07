@@ -61,7 +61,7 @@ export default function RegisterPage() {
   }
 
   return (
-    <div style={{ width: '100%', maxWidth: '400px' }}>
+    <div style={{ width: '100%', maxWidth: '560px' }}>
       {/* Logo */}
       <div style={{ textAlign: 'center', marginBottom: '40px' }}>
         <div
@@ -110,24 +110,24 @@ export default function RegisterPage() {
             <div>
               <label className="label" htmlFor="name">Full Name</label>
               <div style={{ position: 'relative' }}>
-                <User size={15} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-tertiary)' }} />
-                <input id="name" className="input" type="text" placeholder="John Doe" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} style={{ paddingLeft: '38px' }} required />
+                <User size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--l-text-secondary, var(--text-tertiary))' }} />
+                <input id="name" className="input" type="text" placeholder="John Doe" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} style={{ padding: '12px 14px 12px 42px', fontSize: '15px' }} required />
               </div>
             </div>
 
             <div>
               <label className="label" htmlFor="email">Email</label>
               <div style={{ position: 'relative' }}>
-                <Mail size={15} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-tertiary)' }} />
-                <input id="email" className="input" type="email" placeholder="you@startup.com" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} style={{ paddingLeft: '38px' }} required />
+                <Mail size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--l-text-secondary, var(--text-tertiary))' }} />
+                <input id="email" className="input" type="email" placeholder="you@startup.com" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} style={{ padding: '12px 14px 12px 42px', fontSize: '15px' }} required />
               </div>
             </div>
 
             <div>
               <label className="label" htmlFor="password">Password</label>
               <div style={{ position: 'relative' }}>
-                <Lock size={15} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-tertiary)' }} />
-                <input id="password" className="input" type="password" placeholder="••••••••" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} style={{ paddingLeft: '38px' }} required minLength={6} />
+                <Lock size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--l-text-secondary, var(--text-tertiary))' }} />
+                <input id="password" className="input" type="password" placeholder="••••••••" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} style={{ padding: '12px 14px 12px 42px', fontSize: '15px' }} required minLength={6} />
               </div>
             </div>
           </div>
