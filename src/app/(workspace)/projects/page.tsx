@@ -3,12 +3,14 @@
 import { useState } from 'react'
 import { useProjects } from '@/lib/hooks/useProjects'
 import { Plus, Search } from 'lucide-react'
+import { useT } from '@/lib/i18n/useLanguage'
 import ProjectCard from '@/components/projects/ProjectCard'
 import ProjectForm from '@/components/projects/ProjectForm'
 import EmptyState from '@/components/shared/EmptyState'
 import LoadingSpinner from '@/components/shared/LoadingSpinner'
 
 export default function ProjectsPage() {
+  const t = useT()
   const { projects, isLoading, mutate } = useProjects()
   const [showForm, setShowForm] = useState(false)
   const [filter, setFilter] = useState('all')
@@ -26,9 +28,9 @@ export default function ProjectsPage() {
     <div className="animate-fade-in">
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '12px' }}>
-        <h1>Projects</h1>
+        <h1>{t('projects.title')}</h1>
         <button className="btn-primary" onClick={() => setShowForm(true)}>
-          <Plus size={16} /> New Project
+          <Plus size={16} /> {t('projects.create')}
         </button>
       </div>
 
@@ -38,7 +40,7 @@ export default function ProjectsPage() {
           <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
           <input
             className="input"
-            placeholder="Search projects…"
+            placeholder={t('projects.search')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             style={{ paddingLeft: '40px' }}

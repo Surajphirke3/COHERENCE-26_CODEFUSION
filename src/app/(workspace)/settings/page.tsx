@@ -2,17 +2,22 @@
 
 import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
-import { Settings as SettingsIcon, User, Shield, Palette, Sun, Moon, Bot, Key, Eye, EyeOff, Check, Trash2, Mail, Loader2, CheckCircle } from 'lucide-react'
+import { Settings as SettingsIcon, User, Shield, Palette, Sun, Moon, Bot, Key, Eye, EyeOff, Check, Trash2, Mail, Loader2, CheckCircle, ChevronDown, ChevronRight, Globe } from 'lucide-react'
 import { toast } from 'sonner'
 import { useTheme } from '@/components/providers'
 import { useAIProviderStore } from '@/lib/store/aiProviderStore'
 import { ALL_PROVIDERS } from '@/lib/ai/providers'
+import { LANGUAGES } from '@/lib/i18n/translations'
+import { useLanguageStore, useT } from '@/lib/i18n/useLanguage'
 
 export default function SettingsPage() {
   const { data: session } = useSession()
   const { theme, setTheme } = useTheme()
   const { configs, activeProviderId, setActiveProvider, updateConfig, hydrate, hydrated } = useAIProviderStore()
   const [showKeys, setShowKeys] = useState<Record<string, boolean>>({})
+  const [expandedProvider, setExpandedProvider] = useState<string | null>(null)
+  const { lang, setLang, hydrate: hydrateLang } = useLanguageStore()
+  const t = useT()
   const [profile, setProfile] = useState({
     name: session?.user?.name || '',
     title: '',
@@ -29,7 +34,7 @@ export default function SettingsPage() {
   const [emailSaved, setEmailSaved] = useState(false)
   const [aiSaved, setAISaved] = useState(false)
 
-  useEffect(() => { hydrate() }, [hydrate])
+  useEffect(() => { hydrate(); hydrateLang() }, [hydrate, hydrateLang])
 
   // Load user settings from server
   useEffect(() => {
@@ -242,6 +247,36 @@ export default function SettingsPage() {
         </div>
       </section>
 
+      {/* Language Section */}
+      <section className="card" style={{ padding: '24px', marginBottom: '20px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+          <Globe size={18} color="var(--brand-600)" />
+          <h2>{t('settings.language')}</h2>
+        </div>
+        <p style={{ fontSize: '12px', color: 'var(--text-tertiary)', marginBottom: '16px' }}>
+          {t('settings.languageDesc')}
+        </p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '8px' }}>
+          {LANGUAGES.map((l) => (
+            <button
+              key={l.code}
+              onClick={() => { setLang(l.code); toast.success(`Language changed to ${l.name}`) }}
+              style={{
+                display: 'flex', alignItems: 'center', gap: '8px',
+                padding: '10px 12px', borderRadius: 'var(--radius-md)',
+                border: lang === l.code ? '2px solid var(--brand-500)' : '1px solid var(--border-default)',
+                background: lang === l.code ? 'var(--brand-50)' : 'var(--bg-sunken)',
+                cursor: 'pointer', fontSize: '13px', fontWeight: lang === l.code ? 600 : 400,
+                color: 'var(--text-primary)', transition: 'all 100ms ease',
+              }}
+            >
+              <span style={{ fontSize: '18px' }}>{l.flag}</span>
+              <span>{l.name}</span>
+            </button>
+          ))}
+        </div>
+      </section>
+
       {/* AI Providers Section */}
       {hydrated && (
         <section className="card" style={{ padding: '24px' }}>
@@ -270,126 +305,112 @@ export default function SettingsPage() {
             </select>
           </div>
 
-          {/* Provider configs */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          {/* Provider configs — Collapsible Accordion */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
             {ALL_PROVIDERS.map((provider) => {
               const cfg = configs[provider.id]
               if (!cfg) return null
               const isActive = activeProviderId === provider.id
+              const isExpanded = expandedProvider === provider.id
               const keyVisible = showKeys[provider.id]
 
               return (
                 <div
                   key={provider.id}
                   style={{
-                    padding: '16px',
                     borderRadius: 'var(--radius-md)',
                     border: `1px solid ${isActive ? 'var(--brand-500)' : 'var(--border-default)'}`,
-                    background: isActive ? 'color-mix(in srgb, var(--brand-50) 30%, transparent)' : 'var(--bg-surface)',
+                    background: isActive ? 'var(--brand-50)' : 'var(--bg-sunken)',
+                    overflow: 'hidden',
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <span style={{ fontWeight: 600, fontSize: '14px' }}>{provider.name}</span>
-                      {isActive && (
-                        <span style={{
-                          fontSize: '10px', fontWeight: 600, padding: '2px 8px',
-                          borderRadius: '9999px', background: 'var(--brand-600)', color: '#fff',
-                        }}>
-                          Active
-                        </span>
-                      )}
-                    </div>
-                    {!isActive && (
-                      <button
-                        className="btn-ghost"
-                        style={{ fontSize: '12px', padding: '4px 10px' }}
-                        onClick={() => { setActiveProvider(provider.id); toast.success(`Switched to ${provider.name}`) }}
-                      >
-                        <Check size={12} /> Use
-                      </button>
+                  {/* Accordion Header — always visible */}
+                  <button
+                    onClick={() => setExpandedProvider(isExpanded ? null : provider.id)}
+                    style={{
+                      width: '100%', display: 'flex', alignItems: 'center', gap: '10px',
+                      padding: '12px 14px', border: 'none', cursor: 'pointer',
+                      background: 'transparent', textAlign: 'left',
+                      color: 'var(--text-primary)',
+                    }}
+                  >
+                    {isExpanded ? <ChevronDown size={14} color="var(--text-tertiary)" /> : <ChevronRight size={14} color="var(--text-tertiary)" />}
+                    <span style={{ fontWeight: 600, fontSize: '13px', flex: 1 }}>{provider.name}</span>
+                    <span style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>{provider.description.split('—')[0]}</span>
+                    {isActive && (
+                      <span style={{ fontSize: '10px', fontWeight: 600, padding: '2px 8px', borderRadius: '9999px', background: 'var(--brand-600)', color: '#fff' }}>
+                        Active
+                      </span>
                     )}
-                  </div>
-                  <p style={{ fontSize: '12px', color: 'var(--text-tertiary)', marginBottom: '12px' }}>{provider.description}</p>
+                    {!isActive && cfg.apiKey && (
+                      <span style={{ fontSize: '10px', fontWeight: 500, padding: '2px 8px', borderRadius: '9999px', background: 'var(--success-bg)', color: 'var(--success-text)' }}>
+                        Key set
+                      </span>
+                    )}
+                  </button>
 
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    {provider.requiresApiKey && (
-                      <div>
-                        <label className="label" style={{ fontSize: '12px' }}>
-                          <Key size={11} style={{ display: 'inline', marginRight: '4px' }} />
-                          API Key
-                        </label>
-                        <div style={{ display: 'flex', gap: '6px' }}>
-                          <input
-                            className="input"
-                            type={keyVisible ? 'text' : 'password'}
-                            placeholder={`Enter ${provider.name} API key...`}
-                            value={cfg.apiKey}
-                            onChange={(e) => updateConfig(provider.id, { apiKey: e.target.value })}
-                            style={{ flex: 1, fontSize: '13px' }}
-                          />
+                  {/* Accordion Body — only when expanded */}
+                  {isExpanded && (
+                    <div style={{ padding: '0 14px 14px', display: 'flex', flexDirection: 'column', gap: '10px', borderTop: '1px solid var(--border-subtle)' }}>
+                      <div style={{ paddingTop: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        {!isActive && (
                           <button
-                            className="btn-ghost"
-                            onClick={() => toggleKeyVisibility(provider.id)}
-                            style={{ padding: '6px' }}
-                            title={keyVisible ? 'Hide key' : 'Show key'}
+                            className="btn-primary"
+                            style={{ fontSize: '12px', padding: '4px 12px' }}
+                            onClick={() => { setActiveProvider(provider.id); toast.success(`Switched to ${provider.name}`) }}
                           >
-                            {keyVisible ? <EyeOff size={14} /> : <Eye size={14} />}
+                            <Check size={12} /> Set as Active
                           </button>
-                        </div>
+                        )}
+                        {isActive && <span style={{ fontSize: '12px', color: 'var(--success-text)' }}>Currently active provider</span>}
                       </div>
-                    )}
 
-                    <div>
-                      <label className="label" style={{ fontSize: '12px' }}>Base URL</label>
-                      <input
-                        className="input"
-                        value={cfg.baseUrl}
-                        onChange={(e) => updateConfig(provider.id, { baseUrl: e.target.value })}
-                        placeholder="https://api.example.com/v1"
-                        style={{ fontSize: '13px' }}
-                      />
-                    </div>
+                      {provider.requiresApiKey && (
+                        <div>
+                          <label className="label" style={{ fontSize: '12px' }}>
+                            <Key size={11} style={{ display: 'inline', marginRight: '4px' }} />
+                            API Key
+                          </label>
+                          <div style={{ display: 'flex', gap: '6px' }}>
+                            <input
+                              className="input"
+                              type={keyVisible ? 'text' : 'password'}
+                              placeholder={`Enter ${provider.name} API key...`}
+                              value={cfg.apiKey}
+                              onChange={(e) => updateConfig(provider.id, { apiKey: e.target.value })}
+                              style={{ flex: 1, fontSize: '13px' }}
+                            />
+                            <button className="btn-ghost" onClick={() => toggleKeyVisibility(provider.id)} style={{ padding: '6px' }}>
+                              {keyVisible ? <EyeOff size={14} /> : <Eye size={14} />}
+                            </button>
+                          </div>
+                        </div>
+                      )}
 
-                    <div>
-                      <label className="label" style={{ fontSize: '12px' }}>Model</label>
-                      {provider.id === 'byok' || provider.models.length === 0 ? (
-                        <input
-                          className="input"
-                          value={cfg.model}
-                          onChange={(e) => updateConfig(provider.id, { model: e.target.value })}
-                          placeholder="Enter model name..."
-                          style={{ fontSize: '13px' }}
-                        />
-                      ) : (
-                        <select
-                          className="select"
-                          value={cfg.model}
-                          onChange={(e) => updateConfig(provider.id, { model: e.target.value })}
-                          style={{ fontSize: '13px' }}
-                        >
-                          {provider.models.map((m) => (
-                            <option key={m} value={m}>{m}</option>
-                          ))}
-                        </select>
+                      <div>
+                        <label className="label" style={{ fontSize: '12px' }}>Model</label>
+                        {provider.id === 'byok' || provider.models.length === 0 ? (
+                          <input className="input" value={cfg.model} onChange={(e) => updateConfig(provider.id, { model: e.target.value })} placeholder="Enter model name..." style={{ fontSize: '13px' }} />
+                        ) : (
+                          <select className="select" value={cfg.model} onChange={(e) => updateConfig(provider.id, { model: e.target.value })} style={{ fontSize: '13px' }}>
+                            {provider.models.map((m) => (<option key={m} value={m}>{m}</option>))}
+                          </select>
+                        )}
+                      </div>
+
+                      <div>
+                        <label className="label" style={{ fontSize: '12px' }}>Base URL</label>
+                        <input className="input" value={cfg.baseUrl} onChange={(e) => updateConfig(provider.id, { baseUrl: e.target.value })} placeholder="https://api.example.com/v1" style={{ fontSize: '13px' }} />
+                      </div>
+
+                      {provider.id === 'byok' && (
+                        <button className="btn-ghost" style={{ fontSize: '12px', padding: '4px 10px', color: 'var(--danger)', alignSelf: 'flex-start' }}
+                          onClick={() => { updateConfig('byok', { apiKey: '', baseUrl: '', model: '' }); toast.success('BYOK config cleared') }}>
+                          <Trash2 size={12} /> Clear Config
+                        </button>
                       )}
                     </div>
-
-                    {provider.id === 'byok' && (
-                      <div style={{ display: 'flex', gap: '8px' }}>
-                        <button
-                          className="btn-ghost"
-                          style={{ fontSize: '12px', padding: '4px 10px', color: 'var(--danger)' }}
-                          onClick={() => {
-                            updateConfig('byok', { apiKey: '', baseUrl: '', model: '' })
-                            toast.success('BYOK config cleared')
-                          }}
-                        >
-                          <Trash2 size={12} /> Clear BYOK Config
-                        </button>
-                      </div>
-                    )}
-                  </div>
+                  )}
                 </div>
               )
             })}

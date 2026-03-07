@@ -4,6 +4,7 @@ import { useState } from 'react'
 import useSWR from 'swr'
 import Link from 'next/link'
 import { Plus, Search, Pin, FileText, X } from 'lucide-react'
+import { useT } from '@/lib/i18n/useLanguage'
 import EmptyState from '@/components/shared/EmptyState'
 import LoadingSpinner from '@/components/shared/LoadingSpinner'
 import { formatDate } from '@/lib/utils/date'
@@ -12,6 +13,7 @@ import { toast } from 'sonner'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const typeLabels: Record<string, string> = {
   prd: 'PRD',
   meeting_notes: 'Meeting Notes',
@@ -27,6 +29,7 @@ const typeColors: Record<string, string> = {
 }
 
 export default function DocsPage() {
+  const t = useT()
   const [search, setSearch] = useState('')
   const [typeFilter, setTypeFilter] = useState('')
   const { data: docs, isLoading, mutate } = useSWR(
@@ -70,9 +73,9 @@ export default function DocsPage() {
     <div className="animate-fade-in">
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '12px' }}>
-        <h1>Docs</h1>
+        <h1>{t('docs.title')}</h1>
         <button className="btn-primary" onClick={() => setShowCreate(true)}>
-          <Plus size={16} /> New Document
+          <Plus size={16} /> {t('docs.create')}
         </button>
       </div>
 
@@ -82,7 +85,7 @@ export default function DocsPage() {
           <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
           <input
             className="input"
-            placeholder="Search docs…"
+            placeholder={t('docs.search')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             style={{ paddingLeft: '40px' }}

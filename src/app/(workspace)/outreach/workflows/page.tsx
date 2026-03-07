@@ -4,6 +4,8 @@ import { useState } from 'react'
 import Link from 'next/link'
 import useSWR, { mutate } from 'swr'
 import { Plus, GitBranch, Trash2, Play, Pause, Loader2, Mail, Users, Repeat, Zap, X, FileText, Handshake, CalendarCheck, Star, Gift, Megaphone, UserCheck, Award, Target, TrendingUp, Heart, Shield, Briefcase, Globe, Rocket, Phone, MessageCircle, Building, Crown, Lightbulb, RefreshCw } from 'lucide-react'
+import { useT, useLanguageStore } from '@/lib/i18n/useLanguage'
+import { useEffect } from 'react'
 
 const fetcher = (url: string) => fetch(url).then(r => r.json())
 
@@ -350,6 +352,9 @@ const WORKFLOW_TEMPLATES = [
 ]
 
 export default function WorkflowsPage() {
+  const t = useT()
+  const { hydrate: hydrateLang } = useLanguageStore()
+  useEffect(() => { hydrateLang() }, [hydrateLang])
   const { data, isLoading } = useSWR('/api/workflows', fetcher)
   const [creating, setCreating] = useState(false)
   const [showTemplates, setShowTemplates] = useState(false)
@@ -405,7 +410,7 @@ export default function WorkflowsPage() {
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
         <div>
-          <h1 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '4px' }}>Workflows</h1>
+          <h1 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '4px' }}>{t('workflow.title')}</h1>
           <p style={{ color: 'var(--text-tertiary)', fontSize: '14px' }}>
             Design and manage your outreach sequences
           </p>
@@ -420,7 +425,7 @@ export default function WorkflowsPage() {
           </button>
           <button className="btn-primary" onClick={handleCreate} disabled={creating}>
             {creating ? <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} /> : <Plus size={16} />}
-            Blank Workflow
+            {t('workflow.create')}
           </button>
         </div>
       </div>

@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { Upload, FileSpreadsheet, Users, Trash2, Loader2, Search } from 'lucide-react'
 import useSWR, { mutate } from 'swr'
+import { useT, useLanguageStore } from '@/lib/i18n/useLanguage'
 
 const fetcher = (url: string) => fetch(url).then(r => r.json())
 
@@ -27,6 +28,9 @@ const statusTextColors: Record<string, string> = {
 }
 
 export default function LeadsPage() {
+  const t = useT()
+  const { hydrate: hydrateLang } = useLanguageStore()
+  useEffect(() => { hydrateLang() }, [hydrateLang])
   const { data, isLoading } = useSWR('/api/leads', fetcher)
   const [uploading, setUploading] = useState(false)
   const [dragOver, setDragOver] = useState(false)
@@ -96,9 +100,9 @@ export default function LeadsPage() {
   return (
     <div>
       <div style={{ marginBottom: '24px' }}>
-        <h1 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '4px' }}>Leads</h1>
+        <h1 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '4px' }}>{t('leads.title')}</h1>
         <p style={{ color: 'var(--text-tertiary)', fontSize: '14px' }}>
-          Import and manage your outreach leads
+          {t('leads.import')}
         </p>
       </div>
 
@@ -170,7 +174,7 @@ export default function LeadsPage() {
         <div className="card" style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', gap: '8px', flex: 1, minWidth: '120px' }}>
           <Users size={16} color="var(--brand-600)" />
           <span style={{ fontWeight: 600, fontSize: '18px' }}>{leads.length}</span>
-          <span style={{ fontSize: '13px', color: 'var(--text-tertiary)' }}>Total Leads</span>
+          <span style={{ fontSize: '13px', color: 'var(--text-tertiary)' }}>{t('leads.totalLeads')}</span>
         </div>
         <div className="card" style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', gap: '8px', flex: 1, minWidth: '120px' }}>
           <FileSpreadsheet size={16} color="var(--success)" />
@@ -184,7 +188,7 @@ export default function LeadsPage() {
         <Search size={15} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-tertiary)' }} />
         <input
           className="input"
-          placeholder="Search leads..."
+          placeholder={t('leads.search')}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           style={{ paddingLeft: '36px', width: '100%', maxWidth: '320px' }}
@@ -200,7 +204,7 @@ export default function LeadsPage() {
       ) : filteredLeads.length === 0 ? (
         <div className="card" style={{ padding: '40px', textAlign: 'center' }}>
           <Users size={32} color="var(--text-tertiary)" style={{ margin: '0 auto 12px' }} />
-          <p style={{ fontWeight: 500, marginBottom: '4px' }}>No leads yet</p>
+          <p style={{ fontWeight: 500, marginBottom: '4px' }}>{t('leads.noLeads')}</p>
           <p style={{ fontSize: '13px', color: 'var(--text-tertiary)' }}>
             Upload a CSV or Excel file to import your leads
           </p>

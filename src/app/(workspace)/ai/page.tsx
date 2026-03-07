@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Sparkles, ListTodo, FileSignature, MessageSquare, Loader2, Plus, ArrowRight, Bot, ChevronDown } from 'lucide-react'
+import { useT } from '@/lib/i18n/useLanguage'
 import { useProjects } from '@/lib/hooks/useProjects'
 import { toast } from 'sonner'
 import StatusBadge from '@/components/shared/StatusBadge'
@@ -11,6 +12,7 @@ import { ALL_PROVIDERS } from '@/lib/ai/providers'
 type Tool = 'task-generator' | 'summarizer' | 'prd-writer'
 
 export default function AIPage() {
+  const t = useT()
   const [activeTool, setActiveTool] = useState<Tool>('task-generator')
   const { projects } = useProjects()
   const { activeProviderId, configs, setActiveProvider, updateConfig, hydrate, hydrated } = useAIProviderStore()
@@ -33,7 +35,7 @@ export default function AIPage() {
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '40px', height: '40px', background: 'var(--primary-muted)', borderRadius: 'var(--radius-md)' }}>
             <Sparkles size={22} color="var(--primary)" />
           </div>
-          <h1>AI Assistant</h1>
+          <h1>{t('ai.title')}</h1>
         </div>
         <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>Three focused tools that actually do work.</p>
       </div>

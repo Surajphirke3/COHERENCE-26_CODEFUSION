@@ -3,11 +3,13 @@
 import { useTeam } from '@/lib/hooks/useTeam'
 import { useSession } from 'next-auth/react'
 import { Shield, User, Mail } from 'lucide-react'
+import { useT } from '@/lib/i18n/useLanguage'
 import { getInitials } from '@/lib/utils/format'
 import LoadingSpinner from '@/components/shared/LoadingSpinner'
 import { toast } from 'sonner'
 
 export default function TeamPage() {
+  const t = useT()
   const { members, isLoading, mutate } = useTeam()
   const { data: session } = useSession()
   const isAdmin = session?.user?.role === 'admin'
@@ -31,7 +33,7 @@ export default function TeamPage() {
   return (
     <div className="animate-fade-in">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-        <h1>Team</h1>
+        <h1>{t('team.title')}</h1>
       </div>
       <p style={{ color: 'var(--text-tertiary)', fontSize: '14px', marginBottom: '32px' }}>
         {members.length} member{members.length !== 1 ? 's' : ''} in your workspace

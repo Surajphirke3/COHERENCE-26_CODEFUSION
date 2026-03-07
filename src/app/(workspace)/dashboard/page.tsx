@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import useSWR from 'swr'
 import { useSession } from 'next-auth/react'
 import { Plus, FileText, Bot, FolderKanban } from 'lucide-react'
+import { useT } from '@/lib/i18n/useLanguage'
 import Link from 'next/link'
 import QuickStats from '@/components/dashboard/QuickStats'
 import ActivityFeed from '@/components/dashboard/ActivityFeed'
@@ -16,6 +17,7 @@ import EmptyState from '@/components/shared/EmptyState'
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
 export default function DashboardPage() {
+  const t = useT()
   const { data: session } = useSession()
   const { data: projects } = useSWR('/api/projects', fetcher, { refreshInterval: 30000 })
   const { data: activities } = useSWR('/api/activity?limit=10', fetcher, { refreshInterval: 10000 })
@@ -46,7 +48,7 @@ export default function DashboardPage() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
         <div>
           <h1 style={{ marginBottom: '4px' }}>
-            Welcome back, {session?.user?.name?.split(' ')[0] || 'there'} 👋
+            {t('dashboard.welcome')}, {session?.user?.name?.split(' ')[0] || 'there'} 👋
           </h1>
           <p style={{ color: 'var(--text-tertiary)', fontSize: '14px' }}>
             Here&apos;s what&apos;s happening with your team today.
@@ -55,12 +57,12 @@ export default function DashboardPage() {
         <div style={{ display: 'flex', gap: '8px' }}>
           <Link href="/projects">
             <button className="btn-secondary">
-              <Plus size={16} /> New Project
+              <Plus size={16} /> {t('dashboard.newProject')}
             </button>
           </Link>
           <Link href="/ai">
             <button className="btn-primary">
-              <Bot size={16} /> Ask AI
+              <Bot size={16} /> {t('dashboard.aiAssistant')}
             </button>
           </Link>
         </div>

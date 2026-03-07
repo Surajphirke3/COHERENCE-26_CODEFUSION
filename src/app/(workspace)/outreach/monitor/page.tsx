@@ -6,6 +6,7 @@ import {
   LayoutGrid, List, RefreshCw, Mail, Bot, Tag, Zap, GitBranch, Flag,
   UserPlus, Timer, AlertTriangle, MessageSquare, ChevronDown, ChevronUp,
 } from 'lucide-react'
+import { useT, useLanguageStore } from '@/lib/i18n/useLanguage'
 
 interface Execution {
   _id: string
@@ -93,6 +94,9 @@ function timeAgo(date: string | Date): string {
 }
 
 export default function MonitorPage() {
+  const t = useT()
+  const { hydrate: hydrateLang } = useLanguageStore()
+  useEffect(() => { hydrateLang() }, [hydrateLang])
   const [stats, setStats] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [selectedExec, setSelectedExec] = useState<Execution | null>(null)
@@ -124,7 +128,7 @@ export default function MonitorPage() {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '60vh', gap: '12px' }}>
         <Loader2 size={28} style={{ animation: 'spin 1s linear infinite', color: 'var(--brand-600)' }} />
-        <span style={{ fontSize: '14px', color: 'var(--text-tertiary)' }}>Loading execution data...</span>
+        <span style={{ fontSize: '14px', color: 'var(--text-tertiary)' }}>{t('common.loading')}</span>
       </div>
     )
   }
@@ -150,7 +154,7 @@ export default function MonitorPage() {
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '20px' }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
-            <h1 style={{ fontSize: '1.5rem', fontWeight: 700 }}>Live Monitor</h1>
+            <h1 style={{ fontSize: '1.5rem', fontWeight: 700 }}>{t('monitor.title')}</h1>
             {(execStats.running || 0) > 0 && (
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '3px 10px', borderRadius: '9999px', background: 'var(--info-bg)', color: 'var(--info-text)', fontSize: '11px', fontWeight: 600, border: '1px solid var(--info-border)' }}>
                 <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--info-text)', animation: 'pulse 2s infinite' }} />
@@ -159,7 +163,7 @@ export default function MonitorPage() {
             )}
           </div>
           <p style={{ color: 'var(--text-tertiary)', fontSize: '14px' }}>
-            Real-time pipeline view · Auto-refreshes every 5s
+            {t('monitor.realtime')} · Auto-refreshes every 5s
           </p>
         </div>
         <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
@@ -169,7 +173,7 @@ export default function MonitorPage() {
             style={{ padding: '6px 10px', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '4px', border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius)' }}
             disabled={refreshing}
           >
-            <RefreshCw size={13} style={refreshing ? { animation: 'spin 1s linear infinite' } : undefined} /> Refresh
+            <RefreshCw size={13} style={refreshing ? { animation: 'spin 1s linear infinite' } : undefined} /> {t('monitor.refresh')}
           </button>
           <div style={{ display: 'flex', border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius)', overflow: 'hidden' }}>
             <button
@@ -231,7 +235,7 @@ export default function MonitorPage() {
       {executions.length === 0 ? (
         <div className="card" style={{ padding: '64px 24px', textAlign: 'center' }}>
           <Activity size={40} color="var(--text-tertiary)" style={{ margin: '0 auto 16px', opacity: 0.4 }} />
-          <h2 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '6px' }}>No executions yet</h2>
+          <h2 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '6px' }}>{t('monitor.noExecutions')}</h2>
           <p style={{ fontSize: '13px', color: 'var(--text-tertiary)', maxWidth: '400px', margin: '0 auto', lineHeight: 1.5 }}>
             Go to Workflows, pick a template, add your API key in Settings, and click &ldquo;Save &amp; Execute&rdquo; to see your pipeline here.
           </p>

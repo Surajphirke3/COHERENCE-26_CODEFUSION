@@ -3,12 +3,14 @@
 import { useSession } from 'next-auth/react'
 import { Search, Bell, Menu } from 'lucide-react'
 import { useState } from 'react'
+import { useT } from '@/lib/i18n/useLanguage'
 import { getInitials } from '@/lib/utils/format'
 import MobileNav from './MobileNav'
 import NotificationPopup from './NotificationPopup'
 import { useNotifications } from '@/lib/hooks/useNotifications'
 
 export default function Topbar() {
+  const t = useT()
   const { data: session } = useSession()
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
@@ -64,7 +66,7 @@ export default function Topbar() {
             <Search size={14} color="var(--text-tertiary)" style={{ flexShrink: 0 }} />
             <input
               type="text"
-              placeholder="Search…"
+              placeholder={t('topbar.search')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               style={{

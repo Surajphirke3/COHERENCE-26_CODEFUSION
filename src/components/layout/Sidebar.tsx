@@ -7,44 +7,50 @@ import {
   LayoutDashboard, FolderKanban, Users, FileText, Bot, Settings, LogOut, ChevronLeft, Rocket, MessageSquare,
   GitBranch, Plus, Activity
 } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { getInitials } from '@/lib/utils/format'
-
-const navGroups = [
-  {
-    label: 'Workspace',
-    items: [
-      { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-      { href: '/projects', label: 'Projects', icon: FolderKanban },
-      { href: '/docs', label: 'Docs', icon: FileText },
-    ],
-  },
-  {
-    label: 'Outreach',
-    items: [
-      { href: '/outreach/leads', label: 'Leads', icon: Users },
-      { href: '/outreach/workflows', label: 'Workflows', icon: GitBranch },
-      { href: '/outreach/workflows/new/builder', label: 'New Workflow', icon: Plus },
-      { href: '/outreach/monitor', label: 'Live Monitor', icon: Activity },
-    ],
-  },
-  {
-    label: 'Team',
-    items: [
-      { href: '/team', label: 'Members', icon: Users },
-      { href: '/messages', label: 'Messages', icon: MessageSquare },
-      { href: '/ai', label: 'AI Assistant', icon: Bot },
-    ],
-  },
-  {
-    label: 'Account',
-    items: [
-      { href: '/settings', label: 'Settings', icon: Settings },
-    ],
-  },
-]
+import { useT } from '@/lib/i18n/useLanguage'
+import { useLanguageStore } from '@/lib/i18n/useLanguage'
 
 export default function Sidebar() {
+  const t = useT()
+  const { hydrate: hydrateLang } = useLanguageStore()
+
+  useEffect(() => { hydrateLang() }, [hydrateLang])
+
+  const navGroups = [
+    {
+      label: 'Workspace',
+      items: [
+        { href: '/dashboard', label: t('nav.dashboard'), icon: LayoutDashboard },
+        { href: '/projects', label: t('nav.projects'), icon: FolderKanban },
+        { href: '/docs', label: t('nav.docs'), icon: FileText },
+      ],
+    },
+    {
+      label: t('nav.outreach'),
+      items: [
+        { href: '/outreach/leads', label: t('nav.leads'), icon: Users },
+        { href: '/outreach/workflows', label: t('nav.workflows'), icon: GitBranch },
+        { href: '/outreach/workflows/new/builder', label: t('workflow.create'), icon: Plus },
+        { href: '/outreach/monitor', label: t('nav.monitor'), icon: Activity },
+      ],
+    },
+    {
+      label: t('nav.team'),
+      items: [
+        { href: '/team', label: t('nav.team'), icon: Users },
+        { href: '/messages', label: t('nav.messages'), icon: MessageSquare },
+        { href: '/ai', label: t('nav.ai'), icon: Bot },
+      ],
+    },
+    {
+      label: '',
+      items: [
+        { href: '/settings', label: t('nav.settings'), icon: Settings },
+      ],
+    },
+  ]
   const pathname = usePathname()
   const { data: session } = useSession()
   const [collapsed, setCollapsed] = useState(false)
@@ -208,17 +214,17 @@ export default function Sidebar() {
           title="Sign out"
         >
           <LogOut size={16} />
-          {!collapsed && 'Sign out'}
+          {!collapsed && t('topbar.signOut')}
         </button>
 
         <button
           onClick={() => setCollapsed(!collapsed)}
           className="btn-ghost"
           style={{ width: '100%', justifyContent: collapsed ? 'center' : 'flex-start', marginTop: '2px', fontSize: '13px' }}
-          title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          title={collapsed ? 'Expand sidebar' : t('topbar.collapse')}
         >
           <ChevronLeft size={16} style={{ transition: 'transform 200ms ease', transform: collapsed ? 'rotate(180deg)' : 'none' }} />
-          {!collapsed && 'Collapse'}
+          {!collapsed && t('topbar.collapse')}
         </button>
       </div>
     </aside>
