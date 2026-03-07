@@ -4,9 +4,10 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useSession, signOut } from 'next-auth/react'
 import {
-  LayoutDashboard, FolderKanban, Users, FileText, Bot, Settings, LogOut, ChevronLeft, Rocket, MessageSquare,
+  LayoutDashboard, FolderKanban, Users, FileText, Bot, Settings, LogOut, ChevronLeft, MessageSquare,
   GitBranch, Plus, Activity
 } from 'lucide-react'
+import Image from 'next/image'
 import { useState } from 'react'
 import { getInitials } from '@/lib/utils/format'
 
@@ -89,11 +90,11 @@ export default function Sidebar() {
             flexShrink: 0,
           }}
         >
-          <Rocket size={18} color="var(--brand-600)" />
+          <Image src="/logo.png" alt="Chronos" width={20} height={20} style={{ objectFit: 'contain' }} />
         </div>
         {!collapsed && (
           <span style={{ fontWeight: 700, fontSize: '15px', color: 'var(--text-primary)', letterSpacing: '-0.01em' }}>
-            Workspace
+            Chronos
           </span>
         )}
       </div>

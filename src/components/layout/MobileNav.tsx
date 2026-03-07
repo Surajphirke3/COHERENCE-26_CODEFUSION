@@ -2,7 +2,8 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, FolderKanban, Users, FileText, Bot, Settings, X, Rocket } from 'lucide-react'
+import { LayoutDashboard, FolderKanban, Users, FileText, Bot, Settings, X } from 'lucide-react'
+import Image from 'next/image'
 
 const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -45,9 +46,9 @@ export default function MobileNav({ isOpen, onClose }: MobileNavProps) {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 8px', marginBottom: '16px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '30px', height: '30px', background: 'var(--brand-50)', borderRadius: 'var(--radius)' }}>
-              <Rocket size={16} color="var(--brand-600)" />
+              <Image src="/logo.png" alt="Chronos" width={18} height={18} style={{ objectFit: 'contain' }} />
             </div>
-            <span style={{ fontWeight: 700, fontSize: '15px', color: 'var(--text-primary)' }}>Workspace</span>
+            <span style={{ fontWeight: 700, fontSize: '15px', color: 'var(--text-primary)' }}>Chronos</span>
           </div>
           <button className="btn-ghost" onClick={onClose} style={{ padding: '4px' }}>
             <X size={18} />
