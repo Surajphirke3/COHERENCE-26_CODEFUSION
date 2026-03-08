@@ -7,18 +7,18 @@
 **The all-in-one productivity platform built for modern startup teams.**  
 Manage projects, collaborate in real-time, write docs, and get AI-powered insights — all in one place.
 
-[![Build Status](https://img.shields.io/badge/build-passing-brightgreen?style=flat-square)](https://github.com/your-username/startup-workspace/actions)
-[![Version](https://img.shields.io/badge/version-0.1.0-blue?style=flat-square)](https://github.com/your-username/startup-workspace/releases)
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen?style=flat-square)](https://github.com/Surajphirke3/COHERENCE-26_CODEFUSION/actions)
+[![Version](https://img.shields.io/badge/version-0.1.0-blue?style=flat-square)](https://github.com/Surajphirke3/COHERENCE-26_CODEFUSION/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](./LICENSE)
 [![Next.js](https://img.shields.io/badge/Next.js-16.1-black?style=flat-square&logo=next.js)](https://nextjs.org/)
 [![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react)](https://react.dev/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-Mongoose-47A248?style=flat-square&logo=mongodb)](https://mongodb.com)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-v4-06B6D4?style=flat-square&logo=tailwindcss)](https://tailwindcss.com/)
-[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=flat-square&logo=vercel)](https://suraj-workspaces.vercel.app)
-[![Last Commit](https://img.shields.io/github/last-commit/your-username/startup-workspace?style=flat-square)](https://github.com/your-username/startup-workspace/commits/main)
-[![Open Issues](https://img.shields.io/github/issues/your-username/startup-workspace?style=flat-square)](https://github.com/your-username/startup-workspace/issues)
+[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=flat-square&logo=vercel)](https://chronosworkflow.vercel.app)
+[![Last Commit](https://img.shields.io/github/last-commit/Surajphirke3/COHERENCE-26_CODEFUSION?style=flat-square)](https://github.com/Surajphirke3/COHERENCE-26_CODEFUSION/commits/main)
+[![Open Issues](https://img.shields.io/github/issues/Surajphirke3/COHERENCE-26_CODEFUSION?style=flat-square)](https://github.com/Surajphirke3/COHERENCE-26_CODEFUSION/issues)
 
-[🌐 Live Demo](https://chronosworkflow.vercel.app/) · [🐛 Report Bug](https://github.com/your-username/startup-workspace/issues/new?template=bug_report.md) · [✨ Request Feature](https://github.com/your-username/startup-workspace/issues/new?template=feature_request.md)
+[🌐 Live Demo](https://chronosworkflow.vercel.app/) · [🐛 Report Bug](https://github.com/Surajphirke3/COHERENCE-26_CODEFUSION/issues/new?template=bug_report.md) · [✨ Request Feature](https://github.com/Surajphirke3/COHERENCE-26_CODEFUSION/issues/new?template=feature_request.md)
 
 ---
 
@@ -70,7 +70,14 @@ It is built on top of the **Next.js 16 App Router** and leverages **Server Compo
 
 ## 🆕 Latest Product Updates (Mar 2026)
 
+### 🚀 Landing Page v2 (New)
+- Fully redesigned **Landing Page** with modern aesthetics and seamless dark/light mode support.
+- **Interactive Workflow Canvas**: A drag-and-drop animated canvas demonstrating the workflow builder.
+- **Floating Dashboard**: A 3D interactive floating dashboard showcasing the app's internal UI natively on the landing page.
+- Modular sections including: Features, Solutions, Stats, Pricing, Testimonials, and advanced CTAs.
+
 ### Outreach Automation Engine (Major Upgrade)
+- **n8n Webhook Integration**: Added robust support for executing and triggering external n8n workflows directly from outreach nodes.
 - Reworked workflow execution to use **real imported leads** instead of generated placeholders.
 - Added **human-like randomized delay** between lead executions for safer bulk outreach.
 - Added **live node execution animation** in workflow builder for real-time visual feedback.
@@ -309,7 +316,7 @@ Make sure the following are installed on your development machine:
 
 **1. Clone the repository**
 ```bash
-git clone https://github.com/your-username/startup-workspace.git
+git clone https://github.com/Surajphirke3/COHERENCE-26_CODEFUSION.git
 cd startup-workspace
 ```
 
@@ -599,7 +606,7 @@ Contributions are what make open-source great. Any contributions you make are **
 1. **Fork** the repository
 2. **Clone** your fork locally:
    ```bash
-   git clone https://github.com/YOUR-USERNAME/startup-workspace.git
+   git clone https://github.com/Surajphirke3/COHERENCE-26_CODEFUSION.git
    ```
 3. **Create a feature branch** from `main`:
    ```bash
@@ -627,7 +634,7 @@ Contributions are what make open-source great. Any contributions you make are **
 - Update relevant documentation if you change behavior
 
 ### Reporting Bugs
-Use the [GitHub Issues](https://github.com/your-username/startup-workspace/issues/new?template=bug_report.md) page with the **bug report** template. Include steps to reproduce, expected vs actual behavior, and your environment details.
+Use the [GitHub Issues](https://github.com/Surajphirke3/COHERENCE-26_CODEFUSION/issues/new?template=bug_report.md) page with the **bug report** template. Include steps to reproduce, expected vs actual behavior, and your environment details.
 
 ---
 
@@ -646,7 +653,7 @@ of this software...
 ## 👨‍💻 Author & Acknowledgements
 
 **Suraj**
-- 💼 [GitHub](https://github.com/your-github) <!-- TODO: Add real GitHub URL -->
+- 💼 [GitHub](https://github.com/Surajphirke3) 
 - 🔗 [LinkedIn](https://linkedin.com/in/your-linkedin) <!-- TODO: Add real LinkedIn URL -->
 - 🌐 [Portfolio](https://your-portfolio.com) <!-- TODO: Add portfolio URL -->
 
@@ -663,6 +670,6 @@ of this software...
 
 If you found this project useful, please consider giving it a ⭐ — it helps more developers discover it!
 
-**[Back to top ↑](#-startup-workspace)**
+**[Back to top ↑](#-chronos---automate-personalize-scale)**
 
 </div>
